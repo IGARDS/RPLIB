@@ -1,37 +1,30 @@
-## Welcome to GitHub Pages
+## Rankability Problem Library (RPLib)
 
-You can use the [editor on GitHub](https://github.com/IGARDS/RPLib/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+The Rankability Problem Library (RPLib) contains problem instances structured to study a datasets ability to support a ranking independent of or associated with particular ranking pipelines. A ranking pipeline is a series of preprocessing and transformation steps that build the input for a ranking algorithm. In order to solve ranking problems, practitioners must not only choose the final ranking algorithm (e.g., Massey, Colley, PageRank) they must also choose from a set of potential pipelines that transform the original dataset into the input of the ranking algorithm. This open and public repository with problems available for the research community. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Problem Definitions
+Problem definitions may be found in [RPLib/problems/](http://https://github.com/IGARDS/RPLib/problems/). The documentation and preparation of each problem instance is located in notebooks called generate.ipynb (e.g., [RPLLib/problems/problem_0001/generate.ipynb](http://https://github.com/IGARDS/RPLib/problems/problem_0001/generate.ipynb). Many rankability problems may branch off from a single generate.ipynb. These should be called problem_0001a, problem_0001b, etc.
 
-### Markdown
+### Problem Submissions
+Submissions to rankability problems are cataloged alongside generate.ipynb and should be named such as submission_0001_problem_0001a.ipynb.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/IGARDS/RPLib/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+### Problem Submission Synthesis
+Different rankability problems have different objectives and as such a manual submission synthesis is performed to update overall progress on a problem instance.
 
 ### Support or Contact
+Primary contact: Dr. Paul Anderson <a href="mailto:pander14@calpoly.edu">
+  
+### Authors and Contributors
+Paul Anderson, Ph.D.
+Department of Computer Science and Software Engineering
+California Polytechnic University
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Amy Langville, Ph.D.
+Department of Mathematics
+College of Charleston
+
+Tim Chartier, Ph.D.
+Department of Mathematics
+Davidson College
+
+TODO: please add yourself
