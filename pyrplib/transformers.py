@@ -38,3 +38,37 @@ class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
         map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked,direct_thres=self.direct_thres,spread_thres=self.spread_thres)
         Ddirect,Dindirect = pyrankability.construct.V_count_vectorized(games,map_func)
         return Ddirect,Dindirect
+    
+class ColumnDirectionTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self,direction_column):
+        self.direction_column = direction_column
+    
+    def fit( self, X, y = None):
+        correlations = X.corr().loc[self.direction_column]
+        self.signs = np.sign(correlations)
+        return self
+    
+    def transform(self, X , y = None ):
+        X2 = X.copy()
+        for col in self.signs.index:
+            if self.signs.loc[col] == -1:
+                X2[col] = -1*X2[col]
+        return X2
+    
+class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self,columns):
+        self.columns = columns
+        
+    #Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+    
+    def transform(self, X , y = None ):
+        D = pd.DataFrame(np.zeros((len(X),len(X))),columns=X.index.copy(),index=X.index.copy())
+        D.index.name = D.index.name+"1"
+        D.columns.name = D.columns.name+"2"
+        for col in self.columns:
+            sorted_col = X[col].sort_values()
+            for i in range(len(sorted_col)):
+                D.loc[sorted_col.index[i], sorted_col.index[i+1:]] += 1
+        return D
