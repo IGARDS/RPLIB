@@ -28,7 +28,8 @@ def compute_D(game_df,team_range,direct_thres,spread_thres):
     Ds = pyrankability.construct.V_count_vectorized(game_df,map_func)
     for i in range(len(Ds)):
         Ds[i] = Ds[i].reindex(index=team_range,columns=team_range)
-    return Ds"""
+    return Ds
+"""
 
 class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self, team1_name_col = 'team1_name', team1_score_col='team1_score',
@@ -54,8 +55,7 @@ class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
         # why don't we reindex here?
         return Ddirect,Dindirect
 
-# +
-
+"""
 def process(data,target,best_df_all):
     index_cols = ["Year","days_to_subtract_key","direct_thres","spread_thres","weight_indirect","range","Method"]
     Ds = pd.DataFrame(columns=["D"]+index_cols)
@@ -80,39 +80,34 @@ def process(data,target,best_df_all):
             D = compute_D(data[year][days_to_subtract_key],team_range,dt,st)
             Ds = Ds.append(pd.Series([D],index=["D"],name=name)) 
     return Ds
+"""
 
-
-
-# -
 
 class ProcessTransformer( BaseEstimator, TransformerMixin ):
-    def __init__(self, index_cols, days_to_subtract_keys, years, best_df, best_df_all, 
-                 dom, ran, dt, st, iw, method, target_range, target_teams, all_teams):
+    def __init__(self, index_cols, best_df, best_df_all, target_range, teams, all_teams):
         self.index_cols = index_cols
-        self.days_to_subtract_keys = days_to_subtract_keys
-        self.years = years
-        self.best_df = best_df # should we just pass in the problem df and get these here?
         self.best_df_all = best_df_all #
-        self.dom = dom
-        self.ran = ran
-        self.dt = dt
-        self.st = st
-        self.iw = iw
-        self.method = method
         self.target_range = target_range #
-        self.target_teams = target_teams #
+        self.teams = teams 
         self.all_teams = all_teams #
                  
     def fit( self, X, y = None ):
         return self
     
-    def transform(self, data, y = None ):
+    def transform(self, problem, y = None ):
+        # get variables we need from problem
+        years = list(problem['data'].keys())
+        days_to_subtract_keys = list(problem['data'][years[0]].keys())
+        best_df = problem['other']['best_df']
+        target_teams = problem['other'][self.teams]
+        
         Ds = pd.DataFrame(columns=["D"]+self.index_cols)
         Ds.set_index(index_cols,inplace=True)
         for days_to_subtract_key,year in tqdm(itertools.product(days_to_subtract_keys,years)):
             days_to_subtract = float(days_to_subtract_key.split("=")[1])
             best_df = best_df_all.set_index('days_to_subtract').loc[days_to_subtract]
             for index,row in best_df.iterrows():
+                dom,ran,dt,st,iw,method = row.loc['domain'],row.loc['range'],row.loc['direct_thres'],row.loc['spread_thres'],row.loc['weight_indirect'],row.loc['Method']
                 iw = 1 # Set this so we get both direct and indirect D matrices
                 # set the team_range
                 team_range = None
@@ -133,9 +128,11 @@ class ProcessTransformer( BaseEstimator, TransformerMixin ):
 # problem: these can't be chained together currently...
 # although i suppose the output doesn't need to be a df for intermediate steps?
 
+"""
 best_pred_df = best_pred_df.reset_index()
 best_pred_df['days_to_subtract_key'] = "days_to_subtract="+best_pred_df['days_to_subtract'].astype(str)
 best_pred_df
+"""
 
 
 class KeyColumnTransformer( BaseEstimator, TransformerMixin ):
