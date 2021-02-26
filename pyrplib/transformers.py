@@ -31,6 +31,8 @@ def compute_D(game_df,team_range,direct_thres,spread_thres):
     return Ds
 """
 
+# ### Baseline 0001
+
 class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self, team1_name_col = 'team1_name', team1_score_col='team1_score',
                  team2_name_col='team2_name',team2_score_col='team2_score',
@@ -305,6 +307,96 @@ class GroupByTransformer( BaseEstimator, TransformerMixin ):
         return target
 
 
+# ### Generate 0001
+
+# +
+
+outer_keys = list(itertools.product(domains_ranges,years))
+for domain_range,year in tqdm(outer_keys):
+    # set the team_domain
+    team_domain = None
+    if domain_range[0] == 'madness':
+        team_domain = madness_teams[year]
+    elif domain_range[0] == 'all':
+        team_domain = all_teams[year]
+
+    # set the team_range
+    team_range = None
+    if domain_range[1] == 'madness':
+        team_range = madness_teams[year]
+    elif domain_range[1] == 'all':
+        team_range = all_teams[year]
+
+    columns = ["days_to_subtract","direct_thres","spread_thres","weight_indirect"]+team_range
+    massey_rankings[(domain_range,year)] = pd.DataFrame(columns=columns)
+    colley_rankings[(domain_range,year)] = pd.DataFrame(columns=columns)
+    massey_rs[(domain_range,year)] = pd.DataFrame(columns=columns)
+    colley_rs[(domain_range,year)] = pd.DataFrame(columns=columns)
+    massey_perms[(domain_range,year)] = pd.DataFrame(columns=columns)
+    colley_perms[(domain_range,year)] = pd.DataFrame(columns=columns)
+
+    game_df = pd.DataFrame({"team1_name":games[year]['team1_name'],
+                            "team1_score":games[year]['points1'],
+                            "team1_H_A_N": games[year]['H_A_N1'],
+                            "team2_name":games[year]['team2_name'],
+                            "team2_score":games[year]['points2'],
+                            "team2_H_A_N": games[year]['H_A_N1'],
+                            "date": games[year]['date']
+                           }).sort_values(by='date')#.drop('date',axis=1)
+    mask = game_df.team1_name.isin(team_domain) & game_df.team2_name.isin(team_domain)
+    game_df = game_df.loc[mask]
+
+# -
+
+class GenGameDfTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self, outer_keys, event, event_teams, columns):
+        self.outer_keys = outer_keys
+        self.event = event
+        self.event_teams = event_teams
+        self.columns = columns
+        
+    def fit( self, X, y = None ):
+        return self
+    
+    def transform( self, ?, y = None ): # not sure what should be passed in here for X
+        for domain_range,year in tqdm(outer_keys):
+            # set the team_domain
+            team_domain = None
+            if domain_range[0] == event:
+                team_domain = event_teams[year]
+            elif domain_range[0] == 'all':
+                team_domain = all_teams[year]
+
+            # set the team_range
+            team_range = None
+            if domain_range[1] == event:
+                team_range = event_teams[year]
+            elif domain_range[1] == 'all':
+                team_range = all_teams[year]
+
+            columns = ["days_to_subtract","direct_thres","spread_thres","weight_indirect"]+team_range
+            massey_rankings[(domain_range,year)] = pd.DataFrame(columns=columns)
+            colley_rankings[(domain_range,year)] = pd.DataFrame(columns=columns)
+            massey_rs[(domain_range,year)] = pd.DataFrame(columns=columns)
+            colley_rs[(domain_range,year)] = pd.DataFrame(columns=columns)
+            massey_perms[(domain_range,year)] = pd.DataFrame(columns=columns)
+            colley_perms[(domain_range,year)] = pd.DataFrame(columns=columns)
+
+            game_df = pd.DataFrame({"team1_name":games[year]['team1_name'],
+                                    "team1_score":games[year]['points1'],
+                                    "team1_H_A_N": games[year]['H_A_N1'], # what is this?
+                                    "team2_name":games[year]['team2_name'],
+                                    "team2_score":games[year]['points2'],
+                                    "team2_H_A_N": games[year]['H_A_N1'],
+                                    "date": games[year]['date']
+                                   }).sort_values(by='date')#.drop('date',axis=1)
+            mask = game_df.team1_name.isin(team_domain) & game_df.team2_name.isin(team_domain)
+            game_df = game_df.loc[mask]
+            
+        return game_df
+
+
+# ### US News
 
 class ColumnDirectionTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self,direction_column):
