@@ -241,6 +241,71 @@ class ComputeFeaturesTransformer( BaseEstimator, TransformerMixin ):
         return features
 
 
+def create_features(Ds,best_pred_df,top_k):
+    index_cols = list(Ds.index.names)+["Construction"]
+    X = pd.DataFrame(columns=index_cols + feature_columns)
+    X.set_index(index_cols,inplace=True)
+    for index,row in tqdm(Ds.iterrows()):
+        sum_D = None
+        year,days_to_subtract_key,dt,st,iw,ran,method = index
+        days_to_subtract = float(days_to_subtract_key.split("=")[1])
+        spec_best_pred_df = best_pred_df.set_index(['Year','days_to_subtract_key',"Method"]).loc[[(year,days_to_subtract_key,method)]]
+        for i,D in enumerate(Ds.loc[(year,days_to_subtract_key,dt,st,iw,ran,method),"D"]):
+            if sum_D is None:
+                sum_D = D
+            else:
+                sum_D = sum_D.add(iw*D,fill_value=0)
+            if i == 0:
+                construction = "Direct"
+            elif i == 1:
+                construction = "Indirect"
+            else:
+                raise Exception("Error")
+            rankings = spec_best_pred_df['rankings'][0]
+            features = compute_features(D,rankings,top_k) # how to handle circular calls?
+            features.name = tuple(list(index)+[construction])
+            X = X.append(features)
+            
+            if i == 1:
+                construction = "Both"
+                features = compute_features(sum_D,rankings,top_k)
+                features.name = tuple(list(index)+[construction])
+                X = X.append(features)
+    return X
+
+
+class CreateFeaturesTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self, feature_columns):
+        self.feature_columns = feature_columns
+        
+    def fit( self, X, y = None ):
+        return self
+    
+    def transform( self, Ds, y = None ):
+
+        return X
+
+
+"""
+target = problem['target'].groupby(['days_to_subtract1','days_to_subtract2','Method','Year','direct_thres','spread_thres','weight_indirect'])[feature_names].mean()
+target
+"""
+
+
+class GroupByTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self, group_cols, feature_names):
+        self.group_cols = group_cols
+        self.feature_names = feature_names
+        
+    def fit( self, X, y = None ):
+        return self
+    
+    def transform( self, problem, y = None ):
+        target = problem['target'].groupby([group_cols])[feature_names].mean()
+        return target
+
+
+
 class ColumnDirectionTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self,direction_column):
         self.direction_column = direction_column
