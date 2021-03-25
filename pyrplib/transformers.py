@@ -55,6 +55,24 @@ class ColumnDirectionTransformer( BaseEstimator, TransformerMixin ):
                 X2[col] = -1*X2[col]
         return X2
     
+class ColumnSumTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self,columns):
+        self.columns = columns
+        
+    #Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+    
+    def transform(self, X , y = None ):
+        D = pd.DataFrame(np.zeros((len(X),len(X))),columns=X.index.copy(),index=X.index.copy())
+        D.index.name = str(D.index.name)+"1"
+        D.columns.name = str(D.columns.name)+"2"
+        for col in self.columns:
+            sorted_col = X[col].sort_values()
+            for i in range(len(sorted_col)-1):
+                D.loc[sorted_col.index[i], sorted_col.index[i+1:]] += -(sorted_col.iloc[i] - sorted_col.iloc[i+1])
+        return D
+    
 class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self,columns):
         self.columns = columns
@@ -65,8 +83,8 @@ class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
     
     def transform(self, X , y = None ):
         D = pd.DataFrame(np.zeros((len(X),len(X))),columns=X.index.copy(),index=X.index.copy())
-        D.index.name = D.index.name+"1"
-        D.columns.name = D.columns.name+"2"
+        D.index.name = str(D.index.name)+"1"
+        D.columns.name = str(D.columns.name)+"2"
         for col in self.columns:
             sorted_col = X[col].sort_values()
             for i in range(len(sorted_col)):
