@@ -28,3 +28,19 @@ def get_sel_df(columns):
 
     return sel_df
 
+
+# In[ ]:
+
+
+def filter_teams(games, remaining_games, teams_by_year):
+    for year, teams in teams_by_year.items():
+        team1_name = games[year].team1_name
+        team2_name = games[year].team2_name
+        games[year] = games[year].loc[team1_name.isin(teams) | team2_name.isin(teams)]
+
+        team1_name = remaining_games[year].team1_name
+        team2_name = remaining_games[year].team2_name
+        remaining_games[year] = remaining_games[year].loc[team1_name.isin(teams) | team2_name.isin(teams)]
+        
+    return games, remaining_games
+
