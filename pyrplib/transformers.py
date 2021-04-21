@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from tqdm import tqdm
+import itertools
 
 # +
 import sys
@@ -303,7 +304,7 @@ class GroupByTransformer( BaseEstimator, TransformerMixin ):
         return self
     
     def transform( self, problem, y = None ):
-		target = problem['target'].groupby([group_cols])[feature_names].mean()
+        target = problem['target'].groupby([group_cols])[feature_names].mean()
         return target
 
 
@@ -311,6 +312,7 @@ class GroupByTransformer( BaseEstimator, TransformerMixin ):
 
 # +
 
+"""
 outer_keys = list(itertools.product(domains_ranges,years))
 for domain_range,year in tqdm(outer_keys):
     # set the team_domain
@@ -345,7 +347,7 @@ for domain_range,year in tqdm(outer_keys):
                            }).sort_values(by='date')#.drop('date',axis=1)
     mask = game_df.team1_name.isin(team_domain) & game_df.team2_name.isin(team_domain)
     game_df = game_df.loc[mask]
-
+"""
 # -
 
 class GenGameDfTransformer( BaseEstimator, TransformerMixin ):
@@ -358,7 +360,7 @@ class GenGameDfTransformer( BaseEstimator, TransformerMixin ):
     def fit( self, X, y = None ):
         return self
     
-    def transform( self, ?, y = None ): # not sure what should be passed in here for X
+    def transform( self, X, y = None ): # not sure what should be passed in here for X
         for domain_range,year in tqdm(outer_keys):
             # set the team_domain
             team_domain = None
