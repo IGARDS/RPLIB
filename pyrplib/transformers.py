@@ -23,16 +23,39 @@ import pyrankability
                                }).sort_values(by='date')
                                """
 
-"""
+
+# ### Baseline 0001
+
+# +
+
 def compute_D(game_df,team_range,direct_thres,spread_thres):
     map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked,direct_thres=direct_thres,spread_thres=spread_thres)
     Ds = pyrankability.construct.V_count_vectorized(game_df,map_func)
     for i in range(len(Ds)):
         Ds[i] = Ds[i].reindex(index=team_range,columns=team_range)
     return Ds
-"""
 
-# ### Baseline 0001
+
+# -
+
+class ComputeDTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, team_range, direct_thres, spread_thres):
+        self.team_range = team_range
+        self.direct_thres = direct_thres
+        self.spread_thres = spread_thres
+        
+    # Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+    
+    # X might be the games dataframe
+    def transform(self, X, y = None ):
+        map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked, direct_thres=self.direct_thres, spread_thres=self.spread_thres)
+        Ds = pyrankability.construct.V_count_vectorized(X, map_func)
+        for i in range(len(Ds)):
+            Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
+        return Ds
+
 
 class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self, team1_name_col = 'team1_name', team1_score_col='team1_score',
@@ -415,7 +438,7 @@ class ColumnDirectionTransformer( BaseEstimator, TransformerMixin ):
             if self.signs.loc[col] == -1:
                 X2[col] = -1*X2[col]
         return X2
-    
+
 class ColumnSumTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self,columns):
         self.columns = columns
@@ -433,7 +456,7 @@ class ColumnSumTransformer( BaseEstimator, TransformerMixin ):
             for i in range(len(sorted_col)-1):
                 D.loc[sorted_col.index[i], sorted_col.index[i+1:]] += -(sorted_col.iloc[i] - sorted_col.iloc[i+1])
         return D
-    
+
 class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self,columns):
         self.columns = columns
