@@ -9,34 +9,14 @@ import sys
 from pathlib import Path
 home = str(Path.home())
 
-sys.path.insert(0,"%s/rankability_toolbox_dev"%home)
-sys.path.insert(0,"%s/RPLib"%home)
+#sys.path.insert(0,"%s/rankability_toolbox_dev"%home)
+#sys.path.insert(0,"%s/RPLib"%home)
 import pyrankability
+
+
 # -
-
-"""
-        game_df = pd.DataFrame({"team1_name":games[year]['team1_name'],
-                                "team1_score":games[year]['points1'],
-                                "team2_name":games[year]['team2_name'],
-                                "team2_score":games[year]['points2'],
-                                "date": games[year]['date']
-                               }).sort_values(by='date')
-                               """
-
 
 # ### Baseline 0001
-
-# +
-
-def compute_D(game_df,team_range,direct_thres,spread_thres):
-    map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked,direct_thres=direct_thres,spread_thres=spread_thres)
-    Ds = pyrankability.construct.V_count_vectorized(game_df,map_func)
-    for i in range(len(Ds)):
-        Ds[i] = Ds[i].reindex(index=team_range,columns=team_range)
-    return Ds
-
-
-# -
 
 class ComputeDTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, team_range, direct_thres, spread_thres):
@@ -54,6 +34,76 @@ class ComputeDTransformer(BaseEstimator, TransformerMixin):
         Ds = pyrankability.construct.V_count_vectorized(X, map_func)
         for i in range(len(Ds)):
             Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
+        return Ds
+
+
+def process(data,target,best_df_all):
+    index_cols = ["Year","days_to_subtract_key","direct_thres","spread_thres","weight_indirect","range","Method"]
+    Ds = pd.DataFrame(columns=["D"]+index_cols)
+    Ds.set_index(index_cols,inplace=True)
+    for days_to_subtract_key,year in tqdm(itertools.product(days_to_subtract_keys,years)):
+        days_to_subtract = float(days_to_subtract_key.split("=")[1])
+        best_df = best_df_all.set_index('days_to_subtract').loc[days_to_subtract]
+        for index,row in best_df.iterrows():
+            dom,ran,dt,st,iw,method = row.loc['domain'],row.loc['range'],row.loc['direct_thres'],row.loc['spread_thres'],row.loc['weight_indirect'],row.loc['Method']
+            iw = .1 # Set this so we get both direct and indirect D matrices
+            # set the team_range
+            team_range = None
+            if ran == 'madness':
+                team_range = madness_teams[year]
+            elif ran == 'all':
+                team_range = all_teams[year]
+            else:
+                raise Exception(f"range={ran} not supported")
+            name = (year,days_to_subtract_key,dt,st,iw,ran,method)
+            if iw == 0:
+                st = np.Inf
+            compute_pipe = Pipeline([('compute_D', pyrplib.transformers.ComputeDTransformer(team_range, dt, st))])
+            X = data[year][days_to_subtract_key]
+            pipe.fit(X)
+            D = pipe.transform(X)
+            #D = compute_D(data[year][days_to_subtract_key],team_range,dt,st)
+            Ds = Ds.append(pd.Series([D],index=["D"],name=name)) 
+    return Ds
+
+
+def ProcessTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, index_cols, days_to_subtract_keys, years, team_ran, ran_teams, best_df_all):
+        self.index_cols = index_cols
+        self.days_to_subtract_keys = days_to_subtract_keys
+        self.years = years
+        self.team_ran = team_ran
+        self.ran_teams = ran_teams
+        self.best_df_all = best_df_all
+        
+    # Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+    
+    # X might be the games dataframe
+    def transform(self, X, y = None ):
+        Ds = pd.DataFrame(columns=["D"]+self.index_cols)
+        Ds.set_index(self.index_cols,inplace=True)
+        for days_to_subtract_key,year in tqdm(itertools.product(self.days_to_subtract_keys,self.years)):
+            days_to_subtract = float(days_to_subtract_key.split("=")[1])
+            best_df = self.best_df_all.set_index('days_to_subtract').loc[days_to_subtract]
+            for index,row in best_df.iterrows():
+                dom,ran,dt,st,iw,method = row.loc['domain'],row.loc['range'],row.loc['direct_thres'],row.loc['spread_thres'],row.loc['weight_indirect'],row.loc['Method']
+                iw = .1 # Set this so we get both direct and indirect D matrices
+                # set the team_range
+                team_range = None
+                if ran == self.team_ran:
+                    team_range = madness_teams[year]
+                else:
+                    raise Exception(f"range={ran} not supported")
+                name = (year,days_to_subtract_key,dt,st,iw,ran,method)
+                if iw == 0:
+                    st = np.Inf
+                pipe = Pipeline([('compute_D', pyrplib.transformers.ComputeDTransformer(team_range, dt, st))])
+                X_year = X[year][days_to_subtract_key]
+                pipe.fit(X_year)
+                D = pipe.transform(X_year)
+                Ds = Ds.append(pd.Series([D],index=["D"],name=name)) 
         return Ds
 
 
@@ -80,76 +130,6 @@ class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
         Ddirect,Dindirect = pyrankability.construct.V_count_vectorized(games,map_func)
         # why don't we reindex here?
         return Ddirect,Dindirect
-
-"""
-def process(data,target,best_df_all):
-    index_cols = ["Year","days_to_subtract_key","direct_thres","spread_thres","weight_indirect","range","Method"]
-    Ds = pd.DataFrame(columns=["D"]+index_cols)
-    Ds.set_index(index_cols,inplace=True)
-    for days_to_subtract_key,year in tqdm(itertools.product(days_to_subtract_keys,years)):
-        days_to_subtract = float(days_to_subtract_key.split("=")[1])
-        best_df = best_df_all.set_index('days_to_subtract').loc[days_to_subtract]
-        for index,row in best_df.iterrows():
-            dom,ran,dt,st,iw,method = row.loc['domain'],row.loc['range'],row.loc['direct_thres'],row.loc['spread_thres'],row.loc['weight_indirect'],row.loc['Method']
-            iw = 1 # Set this so we get both direct and indirect D matrices
-            # set the team_range
-            team_range = None
-            if ran == 'madness':
-                team_range = madness_teams[year]
-            elif ran == 'all':
-                team_range = all_teams[year]
-            else:
-                raise Exception(f"range={ran} not supported")
-            name = (year,days_to_subtract_key,dt,st,iw,ran,method)
-            if iw == 0:
-                st = np.Inf
-            D = compute_D(data[year][days_to_subtract_key],team_range,dt,st)
-            Ds = Ds.append(pd.Series([D],index=["D"],name=name)) 
-    return Ds
-"""
-
-
-class ProcessTransformer( BaseEstimator, TransformerMixin ):
-    def __init__(self, index_cols, best_df, best_df_all, target_range, teams, all_teams):
-        self.index_cols = index_cols
-        self.best_df_all = best_df_all #
-        self.target_range = target_range #
-        self.teams = teams 
-        self.all_teams = all_teams #
-                 
-    def fit( self, X, y = None ):
-        return self
-    
-    def transform(self, problem, y = None ):
-        # get variables we need from problem
-        years = list(problem['data'].keys())
-        days_to_subtract_keys = list(problem['data'][years[0]].keys())
-        best_df = problem['other']['best_df']
-        target_teams = problem['other'][self.teams]
-        
-        Ds = pd.DataFrame(columns=["D"]+self.index_cols)
-        Ds.set_index(index_cols,inplace=True)
-        for days_to_subtract_key,year in tqdm(itertools.product(days_to_subtract_keys,years)):
-            days_to_subtract = float(days_to_subtract_key.split("=")[1])
-            best_df = best_df_all.set_index('days_to_subtract').loc[days_to_subtract]
-            for index,row in best_df.iterrows():
-                dom,ran,dt,st,iw,method = row.loc['domain'],row.loc['range'],row.loc['direct_thres'],row.loc['spread_thres'],row.loc['weight_indirect'],row.loc['Method']
-                iw = 1 # Set this so we get both direct and indirect D matrices
-                # set the team_range
-                team_range = None
-                if ran == target_range:
-                    team_range = target_teams[year]
-                elif ran == 'all':
-                    team_range = all_teams[year]
-                else:
-                    raise Exception(f"range={ran} not supported")
-                name = (year,days_to_subtract_key,dt,st,iw,ran,method)
-                if iw == 0:
-                    st = np.Inf
-                D = compute_D(data[year][days_to_subtract_key],team_range,dt,st)
-                Ds = Ds.append(pd.Series([D],index=["D"],name=name)) 
-        return Ds # can we return like this?
-
 
 # problem: these can't be chained together currently...
 # although i suppose the output doesn't need to be a df for intermediate steps?
