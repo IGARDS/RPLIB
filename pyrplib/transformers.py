@@ -122,6 +122,87 @@ class ProcessTransformer(BaseEstimator, TransformerMixin):
         return Ds
 
 
+"""
+def create_features(Ds,rankings_df,top_k):
+    index_cols = list(Ds.index.names)+["Construction"]
+    X = pd.DataFrame(columns=index_cols + feature_columns)
+    X.set_index(index_cols,inplace=True)
+    #target = target.set_index(['days_to_subtract2','Year','direct_thres','spread_thres','weight_indirect','range','Method'])
+    for index,row in tqdm(Ds.iterrows()):
+        sum_D = None
+        year,days_to_subtract_key,dt,st,iw,ran,method = index
+        days_to_subtract = int(days_to_subtract_key.split("=")[1])
+        print(days_to_subtract,year,dt,st,iw,ran,method)
+        rankings = rankings_df.loc[days_to_subtract,year,dt,st,iw,ran,method].dropna() #spec_best_pred_df = best_pred_df.set_index(['Year','days_to_subtract_key',"Method"]).loc[[(year,days_to_subtract_key,method)]]
+        for i,D in enumerate(Ds.loc[(year,days_to_subtract_key,dt,st,iw,ran,method),"D"]):
+            if sum_D is None:
+                sum_D = D
+            else:
+                sum_D = sum_D.add(iw*D,fill_value=0)
+            if i == 0:
+                construction = "Direct"
+            elif i == 1:
+                construction = "Indirect"
+            else:
+                raise Exception("Error")
+            features = pyrplib.utils.compute_features(D,rankings,top_k,feature_columns)
+            features.name = tuple(list(index)+[construction])
+            X = X.append(features)
+            
+            if i == 1:
+                construction = "Both"
+                features = pyrplib.utils.compute_features(sum_D,rankings,top_k,feature_columns)
+                features.name = tuple(list(index)+[construction])
+                X = X.append(features)
+    return X
+"""
+
+
+class CreateFeaturesTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, feature_columns, rankings_df, top_k):
+        self.feature_columns = feature_columns
+        self.rankings_df = rankings_df
+        self.top_k = top_k
+        
+    # Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+    
+    # X might be the games dataframe
+    def transform(self, X, y = None ):
+        index_cols = list(X.index.names)+["Construction"]
+        X_new = pd.DataFrame(columns=index_cols + self.feature_columns)
+        X_new.set_index(index_cols,inplace=True)
+        #target = target.set_index(['days_to_subtract2','Year','direct_thres','spread_thres','weight_indirect','range','Method'])
+        for index,row in tqdm(X.iterrows()):
+            sum_D = None
+            year,days_to_subtract_key,dt,st,iw,ran,method = index
+            days_to_subtract = int(days_to_subtract_key.split("=")[1])
+            print(days_to_subtract,year,dt,st,iw,ran,method)
+            rankings = self.rankings_df.loc[days_to_subtract,year,dt,st,iw,ran,method].dropna() #spec_best_pred_df = best_pred_df.set_index(['Year','days_to_subtract_key',"Method"]).loc[[(year,days_to_subtract_key,method)]]
+            for i,D in enumerate(X.loc[(year,days_to_subtract_key,dt,st,iw,ran,method),"D"]):
+                if sum_D is None:
+                    sum_D = D
+                else:
+                    sum_D = sum_D.add(iw*D,fill_value=0)
+                if i == 0:
+                    construction = "Direct"
+                elif i == 1:
+                    construction = "Indirect"
+                else:
+                    raise Exception("Error")
+                features = pyrplib.utils.compute_features(D, rankings, self.top_k, self.feature_columns)
+                features.name = tuple(list(index)+[construction])
+                X_new = X_new.append(features)
+
+                if i == 1:
+                    construction = "Both"
+                    features = pyrplib.utils.compute_features(sum_D, rankings, self.top_k, self.feature_columns)
+                    features.name = tuple(list(index)+[construction])
+                    X_new = X_new.append(features)
+        return X_new
+
+
 class IndividualGamesCountTransformer( BaseEstimator, TransformerMixin ):
     def __init__(self, team1_name_col = 'team1_name', team1_score_col='team1_score',
                  team2_name_col='team2_name',team2_score_col='team2_score',
@@ -212,100 +293,55 @@ def compute_features(D,rankings,top_k):
     return features
 """
 
-
-class ComputeFeaturesTransformer( BaseEstimator, TransformerMixin ):
-    def __init__(self, rankings, top_k, feature_columns):
-        self.rankings = rankings
-        self.top_k = top_k
-        self.feature_columns = feature_columns
-        
-    def fit( self, X, y = None ):
-        return self
-    
-    def transform(self, D, y = None ):
-        top_teams = list(rankings.sort_values().index[:top_k])
-        D = D.loc[top_teams,top_teams]
-        delta_lop,details_lop = pyrankability.rank.solve(D.fillna(0),method='lop',cont=True)
-
-        x = pd.DataFrame(details_lop['x'],index=D.index,columns=D.columns)
-        r = x.sum(axis=0)
-        order = np.argsort(r)
-        xstar = x.iloc[order,:].iloc[:,order]
-        xstar.loc[:,:] = pyrankability.common.threshold_x(xstar.values)
-        inxs = np.triu_indices(len(xstar),k=1)
-        xstar_upper = xstar.values[inxs[0],inxs[1]]
-        nfrac_upper_lop = sum((xstar_upper > 0) & (xstar_upper < 1))
-
-        top_teams = xstar.columns[:top_k]
-
-        k_two_distant,details_two_distant = pyrankability.search.solve_pair_max_tau(D.fillna(0),method='lop',cont=False,verbose=False)
-        d_lop = details_two_distant['tau']
-
-        delta_hillside,details_hillside = pyrankability.rank.solve(D,method='hillside',cont=True)
-
-        x = pd.DataFrame(details_hillside['x'],index=D.index,columns=D.columns)
-        r = x.sum(axis=0)
-        order = np.argsort(r)
-        xstar = x.iloc[order,:].iloc[:,order]
-        xstar.loc[:,:] = pyrankability.common.threshold_x(xstar.values)
-        inxs = np.triu_indices(len(xstar),k=1)
-        xstar_upper = xstar.values[inxs[0],inxs[1]]
-        nfrac_upper_hillside = sum((xstar_upper > 0) & (xstar_upper < 1))
-
-        top_teams = xstar.columns[:top_k]
-
-        k_two_distant,details_two_distant = pyrankability.search.solve_pair_max_tau(D,method='hillside',verbose=False,cont=False)
-        d_hillside = details_two_distant['tau']
-
-        features = pd.Series([delta_lop,delta_hillside,2*nfrac_upper_lop,2*nfrac_upper_hillside,d_lop,d_hillside],index=feature_columns)
-
-        return features
-
-
-def create_features(Ds,best_pred_df,top_k):
-    index_cols = list(Ds.index.names)+["Construction"]
-    X = pd.DataFrame(columns=index_cols + feature_columns)
-    X.set_index(index_cols,inplace=True)
-    for index,row in tqdm(Ds.iterrows()):
-        sum_D = None
-        year,days_to_subtract_key,dt,st,iw,ran,method = index
-        days_to_subtract = float(days_to_subtract_key.split("=")[1])
-        spec_best_pred_df = best_pred_df.set_index(['Year','days_to_subtract_key',"Method"]).loc[[(year,days_to_subtract_key,method)]]
-        for i,D in enumerate(Ds.loc[(year,days_to_subtract_key,dt,st,iw,ran,method),"D"]):
-            if sum_D is None:
-                sum_D = D
-            else:
-                sum_D = sum_D.add(iw*D,fill_value=0)
-            if i == 0:
-                construction = "Direct"
-            elif i == 1:
-                construction = "Indirect"
-            else:
-                raise Exception("Error")
-            rankings = spec_best_pred_df['rankings'][0]
-            features = compute_features(D,rankings,top_k) # how to handle circular calls?
-            features.name = tuple(list(index)+[construction])
-            X = X.append(features)
-            
-            if i == 1:
-                construction = "Both"
-                features = compute_features(sum_D,rankings,top_k)
-                features.name = tuple(list(index)+[construction])
-                X = X.append(features)
-    return X
-
-
-class CreateFeaturesTransformer( BaseEstimator, TransformerMixin ):
-    def __init__(self, feature_columns):
-        self.feature_columns = feature_columns
-        
-    def fit( self, X, y = None ):
-        return self
-    
-    def transform( self, Ds, y = None ):
-
-        return X
-
+# +
+#class ComputeFeaturesTransformer( BaseEstimator, TransformerMixin ):
+#    def __init__(self, rankings, top_k, feature_columns):
+#        self.rankings = rankings
+#        self.top_k = top_k
+#        self.feature_columns = feature_columns
+#        
+#    def fit( self, X, y = None ):
+#        return self
+#    
+#    def transform(self, D, y = None ):
+#        top_teams = list(rankings.sort_values().index[:top_k])
+#        D = D.loc[top_teams,top_teams]
+#        delta_lop,details_lop = pyrankability.rank.solve(D.fillna(0),method='lop',cont=True)
+#
+#        x = pd.DataFrame(details_lop['x'],index=D.index,columns=D.columns)
+#        r = x.sum(axis=0)
+#        order = np.argsort(r)
+#        xstar = x.iloc[order,:].iloc[:,order]
+#        xstar.loc[:,:] = pyrankability.common.threshold_x(xstar.values)
+#        inxs = np.triu_indices(len(xstar),k=1)
+#        xstar_upper = xstar.values[inxs[0],inxs[1]]
+#        nfrac_upper_lop = sum((xstar_upper > 0) & (xstar_upper < 1))
+#
+#        top_teams = xstar.columns[:top_k]
+#
+#        k_two_distant,details_two_distant = pyrankability.search.solve_pair_max_tau(D.fillna(0),method='lop',cont=False,verbose=False)
+#        d_lop = details_two_distant['tau']
+#
+#        delta_hillside,details_hillside = pyrankability.rank.solve(D,method='hillside',cont=True)
+#
+#        x = pd.DataFrame(details_hillside['x'],index=D.index,columns=D.columns)
+#        r = x.sum(axis=0)
+#        order = np.argsort(r)
+#        xstar = x.iloc[order,:].iloc[:,order]
+#        xstar.loc[:,:] = pyrankability.common.threshold_x(xstar.values)
+#        inxs = np.triu_indices(len(xstar),k=1)
+#        xstar_upper = xstar.values[inxs[0],inxs[1]]
+#        nfrac_upper_hillside = sum((xstar_upper > 0) & (xstar_upper < 1))
+#
+#        top_teams = xstar.columns[:top_k]
+#
+#        k_two_distant,details_two_distant = pyrankability.search.solve_pair_max_tau(D,method='hillside',verbose=False,cont=False)
+#        d_hillside = details_two_distant['tau']
+#
+#        features = pd.Series([delta_lop,delta_hillside,2*nfrac_upper_lop,2*nfrac_upper_hillside,d_lop,d_hillside],index=feature_columns)
+#
+#        return features
+# -
 
 """
 target = problem['target'].groupby(['days_to_subtract1','days_to_subtract2','Method','Year','direct_thres','spread_thres','weight_indirect'])[feature_names].mean()
