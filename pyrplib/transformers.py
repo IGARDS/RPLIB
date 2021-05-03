@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from tqdm import tqdm
 import itertools
+from sklearn.pipeline import Pipeline
 
 # +
 import sys
@@ -12,11 +13,22 @@ home = str(Path.home())
 #sys.path.insert(0,"%s/rankability_toolbox_dev"%home)
 #sys.path.insert(0,"%s/RPLib"%home)
 import pyrankability
-
-
+import pyrplib
 # -
 
 # ### Baseline 0001
+
+# **Function to compute a D matrix from games using hyperparameters**
+
+"""
+def compute_D(game_df,team_range,direct_thres,spread_thres):
+    map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked,direct_thres=direct_thres,spread_thres=spread_thres)
+    Ds = pyrankability.construct.V_count_vectorized(game_df,map_func)
+    for i in range(len(Ds)):
+        Ds[i] = Ds[i].reindex(index=team_range,columns=team_range)
+    return Ds
+"""
+
 
 class ComputeDTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, team_range, direct_thres, spread_thres):
@@ -37,6 +49,7 @@ class ComputeDTransformer(BaseEstimator, TransformerMixin):
         return Ds
 
 
+"""
 def process(data,target,best_df_all):
     index_cols = ["Year","days_to_subtract_key","direct_thres","spread_thres","weight_indirect","range","Method"]
     Ds = pd.DataFrame(columns=["D"]+index_cols)
@@ -65,9 +78,11 @@ def process(data,target,best_df_all):
             #D = compute_D(data[year][days_to_subtract_key],team_range,dt,st)
             Ds = Ds.append(pd.Series([D],index=["D"],name=name)) 
     return Ds
+"""
 
 
-def ProcessTransformer(BaseEstimator, TransformerMixin):
+class ProcessTransformer(BaseEstimator, TransformerMixin):
+    # where team_ran is a column like 'madness' and ran_teams is a df like 'madness_teams'
     def __init__(self, index_cols, days_to_subtract_keys, years, team_ran, ran_teams, best_df_all):
         self.index_cols = index_cols
         self.days_to_subtract_keys = days_to_subtract_keys
@@ -93,7 +108,7 @@ def ProcessTransformer(BaseEstimator, TransformerMixin):
                 # set the team_range
                 team_range = None
                 if ran == self.team_ran:
-                    team_range = madness_teams[year]
+                    team_range = self.ran_teams[year]
                 else:
                     raise Exception(f"range={ran} not supported")
                 name = (year,days_to_subtract_key,dt,st,iw,ran,method)
