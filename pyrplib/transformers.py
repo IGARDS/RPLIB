@@ -39,7 +39,7 @@ def compute_D(game_df,team_range,direct_thres,spread_thres):
 # -
 
 class ComputeDTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, team_range, direct_thres, spread_thres):
+    def __init__(self, direct_thres, spread_thres,team_range=None):
         self.team_range = team_range
         self.direct_thres = direct_thres
         self.spread_thres = spread_thres
@@ -52,8 +52,9 @@ class ComputeDTransformer(BaseEstimator, TransformerMixin):
     def transform(self, X, y = None ):
         map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked, direct_thres=self.direct_thres, spread_thres=self.spread_thres)
         Ds = pyrankability.construct.V_count_vectorized(X, map_func)
-        for i in range(len(Ds)):
-            Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
+        if self.team_range is not None:
+            for i in range(len(Ds)):
+                Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
         return Ds
 
 
