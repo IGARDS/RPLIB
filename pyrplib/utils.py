@@ -1,33 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
+# %%
 
 # # A Utility Library for Rankability Problems
 
-# In[7]:
+# %%
 
 
 import pandas as pd
-import itertools
 import numpy as np
-
-
-# In[6]:
-
-
-import sys
-from pathlib import Path
-home = str(Path.home())
-
-sys.path.insert(0,"%s/rankability_toolbox_dev"%home)
-sys.path.insert(0,"%s/RPLib"%home)
+import itertools
 import pyrankability
 
 
 # ## Problem 1
 
-# ### Generate
-
-# In[3]:
+# %%
 
 
 # Constructs a dataframe from selected parameters
@@ -44,7 +32,7 @@ def get_sel_df(columns):
     return sel_df
 
 
-# In[4]:
+# %%
 
 
 def filter_teams(games, remaining_games, teams_by_year):
@@ -60,12 +48,8 @@ def filter_teams(games, remaining_games, teams_by_year):
     return games, remaining_games
 
 
-# ### Baseline
-
-# In[5]:
-
-
-def compute_features(D,rankings,top_k,feature_columns):
+# %%
+def compute_features(D, rankings, top_k, feature_columns):
     top_teams = list(rankings.sort_values().index[:top_k])
     D = D.loc[top_teams,top_teams]
     delta_lop,details_lop = pyrankability.rank.solve(D.fillna(0),method='lop',cont=True)
@@ -103,4 +87,3 @@ def compute_features(D,rankings,top_k,feature_columns):
     features = pd.Series([delta_lop,delta_hillside,2*nfrac_upper_lop,2*nfrac_upper_hillside,d_lop,d_hillside],index=feature_columns)
 
     return features
-
