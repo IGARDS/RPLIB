@@ -17,7 +17,7 @@ from base64 import b64encode
 def html_image(img_bytes):
     encoding = b64encode(img_bytes).decode()
     img_b64 = "data:image/png;base64," + encoding
-    return html.Img(src=img_b64, style={'width': '100%'})
+    return html.Img(src=img_b64, style={'height': '30%', 'width': '30%'})
 
 app = dash.Dash(__name__)
 server = app.server
@@ -49,8 +49,12 @@ def perm_to_series(D,perm,name):
     return pd.Series(list(D.index[list(perm)]),name=name)
 
 Ds = process(Ds)
+Ds
 
-key = (2002, 'Both')
+
+# +
+#key = (2002, 'Student')
+# -
 
 def generate_table(dataframe, max_rows=26):
     return dash_table.DataTable(
@@ -59,16 +63,39 @@ def generate_table(dataframe, max_rows=26):
         data=dataframe.to_dict('records'),
     )
 
-print(Ds.loc[key,'details_pair_minimize']['perm_y'])
-print(Ds.loc[key,'details_pair_minimize']['perm_x'])
-
-A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_minimize']['perm'],'Closest')
-B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_maximize']['perm'],'Farthest')
-pyrankability.plot.spider2(A,B,file='/tmp/spider2.png')
-
 app.layout = html.Div(children=[
-    html.H4(children='D'),
-    generate_table(Ds.loc[key,'D']),
-    html_image(open('/tmp/spider2.png','rb').read())
-    #Ds['D'].iloc[0]))
-])
+    html.H1("Visualizing the Rankability of US News & World Report", style={'text-align': 'center'}),
+    html.H4(children='D Matrix'),
+    generate_table(Ds.loc[(2002, 'Student'),'D']),
+    html.Br(),
+    html.H4(children='Spider Plot'),
+        dcc.Dropdown(id="select_group",
+                 options=[
+                     {"label": "Student", "value": 'Student'},
+                     {"label": "Parent", "value": 'Parent'},
+                     {"label": "Both", "value": 'Both'}],
+                 multi=False,
+                 value="Student",
+                 style={'width': "40%"}
+                 ),
+    
+    #html_image(open('/tmp/spider3.png','rb').read()),
+    html.Img(id="spider_img", children=[]),
+    html.Br()
+], style={'textAlign': 'center'})
+
+
+# +
+@app.callback(
+     Output(component_id='spider_img', component_property='children'),
+    Input(component_id='select_group', component_property='value')
+)
+
+def update_graph(group):
+    key = (2002, group)
+    print(key)
+    A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_minimize']['perm'],'Closest')
+    B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_maximize']['perm'],'Farthest')
+    pyrankability.plot.spider2(A,B,file='/tmp/spider3.png')
+    print(type(html_image(open('/tmp/spider3.png','rb').read())))
+    return html_image(open('/tmp/spider3.png','rb').read())
