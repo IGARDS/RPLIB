@@ -20,6 +20,12 @@ def html_image(img_bytes):
     return img_b64
     #return html.Img(src=img_b64, style={'height': '30%', 'width': '30%'})
 
+def html_image2(img_bytes):
+    encoding = b64encode(img_bytes).decode()
+    img_b64 = "data:image/png;base64," + encoding
+    return html.Img(src=img_b64, style={'height': '30%', 'width': '30%'})
+
+
 app = dash.Dash(__name__)
 server = app.server
 
@@ -55,6 +61,12 @@ Ds
 
 # +
 #key = (2002, 'Student')
+
+# +
+#key2 = (2002, "Parent")
+#A2 = perm_to_series(Ds.loc[key2,'D'],Ds.loc[key2,'details_pair_minimize']['perm_x'],'Closest')
+#B2 = perm_to_series(Ds.loc[key2,'D'],Ds.loc[key2,'details_pair_minimize']['perm_y'],'Farthest')
+#pyrankability.plot.spider2(A2,B2,file='/tmp/pair_minimize_spider.png')
 # -
 
 def generate_table(dataframe, max_rows=26):
@@ -80,44 +92,28 @@ app.layout = html.Div(children=[
                  style={'width': "40%"}
                  ),
     
-    html.Img(id="spider_img", style={'height': '30%', 'width': '30%'})
+    html.Img(id="spider_img", style={'height': '30%', 'width': '30%'}),
+    #html.Img(id="spider_img2", style={'height': '30%', 'width': '30%'})
 ], style={'textAlign': 'center'})
 
 
 # +
 @app.callback(
+    #[Output(component_id='spider_img', component_property='src'),
+    # Output(component_id='spider_img2', component_property='src')],
     Output(component_id='spider_img', component_property='src'),
     Input(component_id='select_group', component_property='value')
 )
 
 def update_graph(group):
-    ## plot 
-    #plt.clf()
-    #plt.text(5, 5, group, size=20)
-    #plt.xlim(0, 15)
-    #plt.ylim(0, 10)
-#
-    ## create file-like object in memory        
-    #buffer_img = io.BytesIO('/tmp/spider3.png')
-#
-    ## save in file-like object
-    #plt.savefig(buffer_img, format='png')
-#
-    ## move to the beginning of buffer before reading (after writing)
-    #buffer_img.seek(0)
-    #
-    ## read from file-like object
-    #img_bytes = buffer_img.read()
-#
-    ## create base64
-    #img_encoded = "data:image/png;base64," + base64.b64encode(img_bytes).decode()
-#
-    #return img_encoded
     key = (2002, group)
-    print(key)
     A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_minimize']['perm'],'Closest')
     B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_maximize']['perm'],'Farthest')
-    pyrankability.plot.spider2(A,B,file='/tmp/spider3.png')
-    img = open('/tmp/spider3.png','rb').read()
-    return "data:image/png;base64," + base64.b64encode(img).decode()
-    #return html_image(open('/tmp/spider3.png','rb').read())
+    filepath = '/tmp/fixed_min_max_spider.png'
+    pyrankability.plot.spider2(A,B,file=filepath)
+    return html_image(open(filepath,'rb').read())
+#    A2 = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_pair_minimize']['perm_x'],'Closest')
+#    B2 = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_pair_minimize']['perm_y'],'Farthest')
+#    pyrankability.plot.spider2(A2,B2,file='/tmp/pair_minimize_spider.png')
+#    return html_image(open('/tmp/fixed_min_max_spider.png','rb').read()),
+#html_image(open('/tmp/pair_minimize_spider.png','rb').read())
