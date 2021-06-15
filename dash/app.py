@@ -17,7 +17,8 @@ from base64 import b64encode
 def html_image(img_bytes):
     encoding = b64encode(img_bytes).decode()
     img_b64 = "data:image/png;base64," + encoding
-    return html.Img(src=img_b64, style={'height': '30%', 'width': '30%'})
+    return img_b64
+    #return html.Img(src=img_b64, style={'height': '30%', 'width': '30%'})
 
 app = dash.Dash(__name__)
 server = app.server
@@ -79,23 +80,44 @@ app.layout = html.Div(children=[
                  style={'width': "40%"}
                  ),
     
-    #html_image(open('/tmp/spider3.png','rb').read()),
-    html.Img(id="spider_img", children=[]),
-    html.Br()
+    html.Img(id="spider_img", style={'height': '30%', 'width': '30%'})
 ], style={'textAlign': 'center'})
 
 
 # +
 @app.callback(
-     Output(component_id='spider_img', component_property='children'),
+    Output(component_id='spider_img', component_property='src'),
     Input(component_id='select_group', component_property='value')
 )
 
 def update_graph(group):
+    ## plot 
+    #plt.clf()
+    #plt.text(5, 5, group, size=20)
+    #plt.xlim(0, 15)
+    #plt.ylim(0, 10)
+#
+    ## create file-like object in memory        
+    #buffer_img = io.BytesIO('/tmp/spider3.png')
+#
+    ## save in file-like object
+    #plt.savefig(buffer_img, format='png')
+#
+    ## move to the beginning of buffer before reading (after writing)
+    #buffer_img.seek(0)
+    #
+    ## read from file-like object
+    #img_bytes = buffer_img.read()
+#
+    ## create base64
+    #img_encoded = "data:image/png;base64," + base64.b64encode(img_bytes).decode()
+#
+    #return img_encoded
     key = (2002, group)
     print(key)
     A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_minimize']['perm'],'Closest')
     B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_maximize']['perm'],'Farthest')
     pyrankability.plot.spider2(A,B,file='/tmp/spider3.png')
-    print(type(html_image(open('/tmp/spider3.png','rb').read())))
-    return html_image(open('/tmp/spider3.png','rb').read())
+    img = open('/tmp/spider3.png','rb').read()
+    return "data:image/png;base64," + base64.b64encode(img).decode()
+    #return html_image(open('/tmp/spider3.png','rb').read())
