@@ -1,6 +1,9 @@
 ## Rankability Problem Library (RPLib)
 
-The Rankability Problem Library (RPLib) contains problem instances structured to study a datasets ability to support a ranking independent of or associated with particular ranking pipelines. A ranking pipeline is a series of preprocessing and transformation steps that build the input for a ranking algorithm. In order to solve ranking problems, practitioners must not only choose the final ranking algorithm (e.g., Massey, Colley, PageRank) they must also choose from a set of potential pipelines that transform the original dataset into the input of the ranking algorithm. This open and public repository with problems available for the research community. 
+The Rankability Problem Library (RPLib) contains problem instances structured to study a datasets ability to support a ranking independent of or associated with particular ranking pipelines. A ranking pipeline is a series of preprocessing and transformation steps that build the input for a ranking algorithm. In order to solve ranking problems, practitioners must not only choose the final ranking algorithm (e.g., Massey, Colley, PageRank) they must also choose from a set of potential pipelines that transform the original dataset into the input of the ranking algorithm. This open and public repository with problems available for the research community.
+
+[Documentation](doc_root.md)
+[Landing Page](landing.md)
 
 ### Problem Definitions
 Problem definitions may be found in [RPLib/problems/](http://https://github.com/IGARDS/RPLib/problems/). The documentation and preparation of each problem instance is located in notebooks called generate.ipynb (e.g., [RPLLib/problems/problem_0001/generate.ipynb](http://https://github.com/IGARDS/RPLib/problems/problem_0001/generate.ipynb). Many rankability problems may branch off from a single generate.ipynb. These should be called problem_0001a, problem_0001b, etc.
@@ -15,16 +18,18 @@ Different rankability problems have different objectives and as such a manual su
 Primary contact: Dr. Paul Anderson <a href="mailto:pander14@calpoly.edu">
   
 ### Authors and Contributors
-Paul Anderson, Ph.D.
-Department of Computer Science and Software Engineering
+Paul Anderson, Ph.D.<\br>
+Department of Computer Science and Software Engineering<\br>
 California Polytechnic University
 
-Amy Langville, Ph.D.
-Department of Mathematics
+Amy Langville, Ph.D.<\br>
+Department of Mathematics<\br>
 College of Charleston
 
-Tim Chartier, Ph.D.
-Department of Mathematics
+Tim Chartier, Ph.D.<\br>
+Department of Mathematics<\br>
 Davidson College
 
+Jackson Waschura<\br>
+  
 TODO: please add yourself
