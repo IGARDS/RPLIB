@@ -1,1 +1,8 @@
-theme: jekyll-theme-cayman
+remote_theme: tuur29/pages-themes-cayman
+title: The Rankability Problem Library (RPLib)
+description: A library of rankability problems and datasets.
+colors:
+    gradient_left: "#234bdf"
+    gradient_right: "#21b8ee"
+    header: "#fff"
+    section_title: "#1866b4"
