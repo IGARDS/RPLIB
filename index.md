@@ -1,3 +1,7 @@
+---
+layout: landing
+---
+
 ## Rankability Problem Library (RPLib)
 
 The Rankability Problem Library (RPLib) contains problem instances structured to study a datasets ability to support a ranking independent of or associated with particular ranking pipelines. A ranking pipeline is a series of preprocessing and transformation steps that build the input for a ranking algorithm. In order to solve ranking problems, practitioners must not only choose the final ranking algorithm (e.g., Massey, Colley, PageRank) they must also choose from a set of potential pipelines that transform the original dataset into the input of the ranking algorithm. This open and public repository with problems available for the research community.
