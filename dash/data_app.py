@@ -33,8 +33,8 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink("Search datasets", href="/", active="exact"),
-                dbc.NavLink("Page 1", href="/page-1", active="exact"),
                 dbc.NavLink("Page 2", href="/page-2", active="exact"),
+                dbc.NavLink("Page 3", href="/page-3", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -109,9 +109,9 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 def render_page_content(pathname):
     if pathname == "/":
         return page_1
-    elif pathname == "/page-1":
-        return html.P("This is the content of page 2")
     elif pathname == "/page-2":
+        return html.P("This is the content of page 2")
+    elif pathname == "/page-3":
         return html.P("This is the content of page 3")
     # if the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
