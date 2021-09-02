@@ -17,7 +17,7 @@ The main interface for RPLib is the dataset browser. This easy to navigate inter
 Data may be found in [RPLib/data](https://github.com/IGARDS/RPLib/data)
 
 ### Solution Pipelines
-Solution pipelines may be found in [RPLib/data](https://github.com/IGARDS/RPLib/pipelines).
+Solution pipelines may be found in [RPLib/pipelines](https://github.com/IGARDS/RPLib/pipelines).
 
 ### Analysis Templates
 Analysis templates may be found in [RPLib/templates](https://github.com/IGARDS/RPLib/templates)
