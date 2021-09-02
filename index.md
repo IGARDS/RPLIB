@@ -4,21 +4,21 @@ layout: landing
 
 ## Rankability Problem Library (RPLib)
 
-The Rankability Problem Library (RPLib) contains problem instances structured to study a datasets ability to support a ranking independent of or associated with particular ranking pipelines. A ranking pipeline is a series of preprocessing and transformation steps that build the input for a ranking algorithm. In order to solve ranking problems, practitioners must not only choose the final ranking algorithm (e.g., Massey, Colley, PageRank) they must also choose from a set of potential pipelines that transform the original dataset into the input of the ranking algorithm. This open and public repository with problems available for the research community.
+The Rankability Problem Library (RPLib) contains data, solutions, and analysis for a wide range of ranking problems. Example data includes ranking problems for sports (e.g., NCAA, NFL), economics, and fairness (e.g., US News and World Report, AirBnB). The library provides raw and derived datasets for researchers as well as known solutions and analysis. This is an open repository and contributions from the community are welcome. 
 
 [Documentation](doc_root.md)<br/>
 [Landing Page](landing.md)
 
-### Problem Definitions
-Problem definitions may be found in [RPLib/problems/](http://https://github.com/IGARDS/RPLib/problems/). The documentation and preparation of each problem instance is located in notebooks called generate.ipynb (e.g., [RPLLib/problems/problem_0001/generate.ipynb](http://https://github.com/IGARDS/RPLib/problems/problem_0001/generate.ipynb). Many rankability problems may branch off from a single generate.ipynb. These should be called problem_0001a, problem_0001b, etc.
+### Data, Analysis, and Solution Browser
+Link to solution browser
 
-### Problem Submissions
-Submissions to rankability problems are cataloged alongside generate.ipynb and should be named such as submission_0001_problem_0001a.ipynb.
+### Data Definitions
+Data may be found in RPLib/data.
 
-### Problem Submission Synthesis
-Different rankability problems have different objectives and as such a manual submission synthesis is performed to update overall progress on a problem instance.
+### Solution Pipelines
+Solution pipelines may be found in RPLib/piplines.
 
-### Support or Contact
+### Interesting in contributing?
 Primary contact: Dr. Paul Anderson <a href="mailto:pander14@calpoly.edu">
   
 ### Authors and Contributors
@@ -35,5 +35,3 @@ Department of Mathematics<br/>
 Davidson College
 
 Jackson Waschura<br/>
-  
-TODO: please add yourself
