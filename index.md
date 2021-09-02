@@ -14,13 +14,13 @@ The main interface for RPLib is the dataset browser. This easy to navigate inter
 [Access the dataset browser](dataset_search.md)<br/>
 
 ### Data Definitions
-Data may be found in [RPLib/data](https://github.com/IGARDS/RPLib/data)
+Data may be found in [RPLib/data](https://github.com/IGARDS/RPLib/tree/main/data)
 
 ### Solution Pipelines
-Solution pipelines may be found in [RPLib/pipelines](https://github.com/IGARDS/RPLib/pipelines).
+Solution pipelines may be found in [RPLib/pipelines](https://github.com/IGARDS/RPLib/tree/main/pipelines).
 
 ### Analysis Templates
-Analysis templates may be found in [RPLib/templates](https://github.com/IGARDS/RPLib/templates)
+Analysis templates may be found in [RPLib/templates](https://github.com/IGARDS/RPLib/tree/main/templates)
 
 ### Interesting in contributing?
 Primary contact: Dr. Paul Anderson <a href="mailto:pander14@calpoly.edu">
