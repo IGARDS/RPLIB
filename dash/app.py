@@ -1,113 +1,129 @@
-import os
-
-import pandas as pd
-import plotly.express as px  # (version 4.7.0)
-import plotly.graph_objects as go
-
-
-import dash  # (version 1.12.0) pip install dash
+import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
 import dash_table
+import pandas as pd
+from dash.dependencies import Input, Output, State
 
-from base64 import b64encode
-
-
-def html_image(img_bytes):
-    encoding = b64encode(img_bytes).decode()
-    img_b64 = "data:image/png;base64," + encoding
-    return img_b64
-    #return html.Img(src=img_b64, style={'height': '30%', 'width': '30%'})
-
-app = dash.Dash(__name__)
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-import sys
-from pathlib import Path
-home = str(Path.home())
+# the style arguments for the sidebar
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
 
-sys.path.insert(0,"%s/ranking_toolbox"%home)
-sys.path.insert(0,"%s/RPLib"%home)
+# the styles for the main content position to the right of the sidebar
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
 
-import pyrankability
-import pyrplib
-
-import json
-Ds = pd.read_json(f'{home}/us_news_world_report_study/results/Ds.json',orient='records')
-def process(Ds):
-    Ds2 = Ds.set_index(['Year','Group']).copy()
-    D = Ds['D']
-    new_D = []
-    for index in D.index:
-        D_ = pd.DataFrame(D[index])
-        D_.index = D_.columns
-        new_D.append(D_)
-    Ds2.loc[:,'D'] = new_D
-    return Ds2
-
-def perm_to_series(D,perm,name):
-    return pd.Series(list(D.index[list(perm)]),name=name)
-
-Ds = process(Ds)
-Ds
-
-
-def generate_table(dataframe, max_rows=26):
-    return dash_table.DataTable(
-        id='table',
-        columns=[{"name": i, "id": i} for i in dataframe.columns],
-        data=dataframe.to_dict('records'),
-    )
-
-app.layout = html.Div(children=[
-    html.H1("Visualizing the Rankability of US News & World Report University Rankings", style={'text-align': 'center'}),
-    html.H3(children='D Matrix'),
-    generate_table(Ds.loc[(2002, 'Student'),'D']),
-    html.Br(),
-    html.H3(children='Spider Plots'),
-        dcc.Dropdown(id="select_group",
-                 options=[
-                     {"label": "Student", "value": 'Student'},
-                     {"label": "Parent", "value": 'Parent'},
-                     {"label": "Both", "value": 'Both'}],
-                 multi=False,
-                 value="Student",
-                 style={'width': "40%"}
-                 ),
-    
-    html.Img(title="Test Title Tag", id="spider_img", style={'height': '30%', 'width': '30%'}),
-    html.Img(id="spider_img2", style={'height': '30%', 'width': '30%'}),
-    html.Img(id="spider_img3", style={'height': '30%', 'width': '30%'})
-], style={'textAlign': 'center'})
-
-
-# +
-@app.callback(
-    [Output(component_id='spider_img', component_property='src'),
-     Output(component_id='spider_img2', component_property='src'),
-    Output(component_id='spider_img3', component_property='src')],
-    Input(component_id='select_group', component_property='value')
+sidebar = html.Div(
+    [
+        html.H2("RP Lib", className="display-4"),
+        html.Hr(),
+        dbc.Nav(
+            [
+                dbc.NavLink("Search datasets", href="/", active="exact"),
+                dbc.NavLink("Page 2", href="/page-2", active="exact"),
+                dbc.NavLink("Page 3", href="/page-3", active="exact"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
+    ],
+    style=SIDEBAR_STYLE,
 )
 
-def update_graph(group):
-    key = (2002, group)
-    
-    # fixed min/max spider
-    A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_minimize']['perm'],'Closest')
-    B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_fixed_cont_x_maximize']['perm'],'Farthest')
-    pyrankability.plot.spider2(A,B,file='/tmp/fixed_min_max_spider.png')
-    
-    # pair min/min spider
-    A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_pair_minimize']['perm_x'],'Closest')
-    B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_pair_minimize']['perm_y'],'Farthest')
-    filepath = '/tmp/fixed_min_max_spider.png'
-    pyrankability.plot.spider2(A,B,file='/tmp/pair_minimize_spider.png')
-    
-    # pair max/max spider
-    A = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_pair_maximize']['perm_x'],'Closest')
-    B = perm_to_series(Ds.loc[key,'D'],Ds.loc[key,'details_pair_maximize']['perm_y'],'Farthest')
-    pyrankability.plot.spider2(A,B,file='/tmp/pair_maximize_spider.png')
-    return html_image(open('/tmp/fixed_min_max_spider.png','rb').read()), \
-        html_image(open('/tmp/pair_minimize_spider.png','rb').read()), \
-        html_image(open('/tmp/pair_maximize_spider.png','rb').read())
+# components for 'Search datasets' page
+df = pd.read_csv(
+    "https://raw.githubusercontent.com/plotly/datasets/master/solar.csv")
+
+dataset = dash_table.DataTable(
+    id="table",
+    columns=[{"name": i, "id": i} for i in df.columns],
+    data=df.to_dict("records"),
+    is_focused=True,
+    style_header={
+        'backgroundColor': 'white',
+        'fontWeight': 'bold',
+        "border": "1px solid white",
+    },
+    filter_action='native',
+    style_data={
+        "backgroundColor": '#E3F2FD',
+        "border-bottom": "1px solid #90CAF9",
+        "border-top": "1px solid #90CAF9",
+        "border-left": "1px solid #E3F2FD",
+        "border-right": "1px solid #E3F2FD"},
+    style_data_conditional=[
+        {
+            "if": {"state": "selected"},
+            "backgroundColor": '#E3F2FD',
+            "border-bottom": "1px solid #90CAF9",
+            "border-top": "1px solid #90CAF9",
+            "border-left": "1px solid #E3F2FD",
+            "border-right": "1px solid #E3F2FD",
+        }
+    ]
+)
+
+page_1 = html.Div([
+    html.H1("Search datasets"),
+    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
+    dataset,
+    html.Div(id="output")
+])
+
+
+@app.callback(
+    Output("output", "children"),
+    Input("table", "active_cell"),
+    State("table", "derived_viewport_data"),
+)
+def cell_clicked(cell, data):
+    if cell:
+        selected = data[cell["row"]]['State']
+        return html.A(
+            "View {}.json on GitHub".format(selected), href='https://github.com/someRPLibfolder/{}.json'.format(selected)
+        )
+    else:
+        return dash.no_update
+
+
+# components for all pages
+content = html.Div(id="page-content", style=CONTENT_STYLE)
+
+app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+
+
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+def render_page_content(pathname):
+    if pathname == "/":
+        return page_1
+    elif pathname == "/page-2":
+        return html.P("This is the content of page 2")
+    elif pathname == "/page-3":
+        return html.P("This is the content of page 3")
+    # if the user tries to reach a different page, return a 404 message
+    return dbc.Jumbotron(
+        [
+            html.H1("404: Not found", className="text-danger"),
+            html.Hr(),
+            html.P(
+                "The pathname {pathname} was not recognised...".format(pathname))
+        ]
+    )
+
+
+if __name__ == "__main__":
+    app.run_server(port=8888)
