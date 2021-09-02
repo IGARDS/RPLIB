@@ -4,8 +4,9 @@
 @import "{{ site.theme }}";
 
 #bannerimage {
-  width: 50%;
+  width: 100%;
   background-image: url("https://igards.github.io/RPLib/images/20190425_brand_launch_APP-1013.jpg")
+  background-size: contain;
 }
 
 #skip-to-content {
