@@ -24,8 +24,7 @@
   <body>
     <a id="skip-to-content" href="#content">Skip to the content.</a>
 
-    <header class="page-header" role="banner">
-      <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Ftowardsdatascience.com%2Funderstanding-binary-data-fc4c78c9e677&psig=AOvVaw3QH611BY69N76UwMOwUjiB&ust=1630696410105000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCNjgmtX_4PICFQAAAAAdAAAAABAD" alt="{{ page.title | default: site.title | default: site.github.repository_name }}" class="project-name" />
+    <header class="page-header" role="banner" id="bannerimage">
       <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
       {% if site.github.is_project_page %}
