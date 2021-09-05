@@ -46,7 +46,8 @@ sidebar = html.Div(
 
 # components for 'Search datasets' page
 df = pd.read_csv(
-    "https://raw.githubusercontent.com/plotly/datasets/master/solar.csv")
+    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool.csv")
+    #"https://raw.githubusercontent.com/plotly/datasets/master/solar.csv")
 
 dataset = dash_table.DataTable(
     id="table",
