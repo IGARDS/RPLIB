@@ -1,0 +1,6 @@
+Dataset ID	Dataset Name	Description	Type	Data provenance
+Unique identifier for each dataset	Descriptive dataset name	Overview of the dataset	One of the following categories of data: Games, D matrix, Features	Link to documentation on aquisition and data creation pipeline
+1	March Madness 2008	March madness dataset for 2008 teams (Tim can write a sentence or two about the MM datasets)	Games	
+2	March Madness 2009			
+3	LOP XYZ1			
+4	LOP XYZ2			

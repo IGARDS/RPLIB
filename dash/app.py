@@ -34,8 +34,10 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink("Search datasets", href="/", active="exact"),
-                dbc.NavLink("Page 2", href="/page-2", active="exact"),
-                dbc.NavLink("Page 3", href="/page-3", active="exact"),
+                dbc.NavLink("Search LOP", href="/lop", active="exact"),
+                dbc.NavLink("Search Hillside", href="/hillside", active="exact"),
+                dbc.NavLink("Search Colley", href="/colley", active="exact"),
+                dbc.NavLink("Search Massey", href="/massey", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -46,7 +48,7 @@ sidebar = html.Div(
 
 # components for 'Search datasets' page
 df = pd.read_csv(
-    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool.csv")
+    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets",sep='\t')
     #"https://raw.githubusercontent.com/plotly/datasets/master/solar.csv")
 
 dataset = dash_table.DataTable(
