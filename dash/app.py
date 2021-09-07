@@ -48,8 +48,10 @@ sidebar = html.Div(
 
 # components for 'Search datasets' page
 df = pd.read_csv(
-    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets",sep='\t')
-    #"https://raw.githubusercontent.com/plotly/datasets/master/solar.csv")
+    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
+
+column_info = df.iloc[0,:]
+df = df.iloc[1:]
 
 dataset = dash_table.DataTable(
     id="table",
@@ -80,8 +82,36 @@ dataset = dash_table.DataTable(
     ]
 )
 
-page_1 = html.Div([
+page_datasets = html.Div([
     html.H1("Search datasets"),
+    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
+    dataset,
+    html.Div(id="output")
+])
+
+page_lop = html.Div([
+    html.H1("Search LOP Solutions and Analysis"),
+    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
+    dataset,
+    html.Div(id="output")
+])
+
+page_hillside = html.Div([
+    html.H1("Search Hillside Solutions and Analysis"),
+    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
+    dataset,
+    html.Div(id="output")
+])
+
+page_massey = html.Div([
+    html.H1("Search Massey Solutions and Analysis"),
+    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
+    dataset,
+    html.Div(id="output")
+])
+
+page_colley = html.Div([
+    html.H1("Search Colley Solutions and Analysis"),
     html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
     dataset,
     html.Div(id="output")
@@ -112,11 +142,15 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
-        return page_1
-    elif pathname == "/page-2":
-        return html.P("This is the content of page 2")
-    elif pathname == "/page-3":
-        return html.P("This is the content of page 3")
+        return page_datasets
+    elif pathname == "/lop":
+        return page_lop
+    elif pathname == "/hillside":
+        return page_hillside
+    elif pathname == "/massey":
+        return page_massey
+    elif pathname == "/colley":
+        return page_colley
     # if the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [
