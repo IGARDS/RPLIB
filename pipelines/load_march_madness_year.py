@@ -10,7 +10,7 @@ sys.path.insert(0,"%s"%home)
 
 from ranking_toolbox import pyrankability
 
-from marchmadness_study.base import base
+from marchmadness_study import base
 
 def load_D_from_games(teams_file,games_file,madness_teams_file):
     games,remaining_games = base.read_data(teams_file,games_file,madness_teams_file)
