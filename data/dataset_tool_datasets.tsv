@@ -1,6 +1,6 @@
 Dataset ID	Dataset Name	Description	Type	Data provenance	Download links
 Unique identifier for each dataset	Descriptive dataset name	Overview of the dataset	One of the following categories of data: Games, D matrix, Features	Link to documentation on aquisition and data creation pipeline	List of links available for download
-1	March Madness 2002	2002 regular season games, list of teams, and march madness teams.	Games	https://github.com/IGARDS/RPLib/blob/main/templates/load_march_madness_year.ipynb	https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002MadnessTeams.txt,https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002games.txt,https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002teams.txt
+1	March Madness 2002	2002 regular season games, list of teams, and march madness teams.	Games	https://github.com/IGARDS/RPLib/blob/main/pipelines/load_march_madness_year.py	https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002MadnessTeams.txt,https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002games.txt,https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002teams.txt
 2	March Madness 2009				
 3	LOP XYZ1				
 4	LOP XYZ2				

@@ -4,6 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import pandas as pd
+import numpy as np
 from dash.dependencies import Input, Output, State
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -47,11 +48,35 @@ sidebar = html.Div(
 )
 
 # components for 'Search datasets' page
-df = pd.read_csv(
-    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
+#df = pd.read_csv(
+#    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
 
-column_info = df.iloc[0,:]
-df = df.iloc[1:]
+def get_datasets():
+    df = pd.read_csv(
+        "../data/dataset_tool_datasets.tsv",sep='\t')
+
+    column_info = df.iloc[0,:]
+    df = df.iloc[1:]
+    
+    df2 = df.copy()
+    def process(links):
+        try:
+            if type(links) != list:
+                links = [links]
+            res = ",".join([link.split("/")[-1] for link in links])
+            return res
+        except:
+            return "Could not process. Check data."
+        
+    df['Download links'] = df['Download links'].str.split(",")
+    df['Data provenance'] = df['Data provenance'].str.split(",")
+
+    df2['Data provenance'] = df2['Data provenance'].str.split(",").apply(process)
+    df2['Download links'] = df2['Download links'].str.split(",").apply(process)
+    
+    return df2,df
+
+df,df_raw = get_datasets()
 
 dataset = dash_table.DataTable(
     id="table",
@@ -62,6 +87,10 @@ dataset = dash_table.DataTable(
         'backgroundColor': 'white',
         'fontWeight': 'bold',
         "border": "1px solid white",
+    },
+    style_cell={
+        'whiteSpace': 'normal',
+        'height': 'auto',
     },
     filter_action='native',
     style_data={
@@ -123,12 +152,24 @@ page_colley = html.Div([
     Input("table", "active_cell"),
     State("table", "derived_viewport_data"),
 )
+
 def cell_clicked(cell, data):
     if cell:
-        selected = data[cell["row"]]['State']
-        return html.A(
-            "View {}.json on GitHub".format(selected), href='https://github.com/someRPLibfolder/{}.json'.format(selected)
-        )
+        row,col = cell["row"],cell["column"]
+        if col < 4:
+            return dash.no_update
+        selected = df.iloc[row,col].split(",")
+        
+        links = df_raw.iloc[row,col]
+        
+        contents = [html.H2("Download links")]
+        for i in range(len(links)):
+            if i > 0:
+                contents.append(html.Br())
+            contents.append(html.A("View {}".format(selected[i]), href=links[i]))
+        download = html.Div(contents)
+        
+        return download
     else:
         return dash.no_update
 
