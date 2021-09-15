@@ -1,3 +1,5 @@
+import requests
+
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
@@ -81,28 +83,57 @@ def get_lop_cards():
         "../data/lop_cards.tsv",sep='\t')
     
     df2 = df.copy()
-    def process(links):
+    def process(link):
+        entry = pd.Series(index=[])
         try:
-            if type(links) != list:
-                links = [links]
-            res = ",".join([link.split("/")[-1] for link in links])
-            return res
+            
         except:
             return "Could not process. Check data."
 
     df2['Link'] = df2['Link'].apply(process)
     
-    card = pd.read_json(df['Link'].iloc[0])
+    df2['Card'] = df['Link'].apply(lambda link: requests.get(link).json())
     
-    return df2,df,card
+    return df2,df
 
 df,df_raw = get_datasets()
 
-df_lop_cards,df_lop_cards_raw,cards = get_lop_cards()
-
-import pdb; pdb.set_trace()
-
 dataset = dash_table.DataTable(
+    id="table",
+    columns=[{"name": i, "id": i} for i in df.columns],
+    data=df.to_dict("records"),
+    is_focused=True,
+    style_header={
+        'backgroundColor': 'white',
+        'fontWeight': 'bold',
+        "border": "1px solid white",
+    },
+    style_cell={
+        'whiteSpace': 'normal',
+        'height': 'auto',
+    },
+    filter_action='native',
+    style_data={
+        "backgroundColor": '#E3F2FD',
+        "border-bottom": "1px solid #90CAF9",
+        "border-top": "1px solid #90CAF9",
+        "border-left": "1px solid #E3F2FD",
+        "border-right": "1px solid #E3F2FD"},
+    style_data_conditional=[
+        {
+            "if": {"state": "selected"},
+            "backgroundColor": '#E3F2FD',
+            "border-bottom": "1px solid #90CAF9",
+            "border-top": "1px solid #90CAF9",
+            "border-left": "1px solid #E3F2FD",
+            "border-right": "1px solid #E3F2FD",
+        }
+    ]
+)
+
+df_lop_cards,df_lop_cards_raw = get_lop_cards()
+
+lop_table = dash_table.DataTable(
     id="table",
     columns=[{"name": i, "id": i} for i in df.columns],
     data=df.to_dict("records"),
@@ -145,7 +176,7 @@ page_datasets = html.Div([
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis"),
     html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset,
+    lop_table,
     html.Div(id="output")
 ])
 

@@ -10,7 +10,7 @@ home = str(Path.home())
 sys.path.insert(0,"%s"%home)
 
 from ranking_toolbox import pyrankability
-from lolib_study import base
+from RPLib.pyrplib import base
 
 if len(sys.argv) < 3:
     print("Usage: python create_lop_card.py <D dataset id> <outfile>")
@@ -39,7 +39,7 @@ mask = sums1 + sums2 != 2*np.diag(D)
 D = D.loc[mask,mask]
 
 # We will construct an instance to store our findings
-instance = base.LOLibInstance()
+instance = base.LOPCard()
 instance.D = D
 
 # Solve using LP which is faster

@@ -16,8 +16,6 @@ import sys
 from pathlib import Path
 home = str(Path.home())
 
-sys.path.insert(0,"%s/rankability_toolbox_dev"%home)
-sys.path.insert(0,"%s/RPLib"%home)
 import pyrankability
 
 
