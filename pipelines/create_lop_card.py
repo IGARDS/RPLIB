@@ -27,7 +27,7 @@ dataset = df.set_index('Dataset ID').loc[dataset_id]
 data_files = dataset['Download links'].split(",")
 provenance = dataset['Data provenance'].split("/")[-1][:-3]
 
-print(data_files[0])
+file_path = data_files[0]
 D = pd.read_csv(data_files[0],index_col=0).fillna(0)
 print(D.shape)
 #D = base.read_instance(data_files[0])

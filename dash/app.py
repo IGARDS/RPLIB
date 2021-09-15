@@ -34,7 +34,7 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Search datasets", href="/", active="exact"),
+                dbc.NavLink("Search Datasets", href="/", active="exact"),
                 dbc.NavLink("Search LOP", href="/lop", active="exact"),
                 dbc.NavLink("Search Hillside", href="/hillside", active="exact"),
                 dbc.NavLink("Search Colley", href="/colley", active="exact"),
@@ -76,7 +76,31 @@ def get_datasets():
     
     return df2,df
 
+def get_lop_cards():
+    df = pd.read_csv(
+        "../data/lop_cards.tsv",sep='\t')
+    
+    df2 = df.copy()
+    def process(links):
+        try:
+            if type(links) != list:
+                links = [links]
+            res = ",".join([link.split("/")[-1] for link in links])
+            return res
+        except:
+            return "Could not process. Check data."
+
+    df2['Link'] = df2['Link'].apply(process)
+    
+    card = pd.read_json(df['Link'].iloc[0])
+    
+    return df2,df,card
+
 df,df_raw = get_datasets()
+
+df_lop_cards,df_lop_cards_raw,cards = get_lop_cards()
+
+import pdb; pdb.set_trace()
 
 dataset = dash_table.DataTable(
     id="table",
