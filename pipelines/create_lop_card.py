@@ -41,6 +41,7 @@ D = D.loc[mask,mask]
 # We will construct an instance to store our findings
 instance = base.LOPCard()
 instance.D = D
+instance.dataset_id = dataset_id
 
 # Solve using LP which is faster
 delta_lp,details_lp = pyrankability.rank.solve(D,method='lop',cont=True)

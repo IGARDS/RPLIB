@@ -10,9 +10,9 @@ import pandas as pd
   
 class LOPCard:
     def __init__(self):
-        self._instance = pd.Series([None,None,set(),None,None,None],
+        self._instance = pd.Series([None,None,set(),None,None,None,None],
                                    index=["D","obj","solutions","max_tau_solutions",
-                                          "centroid_x","outlier_solution"])
+                                          "centroid_x","outlier_solution","dataset_id"])
         
     def to_json(self):
         return self._instance.to_json()
@@ -25,6 +25,8 @@ class LOPCard:
     def D(self, D):
         self._instance['D'] = D
         
+      
+        
     @property
     def obj(self):
         return self._instance['obj']
@@ -32,6 +34,14 @@ class LOPCard:
     @obj.setter
     def obj(self, obj):
         self._instance['obj'] = obj
+        
+    @property
+    def dataset_id(self):
+        return self._instance['dataset_id']
+       
+    @obj.setter
+    def dataset_id(self, id):
+        self._instance['dataset_id'] = id
         
     @property
     def centroid_x(self):
