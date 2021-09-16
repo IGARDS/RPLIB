@@ -83,9 +83,8 @@ def get_datasets():
 def get_Ds(df_datasets,df_datasets_raw):
     df = pd.read_csv(
         "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
-
-    column_info = df.iloc[0,:]
-    df = df.iloc[1:]
+    
+    print(df)
         
     def process(link):
         print(link)

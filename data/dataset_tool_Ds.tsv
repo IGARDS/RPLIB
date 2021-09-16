@@ -1,3 +1,2 @@
 Dataset ID	Link
-1	Directory where the JSON files are located which should be <dataset_id>_D.json	Dataset ID
 https://raw.githubusercontent.com/IGARDS/marchmadness_study/master/data/2002teams.txt,https://raw.githubusercontent.com/IGARDS/RPLib/master/data/marchmadness/1_D.json
