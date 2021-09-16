@@ -21,7 +21,7 @@ dataset_id = sys.argv[1]
 result_path = sys.argv[2]
 
 df = pd.read_csv(
-        "../data/dataset_tool_datasets.tsv",sep='\t')
+        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
 
 dataset = df.set_index('Dataset ID').loc[dataset_id]
 data_files = dataset['Download links'].split(",")
@@ -75,6 +75,7 @@ try:
     cont = False
     other_delta,other_detail = pyrankability.search.solve_any_diff(D,orig_obj,orig_sol_x,method='lop')
     other_solution = pd.Series([cont,orig_obj,orig_sol_x,delta,details],index=["cont","orig_obj","orig_sol_x","delta","details"],name=1)
+    print(other_solution['details']['P'])
     instance.add_solution(other_solution['details']['P'][0])
     print('Found multiple solutions for %s'%file_path)
 except:
