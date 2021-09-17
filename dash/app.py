@@ -1,4 +1,5 @@
 import requests
+from io import StringIO
 
 import dash
 import dash_bootstrap_components as dbc
@@ -83,18 +84,19 @@ def get_datasets():
 def get_Ds(df_datasets,df_datasets_raw):
     df = pd.read_csv(
         "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
-    
-    print(df)
-        
+            
     def process(link):
         print(link)
         d = requests.get(link).json()
-        print(d['dataset_id'])
-        entry = pd.Series(index=['Source Dataset ID','Dataset ID','D Type'])
+        D = pd.DataFrame(d["D"])
+        entry = pd.Series(index=['Source Dataset ID','Dataset ID','D Type','Command','Shape D'])
         try:
             entry.loc['Source Dataset ID'] = d['source_dataset_id']
             entry.loc['Dataset ID'] = d['dataset_id']
             entry.loc['D Type'] = d['D_type']
+            entry.loc['Command'] = d['command']
+            entry.loc['Shape D'] = D.shape
+            entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except:
             pass
         return entry
@@ -105,7 +107,7 @@ def get_Ds(df_datasets,df_datasets_raw):
 
 def get_lop_cards():
     df = pd.read_csv(
-        "../data/lop_cards.tsv",sep='\t')
+        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv",sep='\t')
     
     def process(link):
         print(link)
@@ -123,7 +125,7 @@ def get_lop_cards():
         return entry
 
     cards = df['Link'].apply(process)
-    df2 = df.drop('Link',axis=1).join(cards)
+    df2 = df.drop('Link',axis=1).set_index('Dataset ID').join(cards.set_index('Dataset ID'))
         
     return df2,df
 
@@ -135,7 +137,7 @@ df_lop_cards,df_lop_cards_raw = get_lop_cards()
 
 dataset_table = dash_table.DataTable(
     id="table",
-    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df.columns],
+    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_datasets.columns],
     data=df_datasets.to_dict("records"),
     is_focused=True,
     style_header={
@@ -168,7 +170,7 @@ dataset_table = dash_table.DataTable(
 
 D_table = dash_table.DataTable(
     id="table",
-    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df.columns],
+    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_Ds.columns],
     data=df_Ds.to_dict("records"),
     is_focused=True,
     style_header={
@@ -243,7 +245,7 @@ page_datasets = html.Div([
 page_Ds = html.Div([
     html.H1("Search D matrices"),
     html.P("Try searching for a D matrix with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset_Ds,
+    D_table,
     html.Div(id="output")
 ])
 
@@ -257,21 +259,21 @@ page_lop = html.Div([
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset,
+    dataset_table,
     html.Div(id="output")
 ])
 
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset,
+    dataset_table,
     html.Div(id="output")
 ])
 
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset,
+    dataset_table,
     html.Div(id="output")
 ])
 

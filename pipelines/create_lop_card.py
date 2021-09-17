@@ -1,6 +1,7 @@
 import sys
 import os
 from pathlib import Path
+import requests
 
 import pandas as pd
 import numpy as np
@@ -13,22 +14,23 @@ from ranking_toolbox import pyrankability
 from RPLib.pyrplib import base
 
 if len(sys.argv) < 3:
-    print("Usage: python create_lop_card.py <D dataset id> <outfile>")
+    print("Usage: python create_lop_card.py <D dataset id> <dataset id>")
     exit(0)
 
 #group = sys.argv[1]
-dataset_id = sys.argv[1]
-result_path = sys.argv[2]
+source_dataset_id = int(sys.argv[1])
+dataset_id = int(sys.argv[2])
+result_path = f'{dataset_id}_lop_card.json'#sys.argv[2]
 
 df = pd.read_csv(
-        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
+        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
 
+print(df)
 dataset = df.set_index('Dataset ID').loc[dataset_id]
-data_files = dataset['Download links'].split(",")
-provenance = dataset['Data provenance'].split("/")[-1][:-3]
-
-file_path = data_files[0]
-D = pd.read_csv(data_files[0],index_col=0).fillna(0)
+file_path = dataset['Link']
+d = requests.get(file_path).json()
+D = pd.DataFrame(d["D"]).fillna(0)
+    
 print(D.shape)
 #D = base.read_instance(data_files[0])
 
@@ -41,6 +43,7 @@ D = D.loc[mask,mask]
 # We will construct an instance to store our findings
 instance = base.LOPCard()
 instance.D = D
+instance.source_dataset_id = source_dataset_id
 instance.dataset_id = dataset_id
 
 # Solve using LP which is faster

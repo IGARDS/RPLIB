@@ -74,6 +74,14 @@ class LOPCard:
         self._instance['D'] = D
         
     @property
+    def source_dataset_id(self):
+        return self._instance['source_dataset_id']
+       
+    @source_dataset_id.setter
+    def source_dataset_id(self, id):
+        self._instance['source_dataset_id'] = id
+        
+    @property
     def obj(self):
         return self._instance['obj']
        
