@@ -86,7 +86,6 @@ def get_Ds(df_datasets,df_datasets_raw):
         "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
             
     def process(link):
-        print(link)
         d = requests.get(link).json()
         D = pd.DataFrame(d["D"])
         entry = pd.Series(index=['Source Dataset ID','Dataset ID','D Type','Command','Shape D'])
