@@ -121,6 +121,15 @@ class LOPCard:
         if type(sol) != tuple:
             sol = tuple(sol)
         self._instance['solutions'].add(sol)
+        
+    @staticmethod
+    def from_json(file):
+        contents = json.loads(open(file).read())
+        obj = LOPCard()
+        obj._instance = pd.Series(contents)
+        return obj
+                              
+        
 
 def read_instance(file):
     lines = open(f"{file}").read().strip().split("\n")[1:]
