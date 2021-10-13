@@ -65,29 +65,30 @@ for i in range(len(rows)):
 # Now solve BILP
 cont = False
 delta,details = pyrankability.rank.solve(D,method='lop',fix_x=fix_x,cont=cont)
-solution = pd.Series([cont,fix_x,delta,details],index=["cont","fix_x","delta","details"],name=0)
 orig_sol_x = details['x']
 orig_obj = details['obj']
+first_solution = details['P'][0]
 
 # Add what we have found to our instance
 instance.obj = orig_obj
-instance.add_solution(solution['details']['P'][0])
+instance.add_solution(first_solution)
 
 # Now we will see if there are multiple optimal solutions
 try:
     cont = False
     other_delta,other_detail = pyrankability.search.solve_any_diff(D,orig_obj,orig_sol_x,method='lop')
-    other_solution = pd.Series([cont,orig_obj,orig_sol_x,delta,details],index=["cont","orig_obj","orig_sol_x","delta","details"],name=1)
-    print(other_solution['details']['P'])
-    instance.add_solution(other_solution['details']['P'][0])
+    other_solution = other_detail['perm']
+    #print(other_solution['details']['P'])
+    instance.add_solution(other_solution)
     print('Found multiple solutions for %s'%file_path)
 except:
     print('Cannot find multiple solutions for %s (or another problem occured)'%file_path)
 
 if len(instance.solutions) > 1: # Multiple optimal
-    outlier_deltas,outlier_details = pyrankability.search.solve_min_tau(D,centroid_x,orig_sol_x,method='lop')
-    instance.add_solution(outlier_details['P'][0])
-    instance.outlier_solution = outlier_details['P'][0]
+    #solve_pair(D,D2=None,method=["lop","hillside"][1],minimize=False,min_ndis=None,max_ndis=None,tau_range=None,lazy=False,verbose=False)
+    outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method='lop',minimize=False)
+    instance.add_solution(outlier_details['perm'])
+    instance.outlier_solution = outlier_details['perm']
 
 # solutions = pd.concat([solution,other_solution],axis=1).T
 # record = pd.Series({"group":group,"file":file,"D":D,"mask":mask,"method":"lop","solutions":solutions})

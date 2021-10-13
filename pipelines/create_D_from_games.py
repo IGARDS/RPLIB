@@ -32,16 +32,18 @@ provenance = dataset['Data provenance'].split("/")[-1][:-3]
 import importlib
 
 load_lib = importlib.import_module(f"RPLib.pipelines.{provenance}")
-func_name = os.path.basename(__file__).replace("create","load")[:-3]
+func_name = os.path.basename(__file__).replace("create","load")[:-3] # the name of this file is the same name as the function to run
+print(func_name)
 func = getattr(load_lib, func_name)
 
+print("\n".join(data_files))
 games,teams = func(data_files[0],data_files[1],data_files[2])
 
 trans = pyrankability.transformers.ComputeDTransformer()
 trans.fit(games)
 D,ID = trans.transform(games)
-D = D.loc[teams,teams]
-ID = ID.loc[teams,teams]
+D = D.reindex(index=teams,columns=teams)
+ID = ID.reindex(index=teams,columns=teams)
 
 print(D)
 
