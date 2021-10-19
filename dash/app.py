@@ -82,8 +82,7 @@ def get_datasets():
     return df2,df
 
 def get_Ds(df_datasets,df_datasets_raw):
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
+    df = pd.read_csv("https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
             
     def process(link):
         d = requests.get(link).json()

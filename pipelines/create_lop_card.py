@@ -13,6 +13,8 @@ sys.path.insert(0,"%s"%home)
 from ranking_toolbox import pyrankability
 from RPLib.pyrplib import base
 
+pd.set_option('display.max_colwidth', None)
+
 if len(sys.argv) < 3:
     print("Usage: python create_lop_card.py <D dataset id> <dataset id>")
     exit(0)
@@ -25,8 +27,8 @@ result_path = f'{dataset_id}_lop_card.json'#sys.argv[2]
 df = pd.read_csv(
         "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
 
-print(df)
 dataset = df.set_index('Dataset ID').loc[dataset_id]
+print(dataset)
 file_path = dataset['Link']
 d = requests.get(file_path).json()
 D = pd.DataFrame(d["D"]).fillna(0)
@@ -94,4 +96,4 @@ if len(instance.solutions) > 1: # Multiple optimal
 # record = pd.Series({"group":group,"file":file,"D":D,"mask":mask,"method":"lop","solutions":solutions})
 
 print('Writing to',result_path)
-open(result_path,'w').write(instance.to_json())
+instance.to_json(result_path)

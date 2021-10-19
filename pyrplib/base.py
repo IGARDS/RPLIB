@@ -1,6 +1,5 @@
 # Base Functionality for Reading and Processing
 import os
-from io import StringIO
 import json
 
 import pandas as pd
@@ -62,8 +61,8 @@ class LOPCard:
                                    index=["D","obj","solutions","max_tau_solutions",
                                           "centroid_x","outlier_solution","dataset_id"])
         
-    def to_json(self):
-        return self._instance.to_json()
+    def to_json(self,file):
+        self._instance.to_json(file,orient='columns')
        
     @property
     def D(self):
@@ -128,13 +127,6 @@ class LOPCard:
         obj = LOPCard()
         obj._instance = pd.Series(contents)
         return obj
-                              
-        
-
-def read_instance(file):
-    lines = open(f"{file}").read().strip().split("\n")[1:]
-    data_str = ("\n".join([line.strip() for line in lines])).replace(" ",",")
-    df = pd.read_csv(StringIO(data_str),header=None)
-    return df
+                            
 
 
