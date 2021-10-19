@@ -1,1 +1,0 @@
-For these random problems, the superdiagonal entries are drawn uniformly distributed from the interval [0,U1] and the subdiagonal entries from [0,U2], where U1 >=e U2.

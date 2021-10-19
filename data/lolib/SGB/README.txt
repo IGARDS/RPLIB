@@ -1,1 +1,0 @@
-These instances are taken from the Stanford GraphBase and consist of input-output tables from sectors of the economy of the United States (Knuth 1993). The set has a total of 25 instances with 75 sectors

@@ -1,1 +1,0 @@
-These instances have been used by Mitchell and Borchers for their computational experiments (Mitchell and Borchers, 2000). They are random matrices where the subdiagonal entries are uniformly distributed in [0,99] and the superdiagonal entries are drawn uniformly from [0,39]. Furthermore a certain percentage of the entries was zeroed out.
