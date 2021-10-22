@@ -1,5 +1,6 @@
 import requests
 from io import StringIO
+import traceback
 
 import dash
 import dash_bootstrap_components as dbc
@@ -87,7 +88,7 @@ def get_Ds(df_datasets,df_datasets_raw):
     def process(link):
         d = requests.get(link).json()
         D = pd.DataFrame(d["D"])
-        entry = pd.Series(index=['Source Dataset ID','Dataset ID','D Type','Command','Shape D'])
+        entry = pd.Series(index=['Source Dataset ID','Dataset ID','D Type','Command','Shape D','Download'])
         try:
             entry.loc['Source Dataset ID'] = d['source_dataset_id']
             entry.loc['Dataset ID'] = d['dataset_id']
@@ -96,7 +97,8 @@ def get_Ds(df_datasets,df_datasets_raw):
             entry.loc['Shape D'] = D.shape
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except:
-            pass
+            print("Exception in get_Ds:",e)
+            print(traceback.format_exc())
         return entry
 
     Ds = df['Link'].apply(process)
@@ -111,19 +113,23 @@ def get_lop_cards():
         print(link)
         d = requests.get(link).json()
         print(d['dataset_id'])
-        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions'])
+        print(d.keys())
+        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Download','View Two Solutions'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
-            entry.loc['Shape of D'] = len(d['D'])
+            D = pd.DataFrame(d['D'])
+            entry.loc['Shape of D'] = ",".join([str(n) for n in D.shape])
             entry.loc['Objective'] = d['obj']
             entry.loc['Number of Solutions'] = len(d['solutions'])
-            print(d['solutions'])
-        except:
-            pass
+            entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
+            entry.loc['View Two Solutions'] = 'View'
+        except Exception as e:
+            print("Exception in get_lop_cards:",e)
+            print(traceback.format_exc())
         return entry
 
     cards = df['Link'].apply(process)
-    df2 = df.drop('Link',axis=1).set_index('Dataset ID').join(cards.set_index('Dataset ID'))
+    df2 = df.set_index('Dataset ID').join(cards.set_index('Dataset ID')).reset_index()
         
     return df2,df
 
@@ -146,6 +152,7 @@ dataset_table = dash_table.DataTable(
     style_cell={
         'whiteSpace': 'normal',
         'height': 'auto',
+        'textAlign': 'left'
     },
     filter_action='native',
     style_data={
@@ -179,6 +186,7 @@ D_table = dash_table.DataTable(
     style_cell={
         'whiteSpace': 'normal',
         'height': 'auto',
+        'textAlign': 'left'
     },
     filter_action='native',
     style_data={
@@ -213,6 +221,7 @@ lop_table = dash_table.DataTable(
     style_cell={
         'whiteSpace': 'normal',
         'height': 'auto',
+        'textAlign': 'left'
     },
     filter_action='native',
     style_data={
@@ -284,18 +293,53 @@ page_colley = html.Div([
 
 def cell_clicked(cell, data):
     if cell:
-        row,col = cell["row"],cell["column"]
-        if col < 4:
-            return dash.no_update
-        selected = df.iloc[row,col].split(",")
-        
-        links = df_raw.iloc[row,col]
-        
-        contents = [html.H2("Download links")]
-        for i in range(len(links)):
-            if i > 0:
-                contents.append(html.Br())
-            contents.append(html.A("View {}".format(selected[i]), href=links[i]))
+        row,col = cell["row"],cell["column_id"]
+        print(row)
+        link = data[row]['Link']
+        d = requests.get(link).json()
+        selected = data[row][col]
+        if col == 'View Two Solutions':
+            df = pd.DataFrame(d['solutions'])
+            selected = dash_table.DataTable(
+                id="table",
+                #dict(name='a', id='a', type='text', presentation='markdown')
+                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df.columns],
+                data=df.to_dict("records"),
+                is_focused=True,
+                style_header={
+                    'backgroundColor': 'white',
+                    'fontWeight': 'bold',
+                    "border": "1px solid white",
+                },
+                style_cell={
+                    'whiteSpace': 'normal',
+                    'height': 'auto',
+                    'textAlign': 'left'
+                },
+                filter_action='native',
+                style_data={
+                    "backgroundColor": '#E3F2FD',
+                    "border-bottom": "1px solid #90CAF9",
+                    "border-top": "1px solid #90CAF9",
+                    "border-left": "1px solid #E3F2FD",
+                    "border-right": "1px solid #E3F2FD"},
+                style_data_conditional=[
+                    {
+                        "if": {"state": "selected"},
+                        "backgroundColor": '#E3F2FD',
+                        "border-bottom": "1px solid #90CAF9",
+                        "border-top": "1px solid #90CAF9",
+                        "border-left": "1px solid #E3F2FD",
+                        "border-right": "1px solid #E3F2FD",
+                    }
+                ]
+            )
+        contents = [html.Br(),html.H2("Content Selected"),selected]
+        #if col is 
+        #for i in range(len(links)):
+        #    if i > 0:
+        #        contents.append(html.Br())
+        #    contents.append(html.A("View {}".format(selected[i]), href=links[i]))
         download = html.Div(contents)
         
         return download
