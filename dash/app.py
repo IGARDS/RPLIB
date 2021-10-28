@@ -265,22 +265,19 @@ page_lop = html.Div([
 
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
-    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset_table,
+    html.P("This is currently empty."),
     html.Div(id="output")
 ])
 
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
-    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset_table,
+    html.P("This is currently empty."),
     html.Div(id="output")
 ])
 
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
-    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset_table,
+    html.P("This is currently empty."),
     html.Div(id="output")
 ])
 
@@ -290,7 +287,6 @@ page_colley = html.Div([
     Input("table", "active_cell"),
     State("table", "derived_viewport_data"),
 )
-
 def cell_clicked(cell, data):
     if cell:
         row,col = cell["row"],cell["column_id"]
