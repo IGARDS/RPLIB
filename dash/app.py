@@ -296,12 +296,12 @@ def cell_clicked(cell, data):
         d = requests.get(link).json()
         selected = data[row][col]
         if col == 'View Two Solutions':
-            df = pd.DataFrame(d['solutions'])
+            df_solutions = pd.DataFrame(d['solutions'])
             selected = dash_table.DataTable(
-                id="table",
+                id="table2", # same id for the table in html - causes the original table to get overriden
                 #dict(name='a', id='a', type='text', presentation='markdown')
-                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df.columns],
-                data=df.to_dict("records"),
+                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
+                data=df_solutions.to_dict("records"),
                 is_focused=True,
                 style_header={
                     'backgroundColor': 'white',
