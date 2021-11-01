@@ -114,7 +114,7 @@ def get_lop_cards():
         d = requests.get(link).json()
         print(d['dataset_id'])
         print(d.keys())
-        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Download','View Two Solutions'])
+        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Download','View Two Solutions', 'Red/Green plot'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
             D = pd.DataFrame(d['D'])
@@ -123,6 +123,7 @@ def get_lop_cards():
             entry.loc['Number of Solutions'] = len(d['solutions'])
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
             entry.loc['View Two Solutions'] = 'View'
+            entry.loc['Red/Green plot'] = 'Generate'
         except Exception as e:
             print("Exception in get_lop_cards:",e)
             print(traceback.format_exc())
