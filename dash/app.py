@@ -1,6 +1,8 @@
 import requests
-from io import StringIO
+import io
+import sys
 import traceback
+#from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc
@@ -9,7 +11,14 @@ import dash_html_components as html
 import dash_table
 import pandas as pd
 import numpy as np
+import altair as alt
 from dash.dependencies import Input, Output, State
+
+#home = str(Path.home())
+
+#sys.path.insert(0,"%s"%home)
+
+#from ranking_toolbox.pyrankability import plot
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -108,12 +117,12 @@ def get_Ds(df_datasets,df_datasets_raw):
 def get_lop_cards():
     df = pd.read_csv(
         "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv",sep='\t')
-    
+
     def process(link):
-        print(link)
+        #print(link)
         d = requests.get(link).json()
-        print(d['dataset_id'])
-        print(d.keys())
+        #print(d['dataset_id'])
+        #print(d.keys())
         entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Download','View Two Solutions', 'Red/Green plot'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
@@ -291,7 +300,6 @@ page_colley = html.Div([
 def cell_clicked(cell, data):
     if cell:
         row,col = cell["row"],cell["column_id"]
-        print(row)
         link = data[row]['Link']
         d = requests.get(link).json()
         selected = data[row][col]
@@ -331,15 +339,39 @@ def cell_clicked(cell, data):
                     }
                 ]
             )
+        if col == 'Red/Green plot':
+            #print(data)
+            plot_html = io.StringIO()
+            #df_solutions = pd.DataFrame(d['solutions'])
+            #chart, _, _ = plot.show_score_xstar(df_solutions)
+            df_bees = pd.read_csv("https://raw.githubusercontent.com/Coding-with-Adam/Dash-by-Plotly/master/Other/Dash_Introduction/intro_bees.csv")
+            #brush = alt.selection_interval()
+            chart = alt.Chart(df_bees).mark_bar().encode(
+                x='State',
+                y='count()'
+            ).interactive()
+            # .transform_filter(
+            #     brush.ref()
+            # )
+            chart.save(plot_html, 'html')
+
+            selected = html.Iframe(
+                id='plot',
+                height='500',
+                width='1000',
+                sandbox='allow-scripts',
+                srcDoc=plot_html.getvalue(),
+                style={'border-width': '0px'}
+            )
+
         contents = [html.Br(),html.H2("Content Selected"),selected]
         #if col is 
         #for i in range(len(links)):
         #    if i > 0:
         #        contents.append(html.Br())
         #    contents.append(html.A("View {}".format(selected[i]), href=links[i]))
-        download = html.Div(contents)
-        
-        return download
+
+        return html.Div(contents)
     else:
         return dash.no_update
 
