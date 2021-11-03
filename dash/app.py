@@ -1,6 +1,8 @@
 import requests
-from io import StringIO
+import io
+import sys
 import traceback
+#from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc
@@ -9,7 +11,15 @@ import dash_html_components as html
 import dash_table
 import pandas as pd
 import numpy as np
+import altair as alt
 from dash.dependencies import Input, Output, State
+
+from pathlib import Path
+home = str(Path.home())
+sys.path.insert(0,"%s"%home)
+
+import RPLib.pyrplib as pyrplib
+import ranking_toolbox.pyrankability as pyrankability
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -108,13 +118,13 @@ def get_Ds(df_datasets,df_datasets_raw):
 def get_lop_cards():
     df = pd.read_csv(
         "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv",sep='\t')
-    
+
     def process(link):
-        print(link)
+        #print(link)
         d = requests.get(link).json()
-        print(d['dataset_id'])
-        print(d.keys())
-        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Download','View Two Solutions'])
+        #print(d['dataset_id'])
+        #print(d.keys())
+        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Download','View Two Solutions', 'Red/Green plot'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
             D = pd.DataFrame(d['D'])
@@ -123,6 +133,7 @@ def get_lop_cards():
             entry.loc['Number of Solutions'] = len(d['solutions'])
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
             entry.loc['View Two Solutions'] = 'View'
+            entry.loc['Red/Green plot'] = 'Generate'
         except Exception as e:
             print("Exception in get_lop_cards:",e)
             print(traceback.format_exc())
@@ -290,17 +301,16 @@ page_colley = html.Div([
 def cell_clicked(cell, data):
     if cell:
         row,col = cell["row"],cell["column_id"]
-        print(row)
         link = data[row]['Link']
         d = requests.get(link).json()
         selected = data[row][col]
         if col == 'View Two Solutions':
-            df = pd.DataFrame(d['solutions'])
+            df_solutions = pd.DataFrame(d['solutions'])
             selected = dash_table.DataTable(
-                id="table",
+                id="table2", # same id for the table in html - causes the original table to get overriden
                 #dict(name='a', id='a', type='text', presentation='markdown')
-                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df.columns],
-                data=df.to_dict("records"),
+                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
+                data=df_solutions.to_dict("records"),
                 is_focused=True,
                 style_header={
                     'backgroundColor': 'white',
@@ -330,15 +340,32 @@ def cell_clicked(cell, data):
                     }
                 ]
             )
+        if col == 'Red/Green plot':
+            lop_card = pyrplib.base.LOPCard.from_json(link)
+
+            plot_html = io.StringIO()
+            D = pd.DataFrame(lop_card.D)
+            x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
+            g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
+            g.save(plot_html, 'html')
+
+            selected = html.Iframe(
+                id='plot',
+                height='500',
+                width='1000',
+                sandbox='allow-scripts',
+                srcDoc=plot_html.getvalue(),
+                style={'border-width': '0px'}
+            )
+
         contents = [html.Br(),html.H2("Content Selected"),selected]
         #if col is 
         #for i in range(len(links)):
         #    if i > 0:
         #        contents.append(html.Br())
         #    contents.append(html.A("View {}".format(selected[i]), href=links[i]))
-        download = html.Div(contents)
-        
-        return download
+
+        return html.Div(contents)
     else:
         return dash.no_update
 
