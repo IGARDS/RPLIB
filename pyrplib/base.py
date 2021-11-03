@@ -1,11 +1,9 @@
 # Base Functionality for Reading and Processing
 import os
 import json
+import requests
 
 import pandas as pd
-
-# Python program showing the use of
-# @property
 
 class DInfo:
     def __init__(self):
@@ -123,7 +121,11 @@ class LOPCard:
         
     @staticmethod
     def from_json(file):
-        contents = json.loads(open(file).read())
+        try:
+            contents = json.loads(open(file).read())
+        except:
+            link = file # Try to see if this is a link instead of a file
+            contents = requests.get(link).json()
         obj = LOPCard()
         obj._instance = pd.Series(contents)
         return obj

@@ -14,11 +14,12 @@ import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
 
-#home = str(Path.home())
+from pathlib import Path
+home = str(Path.home())
+sys.path.insert(0,"%s"%home)
 
-#sys.path.insert(0,"%s"%home)
-
-#from ranking_toolbox.pyrankability import plot
+import RPLib.pyrplib as pyrplib
+import ranking_toolbox.pyrankability as pyrankability
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -340,20 +341,13 @@ def cell_clicked(cell, data):
                 ]
             )
         if col == 'Red/Green plot':
-            #print(data)
+            lop_card = pyrplib.base.LOPCard.from_json(link)
+
             plot_html = io.StringIO()
-            #df_solutions = pd.DataFrame(d['solutions'])
-            #chart, _, _ = plot.show_score_xstar(df_solutions)
-            df_bees = pd.read_csv("https://raw.githubusercontent.com/Coding-with-Adam/Dash-by-Plotly/master/Other/Dash_Introduction/intro_bees.csv")
-            #brush = alt.selection_interval()
-            chart = alt.Chart(df_bees).mark_bar().encode(
-                x='State',
-                y='count()'
-            ).interactive()
-            # .transform_filter(
-            #     brush.ref()
-            # )
-            chart.save(plot_html, 'html')
+            D = pd.DataFrame(lop_card.D)
+            x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
+            g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
+            g.save(plot_html, 'html')
 
             selected = html.Iframe(
                 id='plot',
