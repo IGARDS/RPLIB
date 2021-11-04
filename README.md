@@ -8,25 +8,38 @@ If you wish to run many of the algorithms yourself, you will need to make sure G
 Finally, a lot of the code is built around assuming all paths are relative to your home directory.
 
 ### Step 1. Download code and data
+```
 git clone https://github.com/IGARDS/RPLib.git
-
 git clone https://github.com/IGARDS/ranking_toolbox
+```
+
+or if you have SSH keys set up:
+
+```
+git clone git@github.com:IGARDS/RPLib.git
+git clone git@github.com:IGARDS/ranking_toolbox.git
+```
 
 ### Step 2. Install dependencies
 
+```
 cd RPLib
 pip install -r requirements.txt
+```
 
 ## Usage instructions
 
 ### Running frontend
 The frontend can be run from RPLib/dash directory.
 
+```
 cd RPLib/dash
-./run.sh <PORT>
-  
+./run.sh [PORT]
+```
+
 Navigate to http://localhost:PORT/
-  
-### Procesing a file example
-  
-python $HOME/RPLib/pipelines/create_lop_card.py 13 13
+
+### Processing a file example
+
+`python $HOME/RPLib/pipelines/create_lop_card.py 13 13`
+
