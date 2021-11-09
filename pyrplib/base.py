@@ -103,6 +103,14 @@ class LOPCard:
         self._instance['centroid_x'] = centroid_x
         
     @property
+    def centroid_solution(self):
+        return self._instance['centroid_solution']
+       
+    @centroid_solution.setter
+    def centroid_solution(self, centroid_solution):
+        self._instance['centroid_solution'] = centroid_solution
+        
+    @property
     def outlier_solution(self):
         return self._instance['outlier_solution']
        

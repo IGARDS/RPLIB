@@ -91,6 +91,10 @@ if len(instance.solutions) > 1: # Multiple optimal
     outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method='lop',minimize=False)
     instance.add_solution(outlier_details['perm'])
     instance.outlier_solution = outlier_details['perm']
+    
+    centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method='lop',minimize=True)
+    instance.add_solution(centroid_details['perm'])
+    instance.centroid_solution = centroid_details['perm']
 
 # solutions = pd.concat([solution,other_solution],axis=1).T
 # record = pd.Series({"group":group,"file":file,"D":D,"mask":mask,"method":"lop","solutions":solutions})
