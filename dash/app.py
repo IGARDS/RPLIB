@@ -13,6 +13,8 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
+import base64
+from io import BytesIO
 
 from pathlib import Path
 home = str(Path.home())
@@ -367,16 +369,18 @@ def cell_clicked(cell, data):
             centroid_solution = pd.Series(lop_card.centroid_solution,
                                           index=D.index[lop_card.centroid_solution],
                                           name="Closest to Centroid")
-            g = pyrankability.plot.spider3(outlier_solution,centroid_solution)
-            plot_html = io.StringIO()
-            g.save(plot_html, 'html')
+            tmpfile = BytesIO()
+            pyrankability.plot.spider3(outlier_solution,centroid_solution,file=tmpfile)
+            encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+
+            plot_html = '<img src=\'data:image/png;base64,{}\'>'.format(encoded)
 
             selected = html.Iframe(
                 id='plot',
                 height='500',
                 width='1000',
                 sandbox='allow-scripts',
-                srcDoc=plot_html.getvalue(),
+                srcDoc=plot_html,
                 style={'border-width': '0px'}
             )
 
