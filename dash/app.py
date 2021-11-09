@@ -133,6 +133,7 @@ def get_lop_cards():
             entry.loc['Number of Solutions'] = len(d['solutions'])
             entry.loc['View Two Solutions'] = 'View'
             entry.loc['Red/Green plot'] = 'Generate'
+            entry.loc['Nearest/Farthest Centoid Plot'] = 'Generate'
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print("Exception in get_lop_cards:",e)
@@ -347,6 +348,27 @@ def cell_clicked(cell, data):
             D = pd.DataFrame(lop_card.D)
             x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
             g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
+            g.save(plot_html, 'html')
+
+            selected = html.Iframe(
+                id='plot',
+                height='500',
+                width='1000',
+                sandbox='allow-scripts',
+                srcDoc=plot_html.getvalue(),
+                style={'border-width': '0px'}
+            )
+        if col == 'Nearest/Farthest Centoid Plot':
+            lop_card = pyrplib.base.LOPCard.from_json(link)
+            D = pd.DataFrame(lop_card.D)
+            outlier_solution = pd.Series(lop_card.outlier_solution,
+                                         index=D.index[lop_card.outlier_solution],
+                                         name="Farthest from Centroid")
+            centroid_solution = pd.Series(lop_card.centroid_solution,
+                                          index=D.index[lop_card.centroid_solution],
+                                          name="Closest to Centroid")
+            g = pyrankability.plot.spider3(outlier_solution,centroid_solution)
+            plot_html = io.StringIO()
             g.save(plot_html, 'html')
 
             selected = html.Iframe(
