@@ -4,4 +4,4 @@ layout: data_tool
 
 # Dataset Search Tool
 
-[Placeholder link](http://35.222.21.171:7000/)
+[Click here: Dataset Search Tool](http://35.222.21.171:7000/)
