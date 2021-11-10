@@ -17,6 +17,10 @@ git clone https://github.com/IGARDS/ranking_toolbox
 cd RPLib
 pip install -r requirements.txt
 
+Note: If you are having problems with installing graphviz-dev, then run
+`sudo apt install graphviz-dev`
+or your equivalent package manager
+
 ## Usage instructions
 
 ### Running frontend
@@ -27,6 +31,6 @@ cd RPLib/dash
   
 Navigate to http://localhost:PORT/
   
-### Procesing a file example
+### Processing a file example
   
 python $HOME/RPLib/pipelines/create_lop_card.py 13 13
