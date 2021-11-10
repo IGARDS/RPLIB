@@ -138,8 +138,6 @@ class LOPCard:
         obj._instance = pd.Series(contents)
         return obj
                             
-# almost exact same as above^ 
-# not sure if LOPCard and ColleyCard need same functionality for almost everything and should just inherit from some 'Card' class
 class ColleyCard:
     def __init__(self):
         self._instance = pd.Series([None,None,set(),None,None,None,None],
