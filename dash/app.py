@@ -125,7 +125,7 @@ def get_lop_cards():
         d = requests.get(link).json()
         #print(d['dataset_id'])
         #print(d.keys())
-        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','View Two Solutions', 'Red/Green plot','Download'])
+        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','View Two Solutions', 'View Outlier Solutions', 'Red/Green plot','Download'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
             D = pd.DataFrame(d['D'])
@@ -133,6 +133,7 @@ def get_lop_cards():
             entry.loc['Objective'] = d['obj']
             entry.loc['Number of Solutions'] = len(d['solutions'])
             entry.loc['View Two Solutions'] = 'View'
+            entry.loc['View Outlier Solutions'] = 'View'
             entry.loc['Red/Green plot'] = 'Generate'
             entry.loc['Nearest/Farthest Centoid Plot'] = 'Generate'
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
@@ -307,6 +308,43 @@ def cell_clicked(cell, data):
         d = requests.get(link).json()
         selected = data[row][col]
         if col == 'View Two Solutions':
+            df_solutions = pd.DataFrame(d['solutions'])
+            selected = dash_table.DataTable(
+                id="table2", # same id for the table in html - causes the original table to get overriden
+                #dict(name='a', id='a', type='text', presentation='markdown')
+                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
+                data=df_solutions.to_dict("records"),
+                is_focused=True,
+                style_header={
+                    'backgroundColor': 'white',
+                    'fontWeight': 'bold',
+                    "border": "1px solid white",
+                },
+                style_cell={
+                    'whiteSpace': 'normal',
+                    'height': 'auto',
+                    'textAlign': 'left'
+                },
+                filter_action='native',
+                style_data={
+                    "backgroundColor": '#E3F2FD',
+                    "border-bottom": "1px solid #90CAF9",
+                    "border-top": "1px solid #90CAF9",
+                    "border-left": "1px solid #E3F2FD",
+                    "border-right": "1px solid #E3F2FD"},
+                style_data_conditional=[
+                    {
+                        "if": {"state": "selected"},
+                        "backgroundColor": '#E3F2FD',
+                        "border-bottom": "1px solid #90CAF9",
+                        "border-top": "1px solid #90CAF9",
+                        "border-left": "1px solid #E3F2FD",
+                        "border-right": "1px solid #E3F2FD",
+                    }
+                ]
+            )
+        if col == 'View Outlier Solutions':
+            print("TEST!")
             df_solutions = pd.DataFrame(d['solutions'])
             selected = dash_table.DataTable(
                 id="table2", # same id for the table in html - causes the original table to get overriden
