@@ -345,7 +345,7 @@ def cell_clicked(cell, data):
             )
         if col == 'View Outlier Solutions':
             print("TEST!")
-            df_solutions = pd.DataFrame(d['solutions'])
+            df_solutions = pd.DataFrame(d['outlier_solution'])
             selected = dash_table.DataTable(
                 id="table2", # same id for the table in html - causes the original table to get overriden
                 #dict(name='a', id='a', type='text', presentation='markdown')
