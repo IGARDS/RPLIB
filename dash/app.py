@@ -16,7 +16,8 @@ from dash.dependencies import Input, Output, State
 
 from pathlib import Path
 home = str(Path.home())
-sys.path.insert(0,"%s"%home)
+#sys.path.insert(0,"%s"%home) # this python path only works if the user puts the directory within their home
+sys.path.insert(0, "../../") # this one only works if the user follows the advice to put both RPlib and ranking_toolbox within its own folder
 
 import RPLib.pyrplib as pyrplib
 import ranking_toolbox.pyrankability as pyrankability
