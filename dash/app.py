@@ -66,7 +66,7 @@ sidebar = html.Div(
 #df = pd.read_csv(
 #    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
 
-def get_basic_style():
+def get_style():
     return {'style_header': {
         'backgroundColor': 'white',
         'fontWeight': 'bold',
@@ -184,7 +184,7 @@ dataset_table = dash_table.DataTable(
     columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_datasets.columns],
     data=df_datasets.to_dict("records"),
     is_focused=True,
-    **get_basic_style()
+    **get_style()
 )
 
 D_table = dash_table.DataTable(
@@ -192,7 +192,7 @@ D_table = dash_table.DataTable(
     columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_Ds.columns],
     data=df_Ds.to_dict("records"),
     is_focused=True,
-    **get_basic_style()
+    **get_style()
 )
 
 lop_table = dash_table.DataTable(
@@ -201,7 +201,7 @@ lop_table = dash_table.DataTable(
     columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_lop_cards.columns],
     data=df_lop_cards.to_dict("records"),
     is_focused=True,
-    **get_basic_style()
+    **get_style()
 )
 
 page_datasets = html.Div([
@@ -254,7 +254,7 @@ def generate_lop_report(d, link, show_solutions=True, show_xstar=True, show_spid
             columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
             data=df_solutions.to_dict("records"),
             is_focused=True,
-            **get_basic_style()
+            **get_style()
         ))
     
     if show_xstar or show_spider:
@@ -300,8 +300,8 @@ def generate_lop_report(d, link, show_solutions=True, show_xstar=True, show_spid
 
 @app.callback(
     Output("output", "children"),
-    Input("table", "active_cell"),
-    State("table", "derived_viewport_data"),
+    Input("lop_table", "active_cell"),
+    State("lop_table", "derived_viewport_data"),
 )
 def cell_clicked(cell, data):
     if cell:
@@ -312,19 +312,18 @@ def cell_clicked(cell, data):
 
         if col == 'Generate Report':
             selected = generate_lop_report(d, link, show_solutions=True, show_xstar=False, show_spider=False)
-        
-        contents = [html.Br(),html.H2("Dataset Report"), *selected]
+            contents = [html.Br(),html.H2("Dataset Report"), *selected]
+        else:
+            contents = [html.Br(),html.H2("Dataset Report"), selected]
 
         return html.Div(contents)
     else:
         return dash.no_update
 
-
 # components for all pages
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
-
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
