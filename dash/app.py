@@ -384,6 +384,8 @@ def cell_clicked(cell, data):
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+# could be used to save the get_page functions return
+pages = {'page_datasets': None, 'page_Ds': None, 'page_lop': None, 'page_hillside': None, 'page_massey': None, 'page_colley': None}
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
