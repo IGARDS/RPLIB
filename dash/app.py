@@ -2,7 +2,6 @@ import requests
 import io
 import sys
 import traceback
-#from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc
@@ -13,6 +12,7 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
+import urllib
 
 from pathlib import Path
 home = str(Path.home())
@@ -136,7 +136,7 @@ def get_Ds(df_datasets,df_datasets_raw):
             entry.loc['Command'] = d['command']
             entry.loc['Shape D'] = D.shape
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
-        except:
+        except Exception as e:
             print("Exception in get_Ds:",e)
             print(traceback.format_exc())
         return entry
@@ -145,15 +145,21 @@ def get_Ds(df_datasets,df_datasets_raw):
     
     return Ds
 
-def get_lop_cards():
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv",sep='\t')
+def get_solution_cards(algorithm):
+    if algorithm == 'lop':
+        link = "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv"
+    elif algorithm == 'hillside':
+        link = "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_hillside_cards.tsv"
+    elif algorithm == 'colley':
+        link = "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_colley_cards.tsv"
+    elif algorithm == 'massey':
+        link = "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_massey_cards.tsv"
+
+    # throws a urllib.error.HTTPError error if link can't be found. This is caught in the render function.
+    df = pd.read_csv(link, sep='\t')
 
     def process(link):
-        #print(link)
         d = requests.get(link).json()
-        #print(d['dataset_id'])
-        #print(d.keys())
         entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','Generate Report','Download'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
@@ -177,71 +183,125 @@ df_datasets,df_datasets_raw = get_datasets()
 
 df_Ds = get_Ds(df_datasets,df_datasets_raw)
 
-df_lop_cards,df_lop_cards_raw = get_lop_cards()
-
-dataset_table = dash_table.DataTable(
+def get_dataset_table():
+    return dash_table.DataTable(
     id="dataset_table",
     columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_datasets.columns],
     data=df_datasets.to_dict("records"),
     is_focused=True,
     **get_style()
-)
+    )
 
-D_table = dash_table.DataTable(
+def get_D_table():
+    return dash_table.DataTable(
     id="D_table",
     columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_Ds.columns],
     data=df_Ds.to_dict("records"),
     is_focused=True,
     **get_style()
-)
+    )
 
-lop_table = dash_table.DataTable(
+def get_lop_table():
+    df_lop_cards, _ = get_solution_cards('lop')
+    return dash_table.DataTable(
     id="lop_table",
-    #dict(name='a', id='a', type='text', presentation='markdown')
     columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_lop_cards.columns],
     data=df_lop_cards.to_dict("records"),
     is_focused=True,
     **get_style()
-)
+    )
 
-page_datasets = html.Div([
+def get_hillside_table():
+    df_hillside_cards, _ = get_solution_cards('hillside')
+    return dash_table.DataTable(
+    id="hillside_table",
+    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_hillside_cards.columns],
+    data=df_hillside_cards.to_dict("records"),
+    is_focused=True,
+    **get_style()
+    )
+
+def get_massey_table():
+    df_massey_cards, _ = get_solution_cards('massey')
+    return dash_table.DataTable(
+    id="massey_table",
+    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_massey_cards.columns],
+    data=df_massey_cards.to_dict("records"),
+    is_focused=True,
+    **get_style()
+    )
+
+def get_colley_table():
+    df_colley_cards, _ = get_solution_cards('colley')
+    return dash_table.DataTable(
+    id="colley_table",
+    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_colley_cards.columns],
+    data=df_colley_cards.to_dict("records"),
+    is_focused=True,
+    **get_style()
+    )
+
+def get_page_datasets():
+    return html.Div([
     html.H1("Search datasets"),
     html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
-    dataset_table,
+    get_dataset_table(),
     html.Div(id="output")
-])
+    ])
 
-page_Ds = html.Div([
+def get_page_Ds():
+    return html.Div([
     html.H1("Search D matrices"),
     html.P("Try searching for a D matrix with filtered fields. Select a row to navigate to the raw dataset."),
-    D_table,
+    get_D_table(),
     html.Div(id="output")
-])
+    ])
 
-page_lop = html.Div([
+def get_page_lop():
+    return html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Try searching for a LOP card with filtered fields. Select a row to navigate to the raw dataset."),
-    lop_table,
+    get_lop_table(),
     html.Div(id="output")
-])
+    ])
 
-page_hillside = html.Div([
+def get_page_hillside():
+    return html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("This is currently empty."),
     html.Div(id="output")
-])
+    ])
 
-page_massey = html.Div([
+def get_page_massey():
+    return html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("This is currently empty."),
     html.Div(id="output")
-])
+]   )
 
-page_colley = html.Div([
+def get_page_colley():
+    return html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("This is currently empty."),
     html.Div(id="output")
-])
+    ])
+
+def get_blank_page(page_name):
+    return html.Div([
+    html.H1(f"Search {page_name} Solutions and Analysis"),
+    html.P("This is currently empty."),
+    html.Div(id="output")
+    ])
+
+def get_404(pathname):
+    return dbc.Jumbotron(
+        [
+            html.H1("404: Not found", className="text-danger"),
+            html.Hr(),
+            html.P(
+                "The pathname {pathname} was not recognised...".format(pathname))
+        ]
+    )
 
 def generate_lop_report(d, link, show_solutions=True, show_xstar=True, show_spider=True):
     selected = []
@@ -314,7 +374,7 @@ def cell_clicked(cell, data):
             selected = generate_lop_report(d, link, show_solutions=True, show_xstar=False, show_spider=False)
             contents = [html.Br(),html.H2("Dataset Report"), *selected]
         else:
-            contents = [html.Br(),html.H2("Dataset Report"), selected]
+            contents = [html.Br(),html.H2("No Content Selected"), None]
 
         return html.Div(contents)
     else:
@@ -327,28 +387,24 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname == "/":
-        return page_datasets
-    elif pathname == "/D":
-        return page_Ds
-    elif pathname == "/lop":
-        return page_lop
-    elif pathname == "/hillside":
-        return page_hillside
-    elif pathname == "/massey":
-        return page_massey
-    elif pathname == "/colley":
-        return page_colley
+    try:
+        if pathname == "/":
+            return get_page_datasets()
+        elif pathname == "/D":
+            return get_page_Ds()
+        elif pathname == "/lop":
+            return get_page_lop()
+        elif pathname == "/hillside":
+            return get_page_hillside()
+        elif pathname == "/massey":
+            return get_page_massey()
+        elif pathname == "/colley":
+            return get_page_colley()
+    except urllib.error.HTTPError:
+        # get solution cards returns this error when no data can be found for the solution page
+        return get_blank_page(pathname[1:])
     # if the user tries to reach a different page, return a 404 message
-    return dbc.Jumbotron(
-        [
-            html.H1("404: Not found", className="text-danger"),
-            html.Hr(),
-            html.P(
-                "The pathname {pathname} was not recognised...".format(pathname))
-        ]
-    )
-
+    return get_404(pathname)
 
 if __name__ == "__main__":
     app.run_server(port=8888)
