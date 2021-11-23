@@ -25,4 +25,8 @@ def load_D_from_games(teams_file,games_file,madness_teams_file):
     madness_teams = list(pd.read_csv(madness_teams_file,header=None).iloc[:,0])
     
     return game_df,madness_teams
+
+def load_colley_matrices_from_games(teams_file,games_file,madness_teams_file):
+    return load_D_from_games(teams_file,games_file,madness_teams_file)
+
     

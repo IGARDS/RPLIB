@@ -5,6 +5,66 @@ import requests
 
 import pandas as pd
 
+class MatricesInfo:
+    def __init__(self):
+        self._instance = pd.Series([None,None,None,None,None],
+                                   index=["matrix","b","source_dataset_id","dataset_id","command"])
+        
+    def to_json(self):
+        return self._instance.to_json()
+       
+    @property
+    def matrix(self):
+        return self._instance['matrix']
+       
+    @matrix.setter
+    def matrix(self, matrix):
+        self._instance['matrix'] = matrix
+        
+    @property
+    def b(self):
+        return self._instance['b']
+       
+    @b.setter
+    def b(self, b):
+        self._instance['b'] = b
+        
+    @property
+    def source_dataset_id(self):
+        return self._instance['source_dataset_id']
+       
+    @source_dataset_id.setter
+    def source_dataset_id(self, id):
+        self._instance['source_dataset_id'] = id
+        
+    @property
+    def dataset_id(self):
+        return self._instance['dataset_id']
+       
+    @dataset_id.setter
+    def dataset_id(self, id):
+        self._instance['dataset_id'] = id
+        
+    @property
+    def command(self):
+        return self._instance['command']
+       
+    @command.setter
+    def command(self, command):
+        self._instance['command'] = command
+        
+    @staticmethod
+    def from_json(file):
+        try:
+            contents = json.loads(open(file).read())
+        except:
+            link = file # Try to see if this is a link instead of a file
+            contents = requests.get(link).json()
+        obj = MatricesInfo()
+        obj._instance = pd.Series(contents)
+        return obj
+  
+
 class DInfo:
     def __init__(self):
         self._instance = pd.Series([None,None,set(),None,None],
@@ -52,6 +112,17 @@ class DInfo:
     @command.setter
     def command(self, command):
         self._instance['command'] = command
+        
+    @staticmethod
+    def from_json(file):
+        try:
+            contents = json.loads(open(file).read())
+        except:
+            link = file # Try to see if this is a link instead of a file
+            contents = requests.get(link).json()
+        obj = DInfo()
+        obj._instance = pd.Series(contents)
+        return obj
   
 class LOPCard:
     def __init__(self):

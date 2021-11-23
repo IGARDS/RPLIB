@@ -106,7 +106,7 @@ def get_Ds(df_datasets,df_datasets_raw):
             entry.loc['Dataset ID'] = d['dataset_id']
             entry.loc['D Type'] = d['D_type']
             entry.loc['Command'] = d['command']
-            entry.loc['Shape D'] = D.shape
+            entry.loc['Shape of D'] = D.shape
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except:
             print("Exception in get_Ds:",e)
@@ -126,16 +126,14 @@ def get_lop_cards():
         d = requests.get(link).json()
         #print(d['dataset_id'])
         #print(d.keys())
-        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Number of Solutions','View Two Solutions', 'Red/Green plot','Download'])
+        entry = pd.Series(index=['Dataset ID','LOP Card','Shape of D','Objective','Found Solutions','Download'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
             D = pd.DataFrame(d['D'])
             entry.loc['Shape of D'] = ",".join([str(n) for n in D.shape])
             entry.loc['Objective'] = d['obj']
-            entry.loc['Number of Solutions'] = len(d['solutions'])
-            entry.loc['View Two Solutions'] = 'View'
-            entry.loc['Red/Green plot'] = 'Generate'
-            entry.loc['Nearest/Farthest Centoid Plot'] = 'Generate'
+            entry.loc['Found Solutions'] = len(d['solutions'])
+            entry.loc['LOP Card'] = 'View'
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print("Exception in get_lop_cards:",e)
@@ -307,9 +305,10 @@ def cell_clicked(cell, data):
         link = data[row]['Link']
         d = requests.get(link).json()
         selected = data[row][col]
-        if col == 'View Two Solutions':
+        if col == 'LOP Card':
             df_solutions = pd.DataFrame(d['solutions'])
-            selected = dash_table.DataTable(
+            selected = []
+            selected.append(dash_table.DataTable(
                 id="table2", # same id for the table in html - causes the original table to get overriden
                 #dict(name='a', id='a', type='text', presentation='markdown')
                 columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
@@ -342,8 +341,9 @@ def cell_clicked(cell, data):
                         "border-right": "1px solid #E3F2FD",
                     }
                 ]
-            )
-        if col == 'Red/Green plot':
+            ))
+            selected.append(html.P())
+            
             lop_card = pyrplib.base.LOPCard.from_json(link)
 
             plot_html = io.StringIO()
@@ -352,16 +352,16 @@ def cell_clicked(cell, data):
             g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
             g.save(plot_html, 'html')
 
-            selected = html.Iframe(
+            selected.append(html.Iframe(
                 id='plot',
                 height='500',
                 width='1000',
                 sandbox='allow-scripts',
                 srcDoc=plot_html.getvalue(),
                 style={'border-width': '0px'}
-            )
-        if col == 'Nearest/Farthest Centoid Plot':
-            lop_card = pyrplib.base.LOPCard.from_json(link)
+            ))
+            selected.append(html.P())            
+            
             D = pd.DataFrame(lop_card.D)
             outlier_solution = pd.Series(lop_card.outlier_solution,
                                          index=D.index[lop_card.outlier_solution],
@@ -375,16 +375,16 @@ def cell_clicked(cell, data):
 
             plot_html = '<img src=\'data:image/png;base64,{}\'>'.format(encoded)
 
-            selected = html.Iframe(
+            selected.append(html.Iframe(
                 id='plot',
                 height='500',
                 width='1000',
                 sandbox='allow-scripts',
                 srcDoc=plot_html,
                 style={'border-width': '0px'}
-            )
+            ))
 
-        contents = [html.Br(),html.H2("Content Selected"),selected]
+        contents = [html.Br(),html.H2("Content Selected")]+selected
         #if col is 
         #for i in range(len(links)):
         #    if i > 0:
