@@ -17,7 +17,6 @@ import urllib
 from pathlib import Path
 home = str(Path.home())
 sys.path.insert(0,"%s"%home)
-
 import RPLib.pyrplib as pyrplib
 import ranking_toolbox.pyrankability as pyrankability
 
@@ -145,6 +144,7 @@ def get_Ds(df_datasets,df_datasets_raw):
     
     return Ds
 
+solution_cards = {}
 def get_solution_cards(algorithm):
     if algorithm == 'lop':
         link = "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv"
@@ -155,6 +155,8 @@ def get_solution_cards(algorithm):
     elif algorithm == 'massey':
         link = "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_massey_cards.tsv"
 
+    if link in solution_cards:
+        return solution_cards[link]
     # throws a urllib.error.HTTPError error if link can't be found. This is caught in the render function.
     df = pd.read_csv(link, sep='\t')
 
@@ -176,7 +178,8 @@ def get_solution_cards(algorithm):
 
     cards = df['Link'].apply(process)
     df2 = cards.set_index('Dataset ID').join(df.set_index('Dataset ID')).reset_index()
-        
+    
+    solution_cards[link] = (df2, df)
     return df2,df
 
 df_datasets,df_datasets_raw = get_datasets()
