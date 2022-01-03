@@ -1,0 +1,120 @@
+@app.callback(
+    Output("table", "style_data_conditional"),
+    [Input("table", "active_cell")]
+)
+def update_selected_row_color(active):
+    style = style_data_conditional.copy()
+    if active:
+        style.append(
+            {
+                "if": {"row_index": active["row"]},
+                "backgroundColor": "rgba(150, 180, 225, 0.2)",
+                "border": "1px solid blue",
+            },
+        )
+    return style
+
+@app.callback(
+    Output("output", "children"),
+    Input("table", "active_cell"),
+    State("table", "derived_viewport_data"),
+)
+def cell_clicked(cell, data):
+    if cell:
+        row,col = cell["row"],cell["column_id"]
+        link = data[row]['Link']
+        selected = data[row][col]
+        if selected is not None:
+            lop_card = pyrplib.base.LOPCard.from_json(link)
+            d = lop_card._instance
+            df_solutions = pd.DataFrame(d['solutions'])
+            selected = []
+            selected.append(html.H3("Solutions found"))            
+            selected.append("TODO: Add documentation here")            
+            selected.append(dash_table.DataTable(
+                id="table2", # same id for the table in html - causes the original table to get overriden
+                #dict(name='a', id='a', type='text', presentation='markdown')
+                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
+                data=df_solutions.to_dict("records"),
+                is_focused=True,
+                style_header={
+                    'backgroundColor': 'white',
+                    'fontWeight': 'bold',
+                    "border": "1px solid white",
+                },
+                style_cell={
+                    'whiteSpace': 'normal',
+                    'height': 'auto',
+                    'textAlign': 'left'
+                },
+                style_data={
+                    "backgroundColor": '#E3F2FD',
+                    "border-bottom": "1px solid #90CAF9",
+                    "border-top": "1px solid #90CAF9",
+                    "border-left": "1px solid #E3F2FD",
+                    "border-right": "1px solid #E3F2FD"},
+                style_data_conditional=[
+                    {
+                        "if": {"state": "selected"},
+                        "backgroundColor": '#E3F2FD',
+                        "border-bottom": "1px solid #90CAF9",
+                        "border-top": "1px solid #90CAF9",
+                        "border-left": "1px solid #E3F2FD",
+                        "border-right": "1px solid #E3F2FD",
+                    }
+                ]
+            ))
+            selected.append(html.H3("X* plot"))            
+            selected.append("TODO: Add documentation here")  
+            
+            lop_card = pyrplib.base.LOPCard.from_json(link)
+
+            plot_html = io.StringIO()
+            D = pd.DataFrame(lop_card.D)
+            x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
+            g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
+            g.save(plot_html, 'html')
+
+            selected.append(html.Iframe(
+                id='plot',
+                height='500',
+                width='1000',
+                sandbox='allow-scripts',
+                srcDoc=plot_html.getvalue(),
+                style={'border-width': '0px'}
+            ))
+            selected.append(html.H3("Farthest to Nearest Solution Comparison"))            
+            selected.append("TODO: Add documentation here") 
+            
+            D = pd.DataFrame(lop_card.D)
+            outlier_solution = pd.Series(lop_card.outlier_solution,
+                                         index=D.index[lop_card.outlier_solution],
+                                         name="Farthest from Centroid")
+            centroid_solution = pd.Series(lop_card.centroid_solution,
+                                          index=D.index[lop_card.centroid_solution],
+                                          name="Closest to Centroid")
+            tmpfile = BytesIO()
+            pyrankability.plot.spider3(outlier_solution,centroid_solution,file=tmpfile)
+            encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+
+            plot_html = '<img src=\'data:image/png;base64,{}\'>'.format(encoded)
+
+            selected.append(html.Iframe(
+                id='plot',
+                height='500',
+                width='1000',
+                sandbox='allow-scripts',
+                srcDoc=plot_html,
+                style={'border-width': '0px'}
+            ))
+
+        contents = [html.Br(),html.H2("Content Selected")]+selected
+        #if col is 
+        #for i in range(len(links)):
+        #    if i > 0:
+        #        contents.append(html.Br())
+        #    contents.append(html.A("View {}".format(selected[i]), href=links[i]))
+
+        return html.Div(contents)
+    else:
+        return dash.no_update

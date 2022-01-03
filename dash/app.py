@@ -2,26 +2,47 @@ import requests
 import io
 import sys
 import traceback
-#from pathlib import Path
+import os
+import base64
+from io import BytesIO
+from pathlib import Path
+import json
 
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 import pandas as pd
 import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
-import base64
-from io import BytesIO
 
-from pathlib import Path
 home = str(Path.home())
-sys.path.insert(0,"%s"%home)
 
-import RPLib.pyrplib as pyrplib
-import ranking_toolbox.pyrankability as pyrankability
+import os
+import sys
+from pathlib import Path
+
+home = str(Path.home())
+
+RPLIB_DATA_PREFIX = os.environ.get("RPLIB_DATA_PREFIX")
+
+if RPLIB_DATA_PREFIX is None: # Set default
+    RPLIB_DATA_PREFIX=f'{home}/RPLib/data'
+    
+try:
+    import pyrankability as pyrankability
+    import pyrplib as pyrplib
+except:
+    print('Looking for packages in home directory')
+    sys.path.insert(0,f"{home}") # Add the home directory relevant paths to the PYTHONPATH
+    sys.path.insert(0,f"{home}/ranking_toolbox") # Add the home directory relevant paths to the PYTHONPATH
+    sys.path.insert(0,f"{home}/RPLib") # Add the home directory relevant paths to the PYTHONPATH
+    import pyrankability
+    import pyrplib
+    
+# Config contains all of the datasets and other configuration details
+config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -32,14 +53,14 @@ SIDEBAR_STYLE = {
     "top": 0,
     "left": 0,
     "bottom": 0,
-    "width": "16rem",
+    "width": "12rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
 }
 
 # the styles for the main content position to the right of the sidebar
 CONTENT_STYLE = {
-    "margin-left": "18rem",
+    "margin-left": "12rem",
     "margin-right": "2rem",
     "padding": "2rem 1rem",
 }
@@ -50,12 +71,12 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Search Datasets", href="/", active="exact"),
-                dbc.NavLink("Search D Matrices", href="/D", active="exact"),
-                dbc.NavLink("Search LOP", href="/lop", active="exact"),
-                dbc.NavLink("Search Hillside", href="/hillside", active="exact"),
-                dbc.NavLink("Search Colley", href="/colley", active="exact"),
-                dbc.NavLink("Search Massey", href="/massey", active="exact"),
+                dbc.NavLink("Unprocessed", href="/", active="exact"),
+                dbc.NavLink("Processed", href="/processed", active="exact"),
+                dbc.NavLink("LOP", href="/lop", active="exact"),
+                dbc.NavLink("Hillside", href="/hillside", active="exact"),
+                dbc.NavLink("Colley", href="/colley", active="exact"),
+                dbc.NavLink("Massey", href="/massey", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -64,76 +85,72 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE,
 )
 
-# components for 'Search datasets' page
-#df = pd.read_csv(
-#    "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
-
-def get_datasets():
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_datasets.tsv",sep='\t')
-
-    column_info = df.iloc[0,:]
-    df = df.iloc[1:]
+def get_datasets(config):
+    df2 = config.datasets_df.copy()
     
-    df2 = df.copy()
     def process(links):
         try:
             if type(links) != list:
                 links = [links]
-            #res = ",".join([link.split("/")[-1] for link in links])
             res = ", ".join(["[%s](%s)"%(link.split("/")[-1],link) for link in links])
             return res
         except:
             return "Could not process. Check data."
-        
-    df['Download links'] = df['Download links'].str.split(",")
-    df['Data provenance'] = df['Data provenance'].str.split(",")
 
-    df2['Data provenance'] = df2['Data provenance'].str.split(",").apply(process)
-    df2['Download links'] = df2['Download links'].str.split(",").apply(process)
+    df2['Download links'] = df2['Download links'].apply(process)
+    df2 = df2.drop('Loader',axis=1).drop('Description',axis=1)
     
-    return df2,df
+    df2 = df2.sort_values(by='Dataset Name')
+    
+    return df2
 
-def get_Ds(df_datasets,df_datasets_raw):
-    df = pd.read_csv("https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_Ds.tsv",sep='\t')
+def get_processed(config):
+    datasets_df = df = config.datasets_df.set_index('Dataset ID')
+    df = config.processed_datasets_df.copy()
             
-    def process(link):
-        d = requests.get(link).json()
-        D = pd.DataFrame(d["D"])
-        entry = pd.Series(index=['Source Dataset ID','Dataset ID','D Type','Command','Shape D','Download'])
-        try:
-            entry.loc['Source Dataset ID'] = d['source_dataset_id']
-            entry.loc['Dataset ID'] = d['dataset_id']
-            entry.loc['D Type'] = d['D_type']
-            entry.loc['Command'] = d['command']
-            entry.loc['Shape of D'] = D.shape
-            entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
-        except:
-            print("Exception in get_Ds:",e)
-            print(traceback.format_exc())
+    def process(row):
+        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Short Type','Type','Command','Size','Download'])
+        link = row['Link']
+        entry['Dataset ID'] = row['Dataset ID']
+        if row['Type'] == "D":
+            try:
+                d = pyrplib.dataset.ProcessedD.from_json(link).load()
+                entry.loc['Source Dataset ID'] = d.source_dataset_id
+                entry.loc['Source Dataset Name'] = datasets_df.loc[d.source_dataset_id,"Dataset Name"]
+                entry.loc['Dataset ID'] = d.dataset_id
+                entry.loc['Short Type'] = d.short_type
+                entry.loc['Type'] = d.type
+                entry.loc['Command'] = d.command
+                entry.loc['Size'] = d.data.shape
+                entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
+            except Exception as e:
+                print(row)
+                print("Exception in get_processed:",e)
+                print(traceback.format_exc())
         return entry
 
-    Ds = df['Link'].apply(process)
+    datasets = df.apply(process,axis=1)
     
-    return Ds
+    return datasets
 
-def get_lop_cards():
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/IGARDS/RPLib/master/data/dataset_tool_lop_cards.tsv",sep='\t')
+def get_lop_hillside_cards(config,lop=True):
+    if lop:
+        df = config.lop_cards_df.copy()
+    else:
+        df = config.hillside_cards_df.copy() 
+        
+    return df
 
     def process(link):
-        #print(link)
-        d = requests.get(link).json()
-        #print(d['dataset_id'])
-        #print(d.keys())
-        entry = pd.Series(index=['Dataset ID','LOP Card','Shape of D','Objective','Found Solutions','Download'])
+        lop_card = pyrplib.base.LOPCard.from_json(link)
+        d = lop_card._instance
+        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Found Solutions','Download'])
         try:
             entry.loc['Dataset ID'] = d['dataset_id']
             D = pd.DataFrame(d['D'])
             entry.loc['Shape of D'] = ",".join([str(n) for n in D.shape])
             entry.loc['Objective'] = d['obj']
             entry.loc['Found Solutions'] = len(d['solutions'])
-            entry.loc['LOP Card'] = 'View'
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print("Exception in get_lop_cards:",e)
@@ -143,257 +160,169 @@ def get_lop_cards():
     cards = df['Link'].apply(process)
     df2 = cards.set_index('Dataset ID').join(df.set_index('Dataset ID')).reset_index()
         
-    return df2,df
+    return df2
 
-df_datasets,df_datasets_raw = get_datasets()
+df_datasets = get_datasets(config)
 
-df_Ds = get_Ds(df_datasets,df_datasets_raw)
+df_processed = get_processed(config)
 
-df_lop_cards,df_lop_cards_raw = get_lop_cards()
+df_lop_cards = get_lop_hillside_cards(config)
 
-dataset_table = dash_table.DataTable(
-    id="table",
-    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_datasets.columns],
-    data=df_datasets.to_dict("records"),
-    is_focused=True,
-    style_header={
-        'backgroundColor': 'white',
-        'fontWeight': 'bold',
-        "border": "1px solid white",
-    },
-    style_cell={
-        'whiteSpace': 'normal',
-        'height': 'auto',
-        'textAlign': 'left'
-    },
-    filter_action='native',
-    style_data={
-        "backgroundColor": '#E3F2FD',
-        "border-bottom": "1px solid #90CAF9",
-        "border-top": "1px solid #90CAF9",
-        "border-left": "1px solid #E3F2FD",
-        "border-right": "1px solid #E3F2FD"},
-    style_data_conditional=[
-        {
-            "if": {"state": "selected"},
-            "backgroundColor": '#E3F2FD',
-            "border-bottom": "1px solid #90CAF9",
-            "border-top": "1px solid #90CAF9",
-            "border-left": "1px solid #E3F2FD",
-            "border-right": "1px solid #E3F2FD",
-        }
-    ]
-)
+df_hillside_cards = get_lop_hillside_cards(config,lop=False)
 
-D_table = dash_table.DataTable(
-    id="table",
-    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_Ds.columns],
-    data=df_Ds.to_dict("records"),
-    is_focused=True,
-    style_header={
-        'backgroundColor': 'white',
-        'fontWeight': 'bold',
-        "border": "1px solid white",
+# Create dash tables and actions
+style_data_conditional = [
+    {
+        "if": {"state": "active"},
+        "backgroundColor": "rgba(150, 180, 225, 0.2)",
+        "border": "1px solid blue",
     },
-    style_cell={
-        'whiteSpace': 'normal',
-        'height': 'auto',
-        'textAlign': 'left'
+    {
+        "if": {"state": "selected"},
+        "backgroundColor": "rgba(0, 116, 217, .03)",
+        "border": "1px solid blue",
     },
-    filter_action='native',
-    style_data={
-        "backgroundColor": '#E3F2FD',
-        "border-bottom": "1px solid #90CAF9",
-        "border-top": "1px solid #90CAF9",
-        "border-left": "1px solid #E3F2FD",
-        "border-right": "1px solid #E3F2FD"},
-    style_data_conditional=[
-        {
-            "if": {"state": "selected"},
-            "backgroundColor": '#E3F2FD',
-            "border-bottom": "1px solid #90CAF9",
-            "border-top": "1px solid #90CAF9",
-            "border-left": "1px solid #E3F2FD",
-            "border-right": "1px solid #E3F2FD",
-        }
-    ]
-)
+]
 
-lop_table = dash_table.DataTable(
-    id="table",
-    #dict(name='a', id='a', type='text', presentation='markdown')
-    columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_lop_cards.columns],
-    data=df_lop_cards.to_dict("records"),
-    is_focused=True,
-    style_header={
-        'backgroundColor': 'white',
-        'fontWeight': 'bold',
-        "border": "1px solid white",
-    },
-    style_cell={
-        'whiteSpace': 'normal',
-        'height': 'auto',
-        'textAlign': 'left'
-    },
-    filter_action='native',
-    style_data={
-        "backgroundColor": '#E3F2FD',
-        "border-bottom": "1px solid #90CAF9",
-        "border-top": "1px solid #90CAF9",
-        "border-left": "1px solid #E3F2FD",
-        "border-right": "1px solid #E3F2FD"},
-    style_data_conditional=[
-        {
-            "if": {"state": "selected"},
-            "backgroundColor": '#E3F2FD',
-            "border-bottom": "1px solid #90CAF9",
-            "border-top": "1px solid #90CAF9",
-            "border-left": "1px solid #E3F2FD",
-            "border-right": "1px solid #E3F2FD",
-        }
-    ]
-)
+## Unprocessed data first
+def update_selected_row_color(active):
+    style = style_data_conditional.copy()
+    if active:
+        style.append(
+            {
+                "if": {"row_index": active["row"]},
+                "backgroundColor": "rgba(150, 180, 225, 0.2)",
+                "border": "1px solid blue",
+            },
+        )
+    return style
+
+dataset_table = pyrplib.style.get_standard_data_table(df_datasets,"datasets_table")
 
 page_datasets = html.Div([
-    html.H1("Search datasets"),
-    html.P("Try searching for a dataset with filtered fields. Select a row to navigate to the raw dataset."),
+    html.H1("Unprocessed Datasets"),
+    html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     dataset_table,
-    html.Div(id="output")
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="datasets_output")
 ])
 
-page_Ds = html.Div([
-    html.H1("Search D matrices"),
-    html.P("Try searching for a D matrix with filtered fields. Select a row to navigate to the raw dataset."),
-    D_table,
-    html.Div(id="output")
+@app.callback(
+    Output("datasets_output", "children"),
+    Input("datasets_table", "active_cell"),
+    State("datasets_table", "derived_viewport_data"),
+)
+def cell_clicked_dataset(cell,data):
+    if cell is None:
+        return dash.no_update
+    row,col = cell["row"],cell["column_id"]
+    selected = data[row][col]
+    dataset_id = data[row]['Dataset ID']
+    dataset_name = data[row]['Dataset Name']
+    datasets_df = config.datasets_df.set_index('Dataset ID')
+    links = datasets_df.loc[dataset_id,'Download links']
+    loader = datasets_df.loc[dataset_id,'Loader']
+    description = datasets_df.loc[dataset_id,'Description']
+    if selected is not None:
+        import importlib
+        loader_lib = ".".join(loader.split(".")[:-1])
+        cls_str = loader.split(".")[-1]
+        load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+        cls = getattr(load_lib, cls_str)
+        unprocessed = cls(dataset_id,links).load()
+        contents = [html.Br(),html.H2(dataset_name),html.P(description),]+[unprocessed.view()]
+        return html.Div(contents)
+    else:
+        return dash.no_update  
+
+@app.callback(
+    Output("datasets_table", "style_data_conditional"),
+    [Input("datasets_table", "active_cell")]
+)
+def update_selected_row_color_dataset(active):
+    return update_selected_row_color(active)
+
+##################
+# processed table
+processed_table = pyrplib.style.get_standard_data_table(df_processed,"processed_table")
+
+page_processed = html.Div([
+    html.H1("Processed Datasets"),
+    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    processed_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="processed_output")
 ])
+
+@app.callback(
+    Output("processed_output", "children"),
+    Input("processed_table", "active_cell"),
+    State("processed_table", "derived_viewport_data"),
+)
+def cell_clicked_processed(cell,data):
+    if cell is None:
+        return dash.no_update
+    row,col = cell["row"],cell["column_id"]
+    selected = data[row][col]
+    if selected is not None:
+        dataset_id = data[row]['Dataset ID']
+        link = config.processed_datasets_df.set_index('Dataset ID').loc[dataset_id,"Link"]
+        options = config.processed_datasets_df.set_index('Dataset ID').loc[dataset_id,"Options"]
+        if type(options) == str:
+            options = json.loads(options)
+            options_str = json.dumps(options,indent=2)
+        else:
+            options_str = "None"
+        short_type = data[row]['Short Type']
+        if short_type == "D":
+            obj = pyrplib.dataset.ProcessedD.from_json(link).load()
+        datasets_df = config.datasets_df.set_index('Dataset ID')
+        description = datasets_df.loc[obj.source_dataset_id,"Description"]
+        dataset_name = datasets_df.loc[obj.source_dataset_id,"Dataset Name"]
+        command = obj.command
+        contents = [html.Br(),html.H2("Source Dataset Name"),html.P(dataset_name),html.H2("Description"),html.P(description),html.H2("Command"),html.P(command),html.H2("Options"),html.Pre(options_str)]+[obj.view()]
+        return html.Div(contents)
+    else:
+        return dash.no_update  
+
+@app.callback(
+    Output("processed_table", "style_data_conditional"),
+    [Input("processed_table", "active_cell")]
+)
+def update_selected_row_color_processed(active):
+    return update_selected_row_color(active)
+
+lop_table = pyrplib.style.get_standard_data_table(df_lop_cards,"lop_table")
+
+hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
 
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
-    html.P("Try searching for a LOP card with filtered fields. Select a row to navigate to the raw dataset."),
+    html.P("Search for a LOP Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     lop_table,
     html.Div(id="output")
 ])
 
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
-    html.P("This is currently empty."),
+    html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    hillside_table,
     html.Div(id="output")
 ])
 
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
-    html.P("This is currently empty."),
+    html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     html.Div(id="output")
 ])
 
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
-    html.P("This is currently empty."),
+    html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     html.Div(id="output")
 ])
-
-
-@app.callback(
-    Output("output", "children"),
-    Input("table", "active_cell"),
-    State("table", "derived_viewport_data"),
-)
-def cell_clicked(cell, data):
-    if cell:
-        row,col = cell["row"],cell["column_id"]
-        link = data[row]['Link']
-        d = requests.get(link).json()
-        selected = data[row][col]
-        if col == 'LOP Card':
-            df_solutions = pd.DataFrame(d['solutions'])
-            selected = []
-            selected.append(dash_table.DataTable(
-                id="table2", # same id for the table in html - causes the original table to get overriden
-                #dict(name='a', id='a', type='text', presentation='markdown')
-                columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
-                data=df_solutions.to_dict("records"),
-                is_focused=True,
-                style_header={
-                    'backgroundColor': 'white',
-                    'fontWeight': 'bold',
-                    "border": "1px solid white",
-                },
-                style_cell={
-                    'whiteSpace': 'normal',
-                    'height': 'auto',
-                    'textAlign': 'left'
-                },
-                filter_action='native',
-                style_data={
-                    "backgroundColor": '#E3F2FD',
-                    "border-bottom": "1px solid #90CAF9",
-                    "border-top": "1px solid #90CAF9",
-                    "border-left": "1px solid #E3F2FD",
-                    "border-right": "1px solid #E3F2FD"},
-                style_data_conditional=[
-                    {
-                        "if": {"state": "selected"},
-                        "backgroundColor": '#E3F2FD',
-                        "border-bottom": "1px solid #90CAF9",
-                        "border-top": "1px solid #90CAF9",
-                        "border-left": "1px solid #E3F2FD",
-                        "border-right": "1px solid #E3F2FD",
-                    }
-                ]
-            ))
-            selected.append(html.P())
-            
-            lop_card = pyrplib.base.LOPCard.from_json(link)
-
-            plot_html = io.StringIO()
-            D = pd.DataFrame(lop_card.D)
-            x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
-            g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
-            g.save(plot_html, 'html')
-
-            selected.append(html.Iframe(
-                id='plot',
-                height='500',
-                width='1000',
-                sandbox='allow-scripts',
-                srcDoc=plot_html.getvalue(),
-                style={'border-width': '0px'}
-            ))
-            selected.append(html.P())            
-            
-            D = pd.DataFrame(lop_card.D)
-            outlier_solution = pd.Series(lop_card.outlier_solution,
-                                         index=D.index[lop_card.outlier_solution],
-                                         name="Farthest from Centroid")
-            centroid_solution = pd.Series(lop_card.centroid_solution,
-                                          index=D.index[lop_card.centroid_solution],
-                                          name="Closest to Centroid")
-            tmpfile = BytesIO()
-            pyrankability.plot.spider3(outlier_solution,centroid_solution,file=tmpfile)
-            encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-
-            plot_html = '<img src=\'data:image/png;base64,{}\'>'.format(encoded)
-
-            selected.append(html.Iframe(
-                id='plot',
-                height='500',
-                width='1000',
-                sandbox='allow-scripts',
-                srcDoc=plot_html,
-                style={'border-width': '0px'}
-            ))
-
-        contents = [html.Br(),html.H2("Content Selected")]+selected
-        #if col is 
-        #for i in range(len(links)):
-        #    if i > 0:
-        #        contents.append(html.Br())
-        #    contents.append(html.A("View {}".format(selected[i]), href=links[i]))
-
-        return html.Div(contents)
-    else:
-        return dash.no_update
 
 
 # components for all pages
@@ -401,13 +330,12 @@ content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
-
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
         return page_datasets
-    elif pathname == "/D":
-        return page_Ds
+    elif pathname == "/processed":
+        return page_processed
     elif pathname == "/lop":
         return page_lop
     elif pathname == "/hillside":

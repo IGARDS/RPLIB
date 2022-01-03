@@ -1,0 +1,1 @@
+Unique identifier for each dataset	Descriptive dataset name	Overview of the dataset	"One of the following categories of data: Games, D matrix, Features"	Link to documentation on aquisition and data creation pipeline	List of links available for download

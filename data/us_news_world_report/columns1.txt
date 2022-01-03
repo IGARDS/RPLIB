@@ -1,0 +1,5 @@
+Selectivity Rank,
+Acceptance Rate,
+SAT/ACT 25th-75th Percentile Mean,
+Percent of Classes with Less Than 20 Students,
+Student/Faculty Ratio

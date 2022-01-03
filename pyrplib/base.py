@@ -209,5 +209,6 @@ class LOPCard:
         obj._instance = pd.Series(contents)
         return obj
                             
-
+class HillsideCard(LOPCard):
+    pass
 
