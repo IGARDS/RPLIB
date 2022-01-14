@@ -138,29 +138,33 @@ def get_lop_hillside_cards(config,lop=True):
         df = config.lop_cards_df.copy()
     else:
         df = config.hillside_cards_df.copy() 
+        return df
         
-    return df
-
-    def process(link):
-        lop_card = pyrplib.base.LOPCard.from_json(link)
-        d = lop_card._instance
-        entry = pd.Series(index=['Dataset ID','Shape of D','Objective','Found Solutions','Download'])
+    def process(row):
+        entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name','Shape of D','Objective','Found Solutions','Download'])
+        link = row['Link']
+        entry['Dataset ID'] = row['Dataset ID']
         try:
-            entry.loc['Dataset ID'] = d['dataset_id']
-            D = pd.DataFrame(d['D'])
+            card = pyrplib.card.LOP.from_json(link)
+            datasets_df = config.datasets_df.set_index('Dataset ID')
+            processed_datasets_df = config.processed_datasets_df.set_index('Dataset ID') 
+            dataset_name = datasets_df.loc[processed_datasets_df.loc[card.source_dataset_id,"Source Dataset ID"],"Dataset Name"]
+        
+            entry.loc['Unprocessed Dataset Name'] = dataset_name
+            entry.loc['Dataset ID'] = card.dataset_id
+            D = card.D
             entry.loc['Shape of D'] = ",".join([str(n) for n in D.shape])
-            entry.loc['Objective'] = d['obj']
-            entry.loc['Found Solutions'] = len(d['solutions'])
+            entry.loc['Objective'] = card.obj
+            entry.loc['Found Solutions'] = len(card.solutions)
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print("Exception in get_lop_cards:",e)
             print(traceback.format_exc())
         return entry
 
-    cards = df['Link'].apply(process)
-    df2 = cards.set_index('Dataset ID').join(df.set_index('Dataset ID')).reset_index()
+    cards = df.apply(process,axis=1)
         
-    return df2
+    return cards
 
 df_datasets = get_datasets(config)
 
@@ -294,16 +298,58 @@ def cell_clicked_processed(cell,data):
 def update_selected_row_color_processed(active):
     return update_selected_row_color(active)
 
+###################
+# lop_table
 lop_table = pyrplib.style.get_standard_data_table(df_lop_cards,"lop_table")
-
-hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
 
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
-    html.P("Search for a LOP Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     lop_table,
-    html.Div(id="output")
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="lop_output")
 ])
+
+@app.callback(
+    Output("lop_output", "children"),
+    Input("lop_table", "active_cell"),
+    State("lop_table", "derived_viewport_data"),
+)
+def cell_clicked_lop(cell,data):
+    if cell is None:
+        return dash.no_update
+    row,col = cell["row"],cell["column_id"]
+    selected = data[row][col]
+    if selected is not None:
+        dataset_id = data[row]['Dataset ID']
+        link = config.lop_cards_df.set_index('Dataset ID').loc[dataset_id,"Link"]
+        options = config.lop_cards_df.set_index('Dataset ID').loc[dataset_id,"Options"]
+        if type(options) == str:
+            options = json.loads(options)
+            options_str = json.dumps(options,indent=2)
+        else:
+            options_str = "None"
+        obj = pyrplib.card.LOP.from_json(link)
+        
+        processed_datasets_df = config.processed_datasets_df.set_index('Dataset ID') 
+        datasets_df = config.datasets_df.set_index('Dataset ID') 
+        description = datasets_df.loc[processed_datasets_df.loc[obj.source_dataset_id,"Source Dataset ID"],"Description"]
+        dataset_name = datasets_df.loc[processed_datasets_df.loc[obj.source_dataset_id,"Source Dataset ID"],"Dataset Name"]
+        
+        contents = [html.Br(),html.H2("Source Dataset Name"),html.P(dataset_name),html.H2("Description"),html.P(description),html.H2("Options"),html.Pre(options_str)]+obj.view()
+        return html.Div(contents)
+    else:
+        return dash.no_update  
+    
+@app.callback(
+    Output("lop_table", "style_data_conditional"),
+    [Input("lop_table", "active_cell")]
+)
+def update_selected_row_color_lop(active):
+    return update_selected_row_color(active)
+
+hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
 
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),

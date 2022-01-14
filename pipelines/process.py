@@ -63,9 +63,10 @@ for dataset_id in processed_dataset_ids:
     loader = datasets_df.loc[source_dataset_id,'Loader']
     command = dataset['Command']
     options = dataset['Options']
-    options = json.loads(options)
-    print("Loaded options:")
-    print(json.dumps(options, indent=2))
+    if type(options) == str:
+        options = json.loads(options)
+        print("Loaded options:")
+        print(json.dumps(options, indent=2))
 
     collection = dataset.loc['Collection']
     if "base" in loader: # migration check
