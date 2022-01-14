@@ -15,3 +15,7 @@ gurobipy==9.1.1
 numpy==1.20.0
 pandas==1.2.1
 pygraphviz==1.6
+ipython==7.29.0
+pygraphviz==1.7
+networkx==2.6.3
+matplotlib==3.4.3

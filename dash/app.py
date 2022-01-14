@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
+import urllib
 
 home = str(Path.home())
 
@@ -356,20 +357,93 @@ page_hillside = html.Div([
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     hillside_table,
     html.Div(id="output")
-])
+    ])
 
-page_massey = html.Div([
+def get_page_massey():
+    return html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     html.Div(id="output")
-])
+]   )
 
-page_colley = html.Div([
+def get_page_colley():
+    return html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     html.Div(id="output")
-])
+    ])
 
+def get_blank_page(page_name):
+    return html.Div([
+    html.H1(f"Search {page_name} Solutions and Analysis"),
+    html.P("This is currently empty."),
+    html.Div(id="output")
+    ])
+
+def get_404(pathname):
+    return dbc.Jumbotron(
+        [
+            html.H1("404: Not found", className="text-danger"),
+            html.Hr(),
+            html.P(
+                "The pathname {pathname} was not recognised...".format(pathname))
+        ]
+    )
+
+def generate_lop_report(d, link, show_solutions=True, show_xstar=True, show_spider=True):
+    selected = []
+    # 'View Two Solutions':
+    if show_solutions:
+        selected.append(html.H3("Two Solutions"))
+        df_solutions = pd.DataFrame(d['solutions'])
+        selected.append(dash_table.DataTable(
+            id="solutions_table", # same id for the table in html - causes the original table to get overriden
+            columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
+            data=df_solutions.to_dict("records"),
+            is_focused=True,
+            **get_style()
+        ))
+    
+    if show_xstar or show_spider:
+        lop_card = pyrplib.base.LOPCard.from_json(link)
+        plot_html = io.StringIO()
+        D = pd.DataFrame(lop_card.D)
+    # 'Red/Green plot':
+    if show_xstar:
+        selected.append(html.H3("Red/Green plot"))
+        x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
+        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
+        xstar_g.save(plot_html, 'html')
+
+        selected.append(html.Iframe(
+            id='xstar_plot',
+            height='500',
+            width='1000',
+            sandbox='allow-scripts',
+            srcDoc=plot_html.getvalue(),
+            style={'border-width': '0px'}
+        ))
+    # 'Nearest/Farthest Centoid Plot':
+    if show_spider:
+        selected.append(html.H3("Nearest/Farthest Centroid Plot"))
+        outlier_solution = pd.Series(lop_card.outlier_solution,
+                                        index=D.index[lop_card.outlier_solution],
+                                        name="Farthest from Centroid")
+        centroid_solution = pd.Series(lop_card.centroid_solution,
+                                        index=D.index[lop_card.centroid_solution],
+                                        name="Closest to Centroid")
+        spider_g = pyrankability.plot.spider3(outlier_solution,centroid_solution)
+        spider_g.save(plot_html, 'html')
+
+        selected.append(html.Iframe(
+            id='spider_plot',
+            height='500',
+            width='1000',
+            sandbox='allow-scripts',
+            srcDoc=plot_html.getvalue(),
+            style={'border-width': '0px'}
+        ))
+    return selected
 
 # components for all pages
 content = html.Div(id="page-content", style=CONTENT_STYLE)
@@ -391,15 +465,7 @@ def render_page_content(pathname):
     elif pathname == "/colley":
         return page_colley
     # if the user tries to reach a different page, return a 404 message
-    return dbc.Jumbotron(
-        [
-            html.H1("404: Not found", className="text-danger"),
-            html.Hr(),
-            html.P(
-                "The pathname {pathname} was not recognised...".format(pathname))
-        ]
-    )
-
+    return get_404(pathname)
 
 if __name__ == "__main__":
     app.run_server(port=8888)
