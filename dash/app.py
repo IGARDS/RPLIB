@@ -7,6 +7,7 @@ import base64
 from io import BytesIO
 from pathlib import Path
 import json
+from enum import Enum
 
 import dash
 import dash_bootstrap_components as dbc
@@ -17,12 +18,6 @@ import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
 import urllib
-
-home = str(Path.home())
-
-import os
-import sys
-from pathlib import Path
 
 home = str(Path.home())
 
@@ -134,16 +129,16 @@ def get_processed(config):
     
     return datasets
 
-def get_cards(config, lop=False, hillside=False, massey=False, colley=False):
-    if lop:
+def get_cards(config, method):
+    if method == Method.LOP:
         df = config.lop_cards_df.copy()
-    elif hillside:
+    elif method == Method.HILLSIDE:
         df = config.hillside_cards_df.copy() 
         return df
-    elif massey:
+    elif method == Method.MASSEY:
         df = config.massey_cards_df.copy()
         return df
-    elif colley:
+    elif method == Method.COLLEY:
         df = config.colley_cards_df.copy()
         return df
     else:
@@ -175,17 +170,23 @@ def get_cards(config, lop=False, hillside=False, massey=False, colley=False):
         
     return cards
 
+class Method(Enum):
+    LOP = 0
+    HILLSIDE = 1
+    MASSEY = 2
+    COLLEY = 3  
+
 df_datasets = get_datasets(config)
 
 df_processed = get_processed(config)
 
-df_lop_cards = get_cards(config, lop=True)
+df_lop_cards = get_cards(config, Method.LOP)
 
-df_hillside_cards = get_cards(config, hillside=True)
+df_hillside_cards = get_cards(config, Method.HILLSIDE)
 
-df_massey_cards = get_cards(config, massey=True)
+df_massey_cards = get_cards(config, Method.MASSEY)
 
-df_colley_cards = get_cards(config, colley=True)
+df_colley_cards = get_cards(config, Method.COLLEY)
 
 # Create dash tables and actions
 style_data_conditional = [
@@ -376,6 +377,7 @@ colley_table = pyrplib.style.get_standard_data_table(df_colley_cards,"colley_tab
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    colley_table,
     html.Div(id="output")
     ])
 
