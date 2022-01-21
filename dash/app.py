@@ -7,6 +7,7 @@ import base64
 from io import BytesIO
 from pathlib import Path
 import json
+from enum import Enum
 
 import dash
 import dash_bootstrap_components as dbc
@@ -17,12 +18,6 @@ import numpy as np
 import altair as alt
 from dash.dependencies import Input, Output, State
 import urllib
-
-home = str(Path.home())
-
-import os
-import sys
-from pathlib import Path
 
 home = str(Path.home())
 
@@ -134,12 +129,20 @@ def get_processed(config):
     
     return datasets
 
-def get_lop_hillside_cards(config,lop=True):
-    if lop:
+def get_cards(config, method):
+    if method == Method.LOP:
         df = config.lop_cards_df.copy()
-    else:
+    elif method == Method.HILLSIDE:
         df = config.hillside_cards_df.copy() 
         return df
+    elif method == Method.MASSEY:
+        df = config.massey_cards_df.copy()
+        return df
+    elif method == Method.COLLEY:
+        df = config.colley_cards_df.copy()
+        return df
+    else:
+        raise ValueError('No valid card was requested from options: lop, hillside, massey, or colley')
         
     def process(row):
         entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name','Shape of D','Objective','Found Solutions','Download'])
@@ -167,13 +170,23 @@ def get_lop_hillside_cards(config,lop=True):
         
     return cards
 
+class Method(Enum):
+    LOP = 0
+    HILLSIDE = 1
+    MASSEY = 2
+    COLLEY = 3  
+
 df_datasets = get_datasets(config)
 
 df_processed = get_processed(config)
 
-df_lop_cards = get_lop_hillside_cards(config)
+df_lop_cards = get_cards(config, Method.LOP)
 
-df_hillside_cards = get_lop_hillside_cards(config,lop=False)
+df_hillside_cards = get_cards(config, Method.HILLSIDE)
+
+df_massey_cards = get_cards(config, Method.MASSEY)
+
+df_colley_cards = get_cards(config, Method.COLLEY)
 
 # Create dash tables and actions
 style_data_conditional = [
@@ -248,19 +261,6 @@ def cell_clicked_dataset(cell,data):
 def update_selected_row_color_dataset(active):
     return update_selected_row_color(active)
 
-##################
-# processed table
-processed_table = pyrplib.style.get_standard_data_table(df_processed,"processed_table")
-
-page_processed = html.Div([
-    html.H1("Processed Datasets"),
-    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    processed_table,
-    html.Br(),
-    html.H2("Selected content will appear below"),
-    html.Div(id="processed_output")
-])
-
 @app.callback(
     Output("processed_output", "children"),
     Input("processed_table", "active_cell"),
@@ -298,19 +298,6 @@ def cell_clicked_processed(cell,data):
 )
 def update_selected_row_color_processed(active):
     return update_selected_row_color(active)
-
-###################
-# lop_table
-lop_table = pyrplib.style.get_standard_data_table(df_lop_cards,"lop_table")
-
-page_lop = html.Div([
-    html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
-    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    lop_table,
-    html.Br(),
-    html.H2("Selected content will appear below"),
-    html.Div(id="lop_output")
-])
 
 @app.callback(
     Output("lop_output", "children"),
@@ -350,8 +337,27 @@ def cell_clicked_lop(cell,data):
 def update_selected_row_color_lop(active):
     return update_selected_row_color(active)
 
-hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
+processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed_table")
+page_processed = html.Div([
+    html.H1("Processed Datasets"),
+    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    processed_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="processed_output")
+])
 
+lop_table = pyrplib.style.get_standard_data_table(df_lop_cards,"lop_table")
+page_lop = html.Div([
+    html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
+    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    lop_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="lop_output")
+])
+
+hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -359,17 +365,19 @@ page_hillside = html.Div([
     html.Div(id="output")
     ])
 
-def get_page_massey():
-    return html.Div([
+massey_table = pyrplib.style.get_standard_data_table(df_massey_cards,"massey_table")
+page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    massey_table,
     html.Div(id="output")
-]   )
+    ])
 
-def get_page_colley():
-    return html.Div([
+colley_table = pyrplib.style.get_standard_data_table(df_colley_cards,"colley_table")
+page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
-    html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    colley_table,
     html.Div(id="output")
     ])
 
@@ -389,61 +397,6 @@ def get_404(pathname):
                 "The pathname {pathname} was not recognised...".format(pathname))
         ]
     )
-
-def generate_lop_report(d, link, show_solutions=True, show_xstar=True, show_spider=True):
-    selected = []
-    # 'View Two Solutions':
-    if show_solutions:
-        selected.append(html.H3("Two Solutions"))
-        df_solutions = pd.DataFrame(d['solutions'])
-        selected.append(dash_table.DataTable(
-            id="solutions_table", # same id for the table in html - causes the original table to get overriden
-            columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df_solutions.columns],
-            data=df_solutions.to_dict("records"),
-            is_focused=True,
-            **get_style()
-        ))
-    
-    if show_xstar or show_spider:
-        lop_card = pyrplib.base.LOPCard.from_json(link)
-        plot_html = io.StringIO()
-        D = pd.DataFrame(lop_card.D)
-    # 'Red/Green plot':
-    if show_xstar:
-        selected.append(html.H3("Red/Green plot"))
-        x=pd.DataFrame(lop_card.centroid_x,index=D.index,columns=D.columns)
-        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(x)
-        xstar_g.save(plot_html, 'html')
-
-        selected.append(html.Iframe(
-            id='xstar_plot',
-            height='500',
-            width='1000',
-            sandbox='allow-scripts',
-            srcDoc=plot_html.getvalue(),
-            style={'border-width': '0px'}
-        ))
-    # 'Nearest/Farthest Centoid Plot':
-    if show_spider:
-        selected.append(html.H3("Nearest/Farthest Centroid Plot"))
-        outlier_solution = pd.Series(lop_card.outlier_solution,
-                                        index=D.index[lop_card.outlier_solution],
-                                        name="Farthest from Centroid")
-        centroid_solution = pd.Series(lop_card.centroid_solution,
-                                        index=D.index[lop_card.centroid_solution],
-                                        name="Closest to Centroid")
-        spider_g = pyrankability.plot.spider3(outlier_solution,centroid_solution)
-        spider_g.save(plot_html, 'html')
-
-        selected.append(html.Iframe(
-            id='spider_plot',
-            height='500',
-            width='1000',
-            sandbox='allow-scripts',
-            srcDoc=plot_html.getvalue(),
-            style={'border-width': '0px'}
-        ))
-    return selected
 
 # components for all pages
 content = html.Div(id="page-content", style=CONTENT_STYLE)
