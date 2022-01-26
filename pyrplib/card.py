@@ -7,6 +7,7 @@ import io
 
 import base64
 from io import BytesIO
+from io import StringIO
 
 import pandas as pd
 import numpy as np
@@ -217,17 +218,15 @@ class LOP(Card):
                                         index=D.index[self.centroid_solution],
                                         name="Closest to Centroid")
         
-        tmpfile = BytesIO()        
-        pyrankability.plot.spider3(outlier_solution,centroid_solution,file=tmpfile)
-        encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-        image_html = '<img src=\'data:image/png;base64,{}\'>'.format(encoded)
-
+        spider_g, plot_width, plot_height = pyrankability.plot.spider3(outlier_solution,centroid_solution)
+        tmpfile = StringIO()
+        spider_g.save(tmpfile, 'html')   
         contents.append(html.Iframe(
             id='nearest_farthest',
-            height='500',
-            width='1000',
+            height=str(plot_height),
+            width=str(plot_width),
             sandbox='allow-scripts',
-            srcDoc=image_html,
+            srcDoc=tmpfile.getvalue(),
             style={'border-width': '0px'}
         ))
                 
