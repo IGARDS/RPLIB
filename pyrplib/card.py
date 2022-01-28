@@ -196,14 +196,19 @@ class LOP(Card):
         
         # 'Red/Green plot':
         contents.append(html.H2("Red/Green plot"))
+        xstar_width_height = len(centroid_x) * 10
         xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(centroid_x)
+        xstar_g = xstar_g.properties(
+            width=xstar_width_height,
+            height=xstar_width_height
+        )
         plot_html = io.StringIO()
         xstar_g.save(plot_html, 'html')
 
         contents.append(html.Iframe(
             id='xstar_plot',
-            height='500',
-            width='1000',
+            height=str(xstar_width_height + 150),
+            width=str(xstar_width_height + 150),
             sandbox='allow-scripts',
             srcDoc=plot_html.getvalue(),
             style={'border-width': '0px'}
@@ -218,15 +223,24 @@ class LOP(Card):
                                         index=D.index[self.centroid_solution],
                                         name="Closest to Centroid")
         
-        spider_g, plot_width, plot_height = pyrankability.plot.spider3(outlier_solution,centroid_solution)
+        spider_g = pyrankability.plot.spider(outlier_solution,centroid_solution)
+        spider_width = 700
+        spider_height = 30 * len(outlier_solution)
+        spider_g = spider_g.properties(
+            width = spider_width,
+            height = spider_height
+        ).interactive()
         tmpfile = StringIO()
         spider_g.save(tmpfile, 'html')   
         contents.append(html.Iframe(
             id='nearest_farthest',
-            height=str(plot_height),
-            width=str(plot_width),
+            height=str(spider_height + 100),
+            width=str(spider_width + 400),
             sandbox='allow-scripts',
-            srcDoc=tmpfile.getvalue(),
+            # Once this function returns, tmpfile is garbage collected and may be 
+            # the reason for 'view source' not working. 
+            # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
+            srcDoc=tmpfile.getvalue(), 
             style={'border-width': '0px'}
         ))
                 
