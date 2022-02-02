@@ -26,7 +26,7 @@ except:
 import pandas as pd
 
 if len(sys.argv) < 2:
-    print("Usage: python process.py <comma separated processed dataset ids (comma separated)>")
+    print("Usage: python process.py <comma separated processed dataset ids (comma separated or e.g., 3:8)>")
     exit(0)
         
 def get_ids(str_ids):
