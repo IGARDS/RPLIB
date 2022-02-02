@@ -64,7 +64,7 @@ class LOP(Card):
                                           "centroid_x","outlier_solution","dataset_id","source_dataset_id","options","D"])
     
     def prepare(self,processed_dataset):
-        self._instance['source_dataset_id'] = processed_dataset['Source Dataset ID']
+        self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
         d = pyrplib.dataset.ProcessedD.from_json(processed_dataset['Link']).load(processed_dataset['Options'])
 
         D = d.data.fillna(0)
