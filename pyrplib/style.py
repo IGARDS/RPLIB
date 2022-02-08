@@ -21,6 +21,10 @@ def get_standard_data_table(df,id):
             'textAlign': 'left'
         },
         filter_action='native',
+        filter_query='search',
+        filter_options={
+            'case': 'insensitive'
+        },
         style_data={
             "backgroundColor": '#E3F2FD',
             "border-bottom": "1px solid #90CAF9",
