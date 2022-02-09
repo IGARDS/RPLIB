@@ -1,9 +1,16 @@
 import dash_table
 
 def get_standard_data_table(df,id):
+    def get_datatypes(dtype):
+        if 'float' in dtype or 'double' in dtype or 'int' in dtype:
+            return 'numeric'
+        elif 'datetime' in dtype:
+            return 'datetime'
+        return 'text'
     dataset_table = dash_table.DataTable(
         id=id,
-        columns=[{"name": i, "id": i, 'presentation': 'markdown'} for i in df.columns],
+        columns=[{"name": i, "id": i, 'presentation': 'markdown', 
+                "type": get_datatypes(str(df[i].dtype))} for i in df.columns],
         data=df.to_dict("records"),
         is_focused=True,
         style_table={
@@ -21,7 +28,6 @@ def get_standard_data_table(df,id):
             'textAlign': 'left'
         },
         filter_action='native',
-        filter_query='search',
         filter_options={
             'case': 'insensitive'
         },
