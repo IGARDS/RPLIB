@@ -375,33 +375,69 @@ def get_all_download_links_from_table(table_data, download_link_attribute):
             filenames[cur_filename] = 1
     return unprocessed_links
 
-    # progress=(Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
-    #           Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")),
-        # running=[(Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "style"), 
-        #      {"visibility": "visible"},
-        #      {"visibility": "hidden"})],
+def download_and_or_get_files(data, link_att_name, zipfilename):
+    mf = io.BytesIO()
+    download_links = get_all_download_links_from_table(data, link_att_name)
+    #total = len(download_links)
+    #set_progress((str(0), str(total)))
+    with zipfile.ZipFile(mf, mode="w",compression=zipfile.ZIP_DEFLATED) as zf:
+        for i in range(len(download_links)):
+            filename = download_links[i]['filename']
+            if filename not in zf.namelist():
+                #print(filename)
+                link = download_links[i]['link']
+                if os.path.exists(link):
+                    zf.write(link, arcname=filename)
+                else:
+                    try:
+                        file_data = requests.get(link).text
+                        zf.writestr(filename, file_data)
+                    except requests.ConnectionError as exception:
+                        print(f"The file {filename} at {link} could not be found: {str(exception)}")
+                #set_progress((str(i + 1), str(total)))
+    # saves zip file locally -- maybe a way to save this temporarily?
+    with open(zipfilename, "wb") as f:
+        f.write(mf.getvalue())
+        return os.path.abspath(zipfilename)
+
 @app.long_callback(
     output=Output(UNPROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
     inputs=(Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
             State(UNPROCESSED_TABLE_ID, "derived_virtual_data")),
+    # running=[(Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "style"), 
+    #          {"visibility": "visible"},
+    #          {"visibility": "hidden"})],
+    # progress=[Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+    #           Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+    # prevent_initial_call=True,
 )
 def download_all_files_unprocessed(n_clicks, data):
-    #total = 10
     if n_clicks != None:
-        zipfilename = "unprocessed.zip"
-        mf = io.BytesIO()
-        download_links = get_all_download_links_from_table(data, "Download links")
-        with zipfile.ZipFile(mf, mode="w",compression=zipfile.ZIP_DEFLATED) as zf:
-            for i in range(len(download_links)):
-                filename = download_links[i]['filename']
-                if filename not in zf.namelist():
-                    zf.writestr(filename, requests.get(download_links[i]['link']).text)
-                    #set_progress((str(i + 1), str(total)))
-        # saves zip file locally -- maybe a way to save this temporarily
-        with open(zipfilename, "wb") as f:
-            f.write(mf.getvalue())
-        return [dcc.send_file(os.getcwd()+"/"+zipfilename)]
-        #return dict(content=mf.getvalue(), filename=zipfilename)
+        suggested_zipfilename = "unprocessed.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download links", suggested_zipfilename)
+        return dcc.send_file(path_to_local_zipfile)
+
+@app.long_callback(
+    output=Output(PROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(PROCESSED_TABLE_ID, "derived_virtual_data")),
+)
+def download_all_files_processed(n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "processed.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", suggested_zipfilename)
+        return dcc.send_file(path_to_local_zipfile)
+
+@app.long_callback(
+    output=Output(LOP_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(LOP_TABLE_ID, "derived_virtual_data")),
+)
+def download_all_files_lop(n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "lop.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", suggested_zipfilename)
+        return dcc.send_file(path_to_local_zipfile)
 
 unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
 unprocessed_download_button = \
@@ -419,9 +455,13 @@ page_unprocessed = html.Div([
 ])
 
 processed_table = pyrplib.style.get_standard_data_table(df_processed, PROCESSED_TABLE_ID)
+processed_download_button = \
+    pyrplib.style.get_standard_download_all_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID)
 page_processed = html.Div([
     html.H1("Processed Datasets"),
     html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    processed_download_button,
     processed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -429,9 +469,13 @@ page_processed = html.Div([
 ])
 
 lop_table = pyrplib.style.get_standard_data_table(df_lop_cards, LOP_TABLE_ID)
+lop_download_button = \
+    pyrplib.style.get_standard_download_all_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   LOP_TABLE_DOWNLOAD_ALL_ID)
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    lop_download_button,
     lop_table,
     html.Br(),
     html.H2("Selected content will appear below"),
