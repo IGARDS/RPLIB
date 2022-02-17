@@ -12,7 +12,7 @@ from io import StringIO
 import pandas as pd
 import numpy as np
 
-import dash_html_components as html
+from dash import html
 
 import pyrankability
 import pyrplib

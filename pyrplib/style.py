@@ -1,4 +1,6 @@
-import dash_table
+from dash import dash_table
+from dash import dcc
+from dash import html
 
 def get_standard_data_table(df,id):
     def get_datatypes(dtype):
@@ -49,3 +51,14 @@ def get_standard_data_table(df,id):
         ]
     )
     return dataset_table
+
+def get_standard_download_all_button(button_id, download_id, progress_id):
+    button = html.Div([
+        html.Div([
+            #html.Progress(id=progress_id),
+            dcc.Download(id=download_id),
+        ]),
+        html.Button(id=button_id, children="Download All In Table")
+        
+    ])
+    return button

@@ -8,11 +8,14 @@ from io import BytesIO
 from pathlib import Path
 import json
 from enum import Enum
+import diskcache
+import zipfile
 
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
+from dash.long_callback import DiskcacheLongCallbackManager
 import pandas as pd
 import numpy as np
 import altair as alt
@@ -39,8 +42,11 @@ except:
     
 # Config contains all of the datasets and other configuration details
 config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
+cache = diskcache.Cache("./cache")
+long_callback_manager = DiskcacheLongCallbackManager(cache)
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, long_callback_manager=long_callback_manager, 
+                external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
 # the style arguments for the sidebar
@@ -81,8 +87,28 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE,
 )
 
+UNPROCESSED_TABLE_ID = "datasets_table"
+UNPROCESSED_TABLE_DOWNLOAD_ALL_ID = "datasets_download_all"
+UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID = "datasets_download_all_button"
+UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID = "datasets_download_progress"
+PROCESSED_TABLE_ID = "processed_table"
+PROCESSED_TABLE_DOWNLOAD_ALL_ID = "processed_download_all"
+PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID = "processed_download_all_button"
+LOP_TABLE_ID = "lop_table"
+LOP_TABLE_DOWNLOAD_ALL_ID = "lop_download_all"
+LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID = "lop_download_all_button"
+HILLSIDE_TABLE_ID = "hillside_table"
+HILLSIDE_TABLE_DOWNLOAD_ALL_ID = "hillside_download_all"
+HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID = "hillside_download_all_button"
+MASSEY_TABLE_ID = "massey_table"
+MASSEY_TABLE_DOWNLOAD_ALL_ID = "massey_download_all"
+MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID = "massey_download_all_button"
+COLLEY_TABLE_ID = "colley_table"
+COLLEY_TABLE_DOWNLOAD_ALL_ID = "colley_download_all"
+COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID = "colley_download_all_button"
+
 def get_datasets(config):
-    df2 = config.datasets_df.copy()
+    df = config.datasets_df.copy()
     
     def process(links):
         try:
@@ -93,12 +119,12 @@ def get_datasets(config):
         except:
             return "Could not process. Check data."
 
-    df2['Download links'] = df2['Download links'].apply(process)
-    df2 = df2.drop('Loader',axis=1).drop('Description',axis=1)
+    df['Download links'] = df['Download links'].apply(process)
+    df = df.drop('Loader',axis=1).drop('Description',axis=1)
     
-    df2 = df2.sort_values(by='Dataset Name')
+    df = df.sort_values(by='Dataset Name')
     
-    return df2
+    return df
 
 def get_processed(config):
     datasets_df = df = config.datasets_df.set_index('Dataset ID')
@@ -215,21 +241,10 @@ def update_selected_row_color(active):
         )
     return style
 
-dataset_table = pyrplib.style.get_standard_data_table(df_datasets,"datasets_table")
-
-page_datasets = html.Div([
-    html.H1("Unprocessed Datasets"),
-    html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    dataset_table,
-    html.Br(),
-    html.H2("Selected content will appear below"),
-    html.Div(id="datasets_output")
-])
-
 @app.callback(
     Output("datasets_output", "children"),
-    Input("datasets_table", "active_cell"),
-    State("datasets_table", "derived_viewport_data"),
+    Input(UNPROCESSED_TABLE_ID, "active_cell"),
+    State(UNPROCESSED_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_dataset(cell,data):
     if cell is None:
@@ -255,16 +270,16 @@ def cell_clicked_dataset(cell,data):
         return dash.no_update  
 
 @app.callback(
-    Output("datasets_table", "style_data_conditional"),
-    [Input("datasets_table", "active_cell")]
+    Output(UNPROCESSED_TABLE_ID, "style_data_conditional"),
+    [Input(UNPROCESSED_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_dataset(active):
     return update_selected_row_color(active)
 
 @app.callback(
     Output("processed_output", "children"),
-    Input("processed_table", "active_cell"),
-    State("processed_table", "derived_viewport_data"),
+    Input(PROCESSED_TABLE_ID, "active_cell"),
+    State(PROCESSED_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_processed(cell,data):
     if cell is None:
@@ -293,16 +308,16 @@ def cell_clicked_processed(cell,data):
         return dash.no_update  
 
 @app.callback(
-    Output("processed_table", "style_data_conditional"),
-    [Input("processed_table", "active_cell")]
+    Output(PROCESSED_TABLE_ID, "style_data_conditional"),
+    [Input(PROCESSED_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_processed(active):
     return update_selected_row_color(active)
 
 @app.callback(
     Output("lop_output", "children"),
-    Input("lop_table", "active_cell"),
-    State("lop_table", "derived_viewport_data"),
+    Input(LOP_TABLE_ID, "active_cell"),
+    State(LOP_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_lop(cell,data):
     if cell is None:
@@ -331,13 +346,79 @@ def cell_clicked_lop(cell,data):
         return dash.no_update  
     
 @app.callback(
-    Output("lop_table", "style_data_conditional"),
-    [Input("lop_table", "active_cell")]
+    Output(LOP_TABLE_ID, "style_data_conditional"),
+    [Input(LOP_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_lop(active):
     return update_selected_row_color(active)
 
-processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed_table")
+def get_all_download_links_from_table(table_data, download_link_attribute):
+    def unprocess_link(link):
+        start = link.rfind('](')
+        if start == -1:
+            print('Attempted to strip processing on an unprocessed link')
+            return link
+        return {'filename' : link[1:start], 'link' : link[start+2:-1]}
+
+    unprocessed_links = []
+    for dataset in range(len(table_data)):
+        for link in table_data[dataset][download_link_attribute].split(', '):
+            unprocessed_links.append(unprocess_link(link))
+    filenames = {}
+    # filenames in the table can be the same--prepend increasing number
+    for link in unprocessed_links:
+        cur_filename = link['filename']
+        if cur_filename in filenames:
+            link['filename'] = str(filenames[cur_filename]) + '_' + cur_filename
+            filenames[cur_filename] += 1
+        else:
+            filenames[cur_filename] = 1
+    return unprocessed_links
+
+    # progress=(Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+    #           Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")),
+        # running=[(Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "style"), 
+        #      {"visibility": "visible"},
+        #      {"visibility": "hidden"})],
+@app.long_callback(
+    output=Output(UNPROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(UNPROCESSED_TABLE_ID, "derived_virtual_data")),
+)
+def download_all_files_unprocessed(n_clicks, data):
+    #total = 10
+    if n_clicks != None:
+        zipfilename = "unprocessed.zip"
+        mf = io.BytesIO()
+        download_links = get_all_download_links_from_table(data, "Download links")
+        with zipfile.ZipFile(mf, mode="w",compression=zipfile.ZIP_DEFLATED) as zf:
+            for i in range(len(download_links)):
+                filename = download_links[i]['filename']
+                if filename not in zf.namelist():
+                    zf.writestr(filename, requests.get(download_links[i]['link']).text)
+                    #set_progress((str(i + 1), str(total)))
+        # saves zip file locally -- maybe a way to save this temporarily
+        with open(zipfilename, "wb") as f:
+            f.write(mf.getvalue())
+        return [dcc.send_file(os.getcwd()+"/"+zipfilename)]
+        #return dict(content=mf.getvalue(), filename=zipfilename)
+
+unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
+unprocessed_download_button = \
+    pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   UNPROCESSED_TABLE_DOWNLOAD_ALL_ID,
+                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+page_unprocessed = html.Div([
+    html.H1("Unprocessed Datasets"),
+    html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    unprocessed_download_button,
+    unprocessed_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="datasets_output")
+])
+
+processed_table = pyrplib.style.get_standard_data_table(df_processed, PROCESSED_TABLE_ID)
 page_processed = html.Div([
     html.H1("Processed Datasets"),
     html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -347,7 +428,7 @@ page_processed = html.Div([
     html.Div(id="processed_output")
 ])
 
-lop_table = pyrplib.style.get_standard_data_table(df_lop_cards,"lop_table")
+lop_table = pyrplib.style.get_standard_data_table(df_lop_cards, LOP_TABLE_ID)
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -357,7 +438,7 @@ page_lop = html.Div([
     html.Div(id="lop_output")
 ])
 
-hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
+hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards, HILLSIDE_TABLE_ID)
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -365,7 +446,7 @@ page_hillside = html.Div([
     html.Div(id="output")
     ])
 
-massey_table = pyrplib.style.get_standard_data_table(df_massey_cards,"massey_table")
+massey_table = pyrplib.style.get_standard_data_table(df_massey_cards, MASSEY_TABLE_ID)
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -373,13 +454,29 @@ page_massey = html.Div([
     html.Div(id="output")
     ])
 
-colley_table = pyrplib.style.get_standard_data_table(df_colley_cards,"colley_table")
+colley_table = pyrplib.style.get_standard_data_table(df_colley_cards, COLLEY_TABLE_ID)
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     colley_table,
     html.Div(id="output")
     ])
+
+def get_download_local_file_button(pathname):
+    button_text = "Download: " + pathname.split('/')[-1]
+    fake_button = html.Button(button_text, key=pathname, id="btn-download-file")
+    return html.Div([
+        fake_button,
+        dcc.Download(id="download-file")
+    ])
+
+@app.callback(
+    Output("download-file", "data"),
+    [Input("btn-download-file", "key")],
+)
+def download_local_file(pathname):
+    return dcc.send_file(pathname)
+
 
 def get_blank_page(page_name):
     return html.Div([
@@ -394,7 +491,7 @@ def get_404(pathname):
             html.H1("404: Not found", className="text-danger"),
             html.Hr(),
             html.P(
-                "The pathname {pathname} was not recognised...".format(pathname))
+                f"The pathname {pathname} was not recognised...")
         ]
     )
 
@@ -403,10 +500,12 @@ content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
-@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+@app.callback(
+    Output("page-content", "children"), 
+    [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == "/":
-        return page_datasets
+        return page_unprocessed
     elif pathname == "/processed":
         return page_processed
     elif pathname == "/lop":
@@ -417,6 +516,9 @@ def render_page_content(pathname):
         return page_massey
     elif pathname == "/colley":
         return page_colley
+    elif os.path.exists(pathname):
+        return get_download_local_file_button(pathname)
+
     # if the user tries to reach a different page, return a 404 message
     return get_404(pathname)
 
