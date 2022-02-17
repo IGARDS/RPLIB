@@ -1,3 +1,4 @@
+from matplotlib.font_manager import is_opentype_cff_font
 import requests
 import io
 import sys
@@ -91,21 +92,32 @@ UNPROCESSED_TABLE_ID = "datasets_table"
 UNPROCESSED_TABLE_DOWNLOAD_ALL_ID = "datasets_download_all"
 UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID = "datasets_download_all_button"
 UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID = "datasets_download_progress"
+UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "datasets_download_progress_collapse"
 PROCESSED_TABLE_ID = "processed_table"
 PROCESSED_TABLE_DOWNLOAD_ALL_ID = "processed_download_all"
 PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID = "processed_download_all_button"
+PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID = "processed_download_progress"
+PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "processed_download_progress_collapse"
 LOP_TABLE_ID = "lop_table"
 LOP_TABLE_DOWNLOAD_ALL_ID = "lop_download_all"
 LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID = "lop_download_all_button"
+LOP_TABLE_DOWNLOAD_PROGRESS_ID = "lop_download_progress"
+LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "lop_download_progress_collapse"
 HILLSIDE_TABLE_ID = "hillside_table"
 HILLSIDE_TABLE_DOWNLOAD_ALL_ID = "hillside_download_all"
 HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID = "hillside_download_all_button"
+HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID = "hillside_download_progress"
+HILLSIDE_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "hillside_download_progress_collapse"
 MASSEY_TABLE_ID = "massey_table"
 MASSEY_TABLE_DOWNLOAD_ALL_ID = "massey_download_all"
 MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID = "massey_download_all_button"
+MASSEY_TABLE_DOWNLOAD_PROGRESS_ID = "massey_download_progress"
+MASSEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "massey_download_progress_collapse"
 COLLEY_TABLE_ID = "colley_table"
 COLLEY_TABLE_DOWNLOAD_ALL_ID = "colley_download_all"
 COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID = "colley_download_all_button"
+COLLEY_TABLE_DOWNLOAD_PROGRESS_ID = "colley_download_progress"
+COLLEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "colley_download_progress_collapse"
 
 def get_datasets(config):
     df = config.datasets_df.copy()
@@ -375,16 +387,16 @@ def get_all_download_links_from_table(table_data, download_link_attribute):
             filenames[cur_filename] = 1
     return unprocessed_links
 
-def download_and_or_get_files(data, link_att_name, zipfilename):
+def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=None):
     mf = io.BytesIO()
     download_links = get_all_download_links_from_table(data, link_att_name)
-    #total = len(download_links)
-    #set_progress((str(0), str(total)))
+    if set_progress:
+        total = len(download_links)
+        set_progress((str(0), str(total)))
     with zipfile.ZipFile(mf, mode="w",compression=zipfile.ZIP_DEFLATED) as zf:
         for i in range(len(download_links)):
             filename = download_links[i]['filename']
             if filename not in zf.namelist():
-                #print(filename)
                 link = download_links[i]['link']
                 if os.path.exists(link):
                     zf.write(link, arcname=filename)
@@ -394,56 +406,100 @@ def download_and_or_get_files(data, link_att_name, zipfilename):
                         zf.writestr(filename, file_data)
                     except requests.ConnectionError as exception:
                         print(f"The file {filename} at {link} could not be found: {str(exception)}")
-                #set_progress((str(i + 1), str(total)))
+                if set_progress:
+                    set_progress((str(i + 1), str(total)))
     # saves zip file locally -- maybe a way to save this temporarily?
     with open(zipfilename, "wb") as f:
         f.write(mf.getvalue())
         return os.path.abspath(zipfilename)
 
+def collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open):
+    if n_clicks:
+        # the progress becomes undefined when finished
+        if progress_val is None or progress_max is None:
+            return False
+        return True
+    else:
+        return is_open
+
 @app.long_callback(
     output=Output(UNPROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
     inputs=(Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
             State(UNPROCESSED_TABLE_ID, "derived_virtual_data")),
-    # running=[(Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "style"), 
-    #          {"visibility": "visible"},
-    #          {"visibility": "hidden"})],
-    # progress=[Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
-    #           Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
-    # prevent_initial_call=True,
+    progress=[Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
 )
-def download_all_files_unprocessed(n_clicks, data):
+def download_all_files_unprocessed(set_progress, n_clicks, data):
     if n_clicks != None:
         suggested_zipfilename = "unprocessed.zip"
-        path_to_local_zipfile = download_and_or_get_files(data, "Download links", suggested_zipfilename)
+        path_to_local_zipfile = download_and_or_get_files(data, "Download links", 
+                                                          suggested_zipfilename, set_progress)
         return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
+)
+def download_all_files_unprocessed_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
 
 @app.long_callback(
     output=Output(PROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
     inputs=(Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
             State(PROCESSED_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
 )
-def download_all_files_processed(n_clicks, data):
+def download_all_files_processed(set_progress, n_clicks, data):
     if n_clicks != None:
         suggested_zipfilename = "processed.zip"
-        path_to_local_zipfile = download_and_or_get_files(data, "Download", suggested_zipfilename)
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
         return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
+)
+def download_all_files_processed_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
 
 @app.long_callback(
     output=Output(LOP_TABLE_DOWNLOAD_ALL_ID, "data"),
     inputs=(Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
             State(LOP_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
 )
-def download_all_files_lop(n_clicks, data):
+def download_all_files_lop(set_progress, n_clicks, data):
     if n_clicks != None:
         suggested_zipfilename = "lop.zip"
-        path_to_local_zipfile = download_and_or_get_files(data, "Download", suggested_zipfilename)
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
         return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
+)
+def download_all_files_lop_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
 
 unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
 unprocessed_download_button = \
     pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
                                                    UNPROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_unprocessed = html.Div([
     html.H1("Unprocessed Datasets"),
     html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -457,7 +513,9 @@ page_unprocessed = html.Div([
 processed_table = pyrplib.style.get_standard_data_table(df_processed, PROCESSED_TABLE_ID)
 processed_download_button = \
     pyrplib.style.get_standard_download_all_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID)
+                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID, 
+                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_processed = html.Div([
     html.H1("Processed Datasets"),
     html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -471,7 +529,9 @@ page_processed = html.Div([
 lop_table = pyrplib.style.get_standard_data_table(df_lop_cards, LOP_TABLE_ID)
 lop_download_button = \
     pyrplib.style.get_standard_download_all_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   LOP_TABLE_DOWNLOAD_ALL_ID)
+                                                   LOP_TABLE_DOWNLOAD_ALL_ID,
+                                                   LOP_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
