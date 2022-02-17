@@ -77,6 +77,14 @@ sidebar = html.Div(
             vertical=True,
             pills=True,
         ),
+        html.Hr(),
+        dbc.Nav(
+            [
+                dbc.NavLink("Artificial Structured Datasets", href="https://colab.research.google.com/drive/1nNsf_bVFMw3q9Eq2qBYv9qxmrlIqpGJU?usp=sharing", active="exact"),
+            ],
+            vertical=True,
+            pills=True,
+        ),
     ],
     style=SIDEBAR_STYLE,
 )
