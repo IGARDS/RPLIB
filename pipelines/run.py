@@ -50,6 +50,12 @@ datasets_df = config.datasets_df
 processed_datasets_df = config.processed_datasets_df
 if method == 'lop':
     method_datasets_df = config.lop_cards_df
+elif method == 'hillside':
+    method_datasets_df = config.hillside_cards_df
+elif method == 'massey':
+    method_datasets_df = config.massey_cards_df
+elif method == 'colley':
+    method_datasets_df = config.colley_cards_df
 
 datasets_df.set_index('Dataset ID',inplace=True)
 processed_datasets_df.set_index('Dataset ID',inplace=True)
@@ -64,6 +70,12 @@ for dataset_id in method_dataset_ids:
     
     if method == 'lop':
         card = pyrplib.card.LOP().load(dataset_id,dataset['Options'])
+    elif method == 'hillside':
+        card = pyrplib.card.Hillside().load(dataset_id,dataset['Options'])
+    elif method == 'massey':
+        card = pyrplib.card.SystemOfEquations('massey').load(dataset_id,dataset['Options'])        
+    elif method == 'colley':
+        card = pyrplib.card.SystemOfEquations('colley').load(dataset_id,dataset['Options'])  
         
     card.prepare(processed_dataset)
     card.run()
