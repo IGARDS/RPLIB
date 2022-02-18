@@ -1,3 +1,4 @@
+from matplotlib.font_manager import is_opentype_cff_font
 import requests
 import io
 import sys
@@ -8,12 +9,16 @@ from io import BytesIO
 from pathlib import Path
 import json
 from enum import Enum
+import diskcache
+import zipfile
+import tempfile
 import importlib
 
 import dash
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
+from dash.long_callback import DiskcacheLongCallbackManager
 import pandas as pd
 import numpy as np
 import altair as alt
@@ -40,10 +45,13 @@ except:
     
 # Config contains all of the datasets and other configuration details
 config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
+cache = diskcache.Cache("./cache")
+long_callback_manager = DiskcacheLongCallbackManager(cache)
+
 
 import os
 BASE_PATH = os.getenv("BASE_PATH","/")
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],url_base_pathname=BASE_PATH)
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],url_base_pathname=BASE_PATH, long_callback_manager=long_callback_manager)
 print("BASE_PATH",BASE_PATH)
 server = app.server
 
@@ -85,8 +93,39 @@ sidebar = html.Div(
     style=SIDEBAR_STYLE,
 )
 
+UNPROCESSED_TABLE_ID = "datasets_table"
+UNPROCESSED_TABLE_DOWNLOAD_ALL_ID = "datasets_download_all"
+UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID = "datasets_download_all_button"
+UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID = "datasets_download_progress"
+UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "datasets_download_progress_collapse"
+PROCESSED_TABLE_ID = "processed_table"
+PROCESSED_TABLE_DOWNLOAD_ALL_ID = "processed_download_all"
+PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID = "processed_download_all_button"
+PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID = "processed_download_progress"
+PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "processed_download_progress_collapse"
+LOP_TABLE_ID = "lop_table"
+LOP_TABLE_DOWNLOAD_ALL_ID = "lop_download_all"
+LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID = "lop_download_all_button"
+LOP_TABLE_DOWNLOAD_PROGRESS_ID = "lop_download_progress"
+LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "lop_download_progress_collapse"
+HILLSIDE_TABLE_ID = "hillside_table"
+HILLSIDE_TABLE_DOWNLOAD_ALL_ID = "hillside_download_all"
+HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID = "hillside_download_all_button"
+HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID = "hillside_download_progress"
+HILLSIDE_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "hillside_download_progress_collapse"
+MASSEY_TABLE_ID = "massey_table"
+MASSEY_TABLE_DOWNLOAD_ALL_ID = "massey_download_all"
+MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID = "massey_download_all_button"
+MASSEY_TABLE_DOWNLOAD_PROGRESS_ID = "massey_download_progress"
+MASSEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "massey_download_progress_collapse"
+COLLEY_TABLE_ID = "colley_table"
+COLLEY_TABLE_DOWNLOAD_ALL_ID = "colley_download_all"
+COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID = "colley_download_all_button"
+COLLEY_TABLE_DOWNLOAD_PROGRESS_ID = "colley_download_progress"
+COLLEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "colley_download_progress_collapse"
+
 def get_datasets(config):
-    df2 = config.datasets_df.copy()
+    df = config.datasets_df.copy()
     
     def process(links):
         try:
@@ -97,12 +136,12 @@ def get_datasets(config):
         except:
             return "Could not process. Check data."
 
-    df2['Download links'] = df2['Download links'].apply(process)
-    df2 = df2.drop('Loader',axis=1).drop('Description',axis=1)
+    df['Download links'] = df['Download links'].apply(process)
+    df = df.drop('Loader',axis=1).drop('Description',axis=1)
     
-    df2 = df2.sort_values(by='Dataset Name')
+    df = df.sort_values(by='Dataset Name')
     
-    return df2
+    return df
 
 def get_processed(config):
     datasets_df = df = config.datasets_df.set_index('Dataset ID')
@@ -233,21 +272,10 @@ def update_selected_row_color(active):
         )
     return style
 
-dataset_table = pyrplib.style.get_standard_data_table(df_datasets,"datasets_table")
-
-page_datasets = html.Div([
-    html.H1("Unprocessed Datasets"),
-    html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    dataset_table,
-    html.Br(),
-    html.H2("Selected content will appear below"),
-    html.Div(id="datasets_output")
-])
-
 @app.callback(
     Output("datasets_output", "children"),
-    Input("datasets_table", "active_cell"),
-    State("datasets_table", "derived_viewport_data"),
+    Input(UNPROCESSED_TABLE_ID, "active_cell"),
+    State(UNPROCESSED_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_dataset(cell,data):
     if cell is None:
@@ -272,16 +300,16 @@ def cell_clicked_dataset(cell,data):
         return dash.no_update  
 
 @app.callback(
-    Output("datasets_table", "style_data_conditional"),
-    [Input("datasets_table", "active_cell")]
+    Output(UNPROCESSED_TABLE_ID, "style_data_conditional"),
+    [Input(UNPROCESSED_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_dataset(active):
     return update_selected_row_color(active)
 
 @app.callback(
     Output("processed_output", "children"),
-    Input("processed_table", "active_cell"),
-    State("processed_table", "derived_viewport_data"),
+    Input(PROCESSED_TABLE_ID, "active_cell"),
+    State(PROCESSED_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_processed(cell,data):
     if cell is None:
@@ -310,16 +338,16 @@ def cell_clicked_processed(cell,data):
         return dash.no_update  
 
 @app.callback(
-    Output("processed_table", "style_data_conditional"),
-    [Input("processed_table", "active_cell")]
+    Output(PROCESSED_TABLE_ID, "style_data_conditional"),
+    [Input(PROCESSED_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_processed(active):
     return update_selected_row_color(active)
 
 @app.callback(
     Output("lop_output", "children"),
-    Input("lop_table", "active_cell"),
-    State("lop_table", "derived_viewport_data"),
+    Input(LOP_TABLE_ID, "active_cell"),
+    State(LOP_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_lop(cell,data):
     if cell is None:
@@ -348,12 +376,169 @@ def cell_clicked_lop(cell,data):
         return dash.no_update  
     
 @app.callback(
-    Output("lop_table", "style_data_conditional"),
-    [Input("lop_table", "active_cell")]
+    Output(LOP_TABLE_ID, "style_data_conditional"),
+    [Input(LOP_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_lop(active):
     return update_selected_row_color(active)
 
+def get_all_download_links_from_table(table_data, download_link_attribute):
+    def unprocess_link(link, row):
+        start = link.rfind('](')
+        if start == -1:
+            print('Attempted to strip processing on an unprocessed link')
+            return link
+        return {'filename' : str(row['Dataset ID'])+'_'+link[1:start], 'link' : link[start+2:-1]}
+
+    unprocessed_links = []
+    for dataset in range(len(table_data)):
+        for link in table_data[dataset][download_link_attribute].split(', '):
+            unprocessed_links.append(unprocess_link(link, table_data[dataset]))
+    filenames = {}
+    # filenames in the table can be the same--prepend increasing number
+    for link in unprocessed_links:
+        cur_filename = link['filename']
+        if cur_filename in filenames:
+            link['filename'] = str(filenames[cur_filename]) + '_' + cur_filename
+            filenames[cur_filename] += 1
+        else:
+            filenames[cur_filename] = 1
+    return unprocessed_links
+
+def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=None):
+    mf = io.BytesIO()
+    download_links = get_all_download_links_from_table(data, link_att_name)
+    if set_progress:
+        total = len(download_links)
+        set_progress((str(0), str(total)))
+    with zipfile.ZipFile(mf, mode="w",compression=zipfile.ZIP_DEFLATED) as zf:
+        for i in range(len(download_links)):
+            filename = download_links[i]['filename']
+            if filename not in zf.namelist():
+                link = download_links[i]['link']
+                if os.path.exists(link):
+                    zf.write(link, arcname=filename)
+                else:
+                    try:
+                        file_data = requests.get(link).text
+                        zf.writestr(filename, file_data)
+                    except requests.ConnectionError as exception:
+                        print(f"The file {filename} at {link} could not be found: {str(exception)}")
+                if set_progress:
+                    set_progress((str(i + 1), str(total)))
+    # saves zip file in the machine dependent tempfile location 
+    # creates RPLib dir if not present in temp dir location
+    machine_temp_dir = tempfile.gettempdir()
+    if not os.path.exists(machine_temp_dir+"/"+"RPLIB"):
+        os.mkdir(machine_temp_dir+"/"+"RPLIB")
+    temp_directory_file = machine_temp_dir + "/" + "RPLIB/" + zipfilename
+    with open(temp_directory_file, "wb") as f:
+        f.write(mf.getvalue())
+        return temp_directory_file
+
+def collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open):
+    if n_clicks:
+        # the progress becomes undefined when finished
+        if progress_val is None or progress_max is None:
+            return False
+        return True
+    else:
+        return is_open
+
+@app.long_callback(
+    output=Output(UNPROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(UNPROCESSED_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+)
+def download_all_files_unprocessed(set_progress, n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "unprocessed.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download links", 
+                                                          suggested_zipfilename, set_progress)
+        return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
+)
+def download_all_files_unprocessed_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+
+@app.long_callback(
+    output=Output(PROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(PROCESSED_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+)
+def download_all_files_processed(set_progress, n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "processed.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
+        return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
+)
+def download_all_files_processed_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+
+@app.long_callback(
+    output=Output(LOP_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(LOP_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+)
+def download_all_files_lop(set_progress, n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "lop.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
+        return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
+)
+def download_all_files_lop_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+
+unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
+unprocessed_download_button = \
+    pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   UNPROCESSED_TABLE_DOWNLOAD_ALL_ID,
+                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
+page_unprocessed = html.Div([
+    html.H1("Unprocessed Datasets"),
+    html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    unprocessed_download_button,
+    unprocessed_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
+    html.Div(id="datasets_output")
+])
+
+processed_table = pyrplib.style.get_standard_data_table(df_processed, PROCESSED_TABLE_ID)
+processed_download_button = \
+    pyrplib.style.get_standard_download_all_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID, 
+                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 @app.callback(
     Output("massey_output", "children"),
     Input("massey_table", "active_cell"),
@@ -474,23 +659,30 @@ processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed
 page_processed = html.Div([
     html.H1("Processed Datasets"),
     html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    processed_download_button,
     processed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
     html.Div(id="processed_output")
 ])
 
-lop_table = pyrplib.style.get_standard_data_table(df_lop_cards,"lop_table")
+lop_table = pyrplib.style.get_standard_data_table(df_lop_cards, LOP_TABLE_ID)
+lop_download_button = \
+    pyrplib.style.get_standard_download_all_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   LOP_TABLE_DOWNLOAD_ALL_ID,
+                                                   LOP_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    lop_download_button,
     lop_table,
     html.Br(),
     html.H2("Selected content will appear below"),
     html.Div(id="lop_output")
 ])
 
-hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards,"hillside_table")
+hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards, HILLSIDE_TABLE_ID)
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -498,7 +690,7 @@ page_hillside = html.Div([
     html.Div(id="hillside_output")
     ])
 
-massey_table = pyrplib.style.get_standard_data_table(df_massey_cards,"massey_table")
+massey_table = pyrplib.style.get_standard_data_table(df_massey_cards, MASSEY_TABLE_ID)
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -506,13 +698,29 @@ page_massey = html.Div([
     html.Div(id="massey_output")
     ])
 
-colley_table = pyrplib.style.get_standard_data_table(df_colley_cards,"colley_table")
+colley_table = pyrplib.style.get_standard_data_table(df_colley_cards, COLLEY_TABLE_ID)
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     colley_table,
     html.Div(id="colley_output")
     ])
+
+def get_download_local_file_button(pathname):
+    button_text = "Download: " + pathname.split('/')[-1]
+    fake_button = html.Button(button_text, key=pathname, id="btn-download-file")
+    return html.Div([
+        fake_button,
+        dcc.Download(id="download-file")
+    ])
+
+@app.callback(
+    Output("download-file", "data"),
+    [Input("btn-download-file", "key")],
+)
+def download_local_file(pathname):
+    return dcc.send_file(pathname)
+
 
 def get_blank_page(page_name):
     return html.Div([
@@ -527,7 +735,7 @@ def get_404(pathname):
             html.H1("404: Not found", className="text-danger"),
             html.Hr(),
             html.P(
-                "The pathname {pathname} was not recognised...".format(pathname))
+                f"The pathname {pathname} was not recognised...")
         ]
     )
 
@@ -536,10 +744,12 @@ content = html.Div(id="page-content", style=CONTENT_STYLE)
 
 app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
-@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
+@app.callback(
+    Output("page-content", "children"), 
+    [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname == BASE_PATH:
-        return page_datasets
+    if pathname == "BASE_PATH":
+        return page_unprocessed
     elif pathname == f"{BASE_PATH}processed":
         return page_processed
     elif pathname == f"{BASE_PATH}lop":
@@ -550,6 +760,9 @@ def render_page_content(pathname):
         return page_massey
     elif pathname == f"{BASE_PATH}colley":
         return page_colley
+    elif os.path.exists(pathname):
+        return get_download_local_file_button(pathname)
+
     # if the user tries to reach a different page, return a 404 message
     return get_404(pathname)
 
