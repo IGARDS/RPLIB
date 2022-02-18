@@ -86,6 +86,10 @@ class Processed(Unprocessed):
     @abstractmethod
     def from_json(file):
         pass
+    
+    @abstractmethod
+    def size_str(self):
+        pass
 
 class ProcessedD(Processed):
     def __init__(self):
@@ -108,6 +112,42 @@ class ProcessedD(Processed):
         obj._instance = pd.Series(contents)
         return obj
     
+    def size_str(self):
+        return ",".join([str(i) for i in self.data.shape])
+    
     def view(self):
         return style.get_standard_data_table(self.data.reset_index(),"D")
+    
+    
+class ProcessedGames(Processed):
+    def __init__(self):
+        self._instance = pd.Series([None,None,None,None,None,None],
+                                   index=["data","type","short_type","source_dataset_id","dataset_id","command"])
+        
+    def load(self,options={}):
+        if type(self._instance['data']) == list: # first load from JSON
+            games,teams = self._instance['data']
+            if type(games) != pd.DataFrame:
+                self._instance['data'] = (pd.DataFrame(games).T,teams)
+            if type(teams) != list:
+                self._instance['data'] = (games,list(teams))
+        
+        return self
+    
+    def size_str(self):
+        return "("+",".join([str(i) for i in self.data[0].shape])+"),"+str(len(self.data[1]))
+        
+    @staticmethod
+    def from_json(file):
+        try:
+            contents = json.loads(open(file).read())
+        except:
+            link = file # Try to see if this is a link instead of a file
+            contents = requests.get(link).json()
+        obj = ProcessedGames()
+        obj._instance = pd.Series(contents)
+        return obj
+    
+    def view(self):
+        return style.get_standard_data_table(self.data.reset_index(),"games")
   

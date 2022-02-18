@@ -40,6 +40,10 @@ class Card(ABC):
     @property
     def dataset_id(self):
         return self._instance['dataset_id']
+    
+    @property
+    def options(self):
+        return self._instance['options']
 
     def load(self,dataset_id,options):
         self._instance['dataset_id'] = dataset_id
@@ -60,9 +64,9 @@ class Card(ABC):
 
 class LOP(Card):
     def __init__(self):
-        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None],
+        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop"],
                                    index=["solutions","obj","max_tau_solutions",
-                                          "centroid_x","outlier_solution","dataset_id","source_dataset_id","options","D"])
+                                          "centroid_x","outlier_solution","dataset_id","source_dataset_id","options","D","method"])
     
     def prepare(self,processed_dataset):
         self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
@@ -82,7 +86,7 @@ class LOP(Card):
         
         D = self.D
         # Solve using LP which is faster
-        delta_lp,details_lp = pyrankability.rank.solve(D,method='lop',cont=True)
+        delta_lp,details_lp = pyrankability.rank.solve(D,method=self.method,cont=True)
 
         # Next threshold numbers close to 1.0 or 0.0 and then convert to a dictionary style that is passed to later functions
         orig_sol_x = pyrankability.common.threshold_x(details_lp['x'])
@@ -99,7 +103,7 @@ class LOP(Card):
 
         # Now solve BILP
         cont = False
-        delta,details = pyrankability.rank.solve(D,method='lop',fix_x=fix_x,cont=cont)
+        delta,details = pyrankability.rank.solve(D,method=self.method,fix_x=fix_x,cont=cont)
         orig_sol_x = details['x']
         orig_obj = details['obj']
         first_solution = details['P'][0]
@@ -111,7 +115,7 @@ class LOP(Card):
         # Now we will see if there are multiple optimal solutions
         try:
             cont = False
-            other_delta,other_detail = pyrankability.search.solve_any_diff(D,orig_obj,orig_sol_x,method='lop')
+            other_delta,other_detail = pyrankability.search.solve_any_diff(D,orig_obj,orig_sol_x,method=self.method)
             other_solution = other_detail['perm']
             #print(other_solution['details']['P'])
             self.add_solution(other_solution)
@@ -121,14 +125,30 @@ class LOP(Card):
 
         if len(self.solutions) > 1: # Multiple optimal
             #solve_pair(D,D2=None,method=["lop","hillside"][1],minimize=False,min_ndis=None,max_ndis=None,tau_range=None,lazy=False,verbose=False)
-            outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method='lop',minimize=False)
+            outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=False)
             self.add_solution(outlier_details['perm'])
             self.outlier_solution = outlier_details['perm']
 
-            centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method='lop',minimize=True)
+            centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=True)
             self.add_solution(centroid_details['perm'])
             self.centroid_solution = centroid_details['perm']
-               
+            
+            # Now get ready to run scip
+            obj_lop_scip,details_lop_scip = pyrankability.rank.solve(D,method=self.method,include_model=True,cont=False)
+            model = details_lop_scip['model']
+            model_file = pyrankability.common.write_model(model)
+            max_num_solutions = 1000
+            if type(self.options) == dict and "max_num_solutions" in self.options:
+                max_num_solutions = self.options['max_num_solutions']
+            results = pyrankability.search.scip_collect(D,model_file,max_num_solutions=max_num_solutions)
+            print("Number of solutions found with SCIP:",len(results['perms']))
+            for sol in results['perms']:
+                self.add_solution(sol)
+   
+    @property
+    def method(self):
+        return self._instance['method']
+    
     @property
     def D(self):
         return self._instance['D']
@@ -181,7 +201,10 @@ class LOP(Card):
     @staticmethod
     def from_json(file_link):
         contents = super(LOP, LOP).get_contents(file_link)
-        obj = LOP()
+        if 'method' not in contents or contents['method'] == 'lop': # TODO: remove backward compatibility
+            obj = LOP()
+        elif contents['method'] == 'hillside':
+            obj = Hillside()
         obj._instance = contents
         obj.load(contents['dataset_id'],contents['options'])
         obj._instance['D'] = pd.DataFrame(obj._instance['D'])
@@ -247,5 +270,103 @@ class LOP(Card):
         return contents
 
 class Hillside(LOP):
-    pass
+    def __init__(self):
+        super().__init__()
+        self._instance['method'] = 'hillside'
 
+class SystemOfEquations(Card):
+    def __init__(self,method):
+        self._instance = pd.Series(index=["r","ranking","perm","dataset_id","source_dataset_id","options","games","teams","method"])
+        self._instance['method'] = method
+    
+    def prepare(self,processed_dataset):
+        self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
+        d = pyrplib.dataset.ProcessedGames.from_json(processed_dataset['Link']).load(processed_dataset['Options'])
+
+        self.games,self.teams = d.data
+        
+    def run(self):
+        assert 'source_dataset_id' in self._instance.index
+        
+        if self.method == 'colley':
+            map_func = lambda linked: pyrankability.construct.colley_matrices(linked)
+        elif self.method == 'massey':
+            map_func = lambda linked: pyrankability.construct.massey_matrices(linked)
+        
+        M,b,indirect_M,indirect_b = pyrankability.construct.map_vectorized(self.games,map_func)
+        M = M.reindex(index=self.teams,columns=self.teams)
+        b = b.reindex(self.teams)
+        mask = b.isna()
+        b = b.loc[~mask]
+        M = M.loc[~mask,~mask]
+        #inxs = list(np.where(mask)[0])
+        ranking,r,perm = pyrankability.rank.ranking_from_matrices(M.fillna(0),b)
+        sorted_ixs = np.argsort(-r)
+        self.ranking = ranking.iloc[sorted_ixs]
+        self.r = r.iloc[sorted_ixs]
+        self.perm = perm
+
+    @property
+    def method(self):
+        return self._instance['method']
+        
+    @property
+    def games(self):
+        return self._instance['games']
+       
+    @games.setter
+    def games(self, games):
+        self._instance['games'] = games
+        
+    @property
+    def teams(self):
+        return self._instance['teams']
+       
+    @teams.setter
+    def teams(self, teams):
+        self._instance['teams'] = teams
+        
+    @property
+    def r(self):
+        return self._instance['r']
+       
+    @r.setter
+    def r(self, r):
+        self._instance['r'] = r    
+        
+    @property
+    def ranking(self):
+        return self._instance['ranking']
+       
+    @ranking.setter
+    def ranking(self, ranking):
+        self._instance['ranking'] = ranking
+        
+    @property
+    def perm(self):
+        return self._instance['perm']
+       
+    @perm.setter
+    def perm(self, perm):
+        self._instance['perm'] = perm   
+        
+    @staticmethod
+    def from_json(file_link):
+        contents = super(SystemOfEquations, SystemOfEquations).get_contents(file_link)
+        obj = SystemOfEquations(contents['method'])
+        obj._instance = contents
+        obj.load(contents['dataset_id'],contents['options'])
+        obj._instance['games'] = pd.DataFrame(obj._instance['games'])
+        obj._instance['r'] = pd.Series(obj._instance['r'])
+        obj._instance['ranking'] = pd.Series(obj._instance['ranking'])
+        obj._instance['perm'] = pd.Series(obj._instance['perm'])
+        return obj
+    
+    def view(self):
+        games = self.games
+        contents = [html.H2("Games"),pyrplib.style.get_standard_data_table(games,"games")]
+        contents.extend([html.H2("r"),pyrplib.style.get_standard_data_table(self.r,"r")])
+        contents.extend([html.H2("Ranking"),pyrplib.style.get_standard_data_table(self.ranking,"ranking")])
+        contents.extend([html.H2("Perm"),pyrplib.style.get_standard_data_table(self.perm,"perm")])
+                
+        return contents
