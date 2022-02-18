@@ -41,7 +41,10 @@ except:
 # Config contains all of the datasets and other configuration details
 config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
 
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+import os
+BASE_PATH = os.getenv("BASE_PATH","/")
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],url_base_pathname=BASE_PATH)
+print("BASE_PATH",BASE_PATH)
 server = app.server
 
 # the style arguments for the sidebar
@@ -68,12 +71,12 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Unprocessed", href="/", active="exact"),
-                dbc.NavLink("Processed", href="/processed", active="exact"),
-                dbc.NavLink("LOP", href="/lop", active="exact"),
-                dbc.NavLink("Hillside", href="/hillside", active="exact"),
-                dbc.NavLink("Colley", href="/colley", active="exact"),
-                dbc.NavLink("Massey", href="/massey", active="exact"),
+                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
+                dbc.NavLink("Processed", href=f"{BASE_PATH}processed", active="exact"),
+                dbc.NavLink("LOP", href=f"{BASE_PATH}lop", active="exact"),
+                dbc.NavLink("Hillside", href=f"{BASE_PATH}hillside", active="exact"),
+                dbc.NavLink("Colley", href=f"{BASE_PATH}colley", active="exact"),
+                dbc.NavLink("Massey", href=f"{BASE_PATH}massey", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -535,17 +538,17 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname == "/":
+    if pathname == BASE_PATH:
         return page_datasets
-    elif pathname == "/processed":
+    elif pathname == f"{BASE_PATH}processed":
         return page_processed
-    elif pathname == "/lop":
+    elif pathname == f"{BASE_PATH}lop":
         return page_lop
-    elif pathname == "/hillside":
+    elif pathname == f"{BASE_PATH}hillside":
         return page_hillside
-    elif pathname == "/massey":
+    elif pathname == f"{BASE_PATH}massey":
         return page_massey
-    elif pathname == "/colley":
+    elif pathname == f"{BASE_PATH}colley":
         return page_colley
     # if the user tries to reach a different page, return a 404 message
     return get_404(pathname)
