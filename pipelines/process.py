@@ -88,6 +88,8 @@ for dataset_id in processed_dataset_ids:
                 data = pyrplib.transformers.process_D(*data)
             elif func == "transformers.features_to_D":
                 data = pyrplib.transformers.features_to_D(*data,options=options)
+            elif func == "transformers.standardize_games_teams":
+                data = pyrplib.transformers.standardize_games_teams(*data,options=options)
         # datetime object containing current date and time
         now = datetime.now()
 

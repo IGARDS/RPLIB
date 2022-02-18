@@ -27,6 +27,7 @@ or your equivalent package manager
 The frontend can be run from RPLib/dash directory.
 
 cd RPLib/dash
+# export BASE_PATH=/rplib/ # if you want to run in a subdirectory
 ./run.sh <PORT>
   
 Navigate to http://localhost:PORT/

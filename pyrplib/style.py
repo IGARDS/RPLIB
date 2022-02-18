@@ -2,8 +2,11 @@ from dash import dash_table
 from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
+import pandas as pd
 
 def get_standard_data_table(df,id):
+    if type(df) == pd.Series:
+        df = df.to_frame().reset_index()
     def get_datatypes(dtype):
         if 'float' in dtype or 'double' in dtype or 'int' in dtype:
             return 'numeric'
