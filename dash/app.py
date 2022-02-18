@@ -11,6 +11,7 @@ import json
 from enum import Enum
 import diskcache
 import zipfile
+import tempfile
 
 import dash
 import dash_bootstrap_components as dbc
@@ -365,17 +366,17 @@ def update_selected_row_color_lop(active):
     return update_selected_row_color(active)
 
 def get_all_download_links_from_table(table_data, download_link_attribute):
-    def unprocess_link(link):
+    def unprocess_link(link, row):
         start = link.rfind('](')
         if start == -1:
             print('Attempted to strip processing on an unprocessed link')
             return link
-        return {'filename' : link[1:start], 'link' : link[start+2:-1]}
+        return {'filename' : str(row['Dataset ID'])+'_'+link[1:start], 'link' : link[start+2:-1]}
 
     unprocessed_links = []
     for dataset in range(len(table_data)):
         for link in table_data[dataset][download_link_attribute].split(', '):
-            unprocessed_links.append(unprocess_link(link))
+            unprocessed_links.append(unprocess_link(link, table_data[dataset]))
     filenames = {}
     # filenames in the table can be the same--prepend increasing number
     for link in unprocessed_links:
@@ -408,10 +409,15 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
                         print(f"The file {filename} at {link} could not be found: {str(exception)}")
                 if set_progress:
                     set_progress((str(i + 1), str(total)))
-    # saves zip file locally -- maybe a way to save this temporarily?
-    with open(zipfilename, "wb") as f:
+    # saves zip file in the machine dependent tempfile location 
+    # creates RPLib dir if not present in temp dir location
+    machine_temp_dir = tempfile.gettempdir()
+    if not os.path.exists(machine_temp_dir+"/"+"RPLIB"):
+        os.mkdir(machine_temp_dir+"/"+"RPLIB")
+    temp_directory_file = machine_temp_dir + "/" + "RPLIB/" + zipfilename
+    with open(temp_directory_file, "wb") as f:
         f.write(mf.getvalue())
-        return os.path.abspath(zipfilename)
+        return temp_directory_file
 
 def collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open):
     if n_clicks:
