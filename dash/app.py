@@ -756,7 +756,7 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
     Output("page-content", "children"), 
     [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname == "BASE_PATH":
+    if pathname == f"{BASE_PATH}":
         return page_unprocessed
     elif pathname == f"{BASE_PATH}processed":
         return page_processed
