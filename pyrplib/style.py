@@ -88,7 +88,7 @@ def get_standard_help_button(button_id, collapse_id, text):
             ]),
             html.Div([
                 dbc.Collapse(
-                    html.H3(text),
+                    dcc.Markdown(text),
                     id=collapse_id,
                     is_open=False
                 )

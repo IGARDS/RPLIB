@@ -608,7 +608,6 @@ unprocessed_download_button = \
 page_unprocessed = html.Div([
     html.H1("Unprocessed Datasets"),
     html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    unprocessed_download_button,
     unprocessed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -753,24 +752,10 @@ lop_download_button = \
                                                    LOP_TABLE_DOWNLOAD_ALL_ID,
                                                    LOP_TABLE_DOWNLOAD_PROGRESS_ID,
                                                    LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
-@app.callback(
-    Output("lop_help_show", "is_open"),
-    Input("lop_help_button", "n_clicks"),
-    State("lop_help_show", "is_open"),
-    prevent_initial_call=True,
-)
-def lop_help_button(n_clicks, is_open):
-    if n_clicks:
-        return not is_open
-    return is_open
-    
-lop_help_button = \
-    pyrplib.style.get_standard_help_button("lop_help_button", "lop_help_show", "help text")
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     lop_download_button,
-    lop_help_button,
     lop_table,
     html.Br(),
     html.H2("Selected content will appear below"),
