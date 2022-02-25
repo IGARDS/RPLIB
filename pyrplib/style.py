@@ -79,3 +79,20 @@ def get_standard_download_all_button(button_id, download_id, progress_id, collap
         ]
     ) 
     return button
+
+def get_standard_help_button(button_id, collapse_id, text):
+    button = html.Div(
+        [   
+            html.Div([
+                html.Button(id=button_id, children="?")
+            ]),
+            html.Div([
+                dbc.Collapse(
+                    html.H3(text),
+                    id=collapse_id,
+                    is_open=False
+                )
+            ])
+        ]
+    )
+    return button

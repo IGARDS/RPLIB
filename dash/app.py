@@ -517,6 +517,88 @@ def download_all_files_lop(set_progress, n_clicks, data):
 def download_all_files_lop_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
     return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
 
+@app.long_callback(
+    output=Output(HILLSIDE_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(HILLSIDE_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+    prevent_initial_call=True,
+)
+def download_all_files_hillside(set_progress, n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "hillside.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
+        return dcc.send_file(path_to_local_zipfile)
+    else:
+        return None
+
+@app.callback(
+    Output(HILLSIDE_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(HILLSIDE_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    prevent_initial_call=True,
+)
+def download_all_files_hillside_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+
+@app.long_callback(
+    output=Output(COLLEY_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(COLLEY_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(COLLEY_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(COLLEY_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+    prevent_initial_call=True,
+)
+def download_all_files_colley(set_progress, n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "colley.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
+        return dcc.send_file(path_to_local_zipfile)
+
+@app.callback(
+    Output(COLLEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(COLLEY_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(COLLEY_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(COLLEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    prevent_initial_call=True,
+)
+def download_all_files_colley_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+
+@app.long_callback(
+    output=Output(MASSEY_TABLE_DOWNLOAD_ALL_ID, "data"),
+    inputs=(Input(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+            State(MASSEY_TABLE_ID, "derived_virtual_data")),
+    progress=[Output(MASSEY_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
+              Output(MASSEY_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
+    prevent_initial_call=True,
+)
+def download_all_files_massey(set_progress, n_clicks, data):
+    if n_clicks != None:
+        suggested_zipfilename = "massey.zip"
+        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
+                                                          suggested_zipfilename, set_progress)
+        return dcc.send_file(path_to_local_zipfile)
+    else:
+        return None
+
+@app.callback(
+    Output(MASSEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    Input(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
+    Input(MASSEY_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
+    Input(MASSEY_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
+    State(MASSEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
+    prevent_initial_call=True,
+)
+def download_all_files_massey_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
+    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+
 unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
 unprocessed_download_button = \
     pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
@@ -617,8 +699,8 @@ def update_selected_row_color_colley(active):
 
 @app.callback(
     Output("hillside_output", "children"),
-    Input("hillside_table", "active_cell"),
-    State("hillside_table", "derived_viewport_data"),
+    Input(HILLSIDE_TABLE_ID, "active_cell"),
+    State(HILLSIDE_TABLE_ID, "derived_viewport_data"),
 )
 def cell_clicked_hillside(cell,data):
     if cell is None:
@@ -647,12 +729,11 @@ def cell_clicked_hillside(cell,data):
         return dash.no_update  
     
 @app.callback(
-    Output("hillside_table", "style_data_conditional"),
-    [Input("hillside_table", "active_cell")]
+    Output(HILLSIDE_TABLE_ID, "style_data_conditional"),
+    [Input(HILLSIDE_TABLE_ID, "active_cell")]
 )
 def update_selected_row_color_hillside(active):
     return update_selected_row_color(active)
-
 
 
 processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed_table")
@@ -672,10 +753,24 @@ lop_download_button = \
                                                    LOP_TABLE_DOWNLOAD_ALL_ID,
                                                    LOP_TABLE_DOWNLOAD_PROGRESS_ID,
                                                    LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
+@app.callback(
+    Output("lop_help_show", "is_open"),
+    Input("lop_help_button", "n_clicks"),
+    State("lop_help_show", "is_open"),
+    prevent_initial_call=True,
+)
+def lop_help_button(n_clicks, is_open):
+    if n_clicks:
+        return not is_open
+    return is_open
+    
+lop_help_button = \
+    pyrplib.style.get_standard_help_button("lop_help_button", "lop_help_show", "help text")
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     lop_download_button,
+    lop_help_button,
     lop_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -683,25 +778,47 @@ page_lop = html.Div([
 ])
 
 hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards, HILLSIDE_TABLE_ID)
+hillside_download_button = \
+    pyrplib.style.get_standard_download_all_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   HILLSIDE_TABLE_DOWNLOAD_ALL_ID,
+                                                   HILLSIDE_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   HILLSIDE_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    hillside_download_button,
     hillside_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
     html.Div(id="hillside_output")
     ])
 
 massey_table = pyrplib.style.get_standard_data_table(df_massey_cards, MASSEY_TABLE_ID)
+massey_download_button = \
+    pyrplib.style.get_standard_download_all_button(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   MASSEY_TABLE_DOWNLOAD_ALL_ID,
+                                                   MASSEY_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   MASSEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    massey_download_button,
     massey_table,
+    html.Br(),
+    html.H2("Selected content will appear below"),
     html.Div(id="massey_output")
     ])
 
 colley_table = pyrplib.style.get_standard_data_table(df_colley_cards, COLLEY_TABLE_ID)
+colley_download_button = \
+    pyrplib.style.get_standard_download_all_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   COLLEY_TABLE_DOWNLOAD_ALL_ID,
+                                                   COLLEY_TABLE_DOWNLOAD_PROGRESS_ID,
+                                                   COLLEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    colley_download_button,
     colley_table,
     html.Div(id="colley_output")
     ])
