@@ -7,6 +7,7 @@ import pandas as pd
 def get_standard_data_table(df,id):
     if type(df) == pd.Series:
         df = df.to_frame().reset_index()
+    df = df.fillna("")
     def get_datatypes(dtype):
         if 'float' in dtype or 'double' in dtype or 'int' in dtype:
             return 'numeric'
