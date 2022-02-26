@@ -296,7 +296,7 @@ def cell_clicked_dataset(cell,data):
     datasets_df = config.datasets_df.set_index('Dataset ID')
     links = datasets_df.loc[dataset_id,'Download links']
     loader = datasets_df.loc[dataset_id,'Loader']
-    description = datasets_df.loc[dataset_id,'Description']
+    description = str(datasets_df.loc[dataset_id,'Description'])
     if selected is not None:
         loader_lib = ".".join(loader.split(".")[:-1])
         cls_str = loader.split(".")[-1]
