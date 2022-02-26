@@ -6,8 +6,6 @@ from .. import style
 class Unprocessed(dataset.Unprocessed):
     def load(self,options={}):
         """Returns a dataframe with outcomes of NCAA March Madness games played.
-        :rtype: pd.DataFrame
-        :return: dataframe of games with team names, scores, and home/away/neutral location notes
         """
         from marchmadness_study import base
 

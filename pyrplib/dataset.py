@@ -16,10 +16,16 @@ class Unprocessed(ABC):
         
     @abstractmethod
     def load(self,options={}):
+        """
+        Code that loads the data from the links
+        """
         pass
     
     @abstractmethod
     def data(self):
+        """
+        Returns all the data objects in tuple
+        """
         pass
     
     @abstractmethod
