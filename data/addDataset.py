@@ -90,28 +90,31 @@ def add_processed(config, just_added=None):
             if individual_process_req == 'q':
                 return 'q'
             if 'y' in individual_process_req:
+                new_rows = []
                 new_id = processed['Dataset ID'].max() + 1
                 for row in just_added.index:
                     ret, new_row = individually_add_to_process_table(processed, unprocessed_row=just_added.loc[row], new_id=new_id)
                     new_id += 1
                     if ret == 'q':
                         return 'q'
-                    # need to add new_rows handling
+                    new_rows.append(new_row)
             else:
                 ret, new_rows = add_all_to_process_table(processed, unprocessed_df=just_added)
         else:
             ret, new_rows = individually_add_to_process_table(processed, unprocessed_row=just_added)
         if ret == 'q':
             return 'q'
-        # Run the process pipeline
-        path_to_pipelines = RPLIB_PIPELINES_PREFIX
-        while not os.path.exists(path_to_pipelines):
-            path_to_pipelines = input("Pipelines folder couldn't be found. Enter the path to the RPLib/pipelines folder: ")
-        if len(new_rows) > 1:
-            subprocess.run([path_to_pipelines + "/process.py", f"{processed['Dataset ID'].max() + 1}:"+ \
-                                                               f"{processed['Dataset ID'].max() + 1 + len(new_rows)}"])
-        else:
-            subprocess.run([path_to_pipelines + "/process.py", f"{processed['Dataset ID'].max() + 1}"])
+        # Run the process pipeline 
+        # TODO: This is broken right now
+        # path_to_pipelines = RPLIB_PIPELINES_PREFIX
+        # while not os.path.exists(path_to_pipelines):
+        #     path_to_pipelines = input("Pipelines folder couldn't be found. Enter the path to the RPLib/pipelines folder: ")
+        # if len(new_rows) > 1:
+        #     subprocess.run([path_to_pipelines + "/process.py", f"{processed['Dataset ID'].max() + 1}:"+ \
+        #                                                        f"{processed['Dataset ID'].max() + 1 + len(new_rows)}"])
+        # else:
+        #     subprocess.run([path_to_pipelines + "/process.py", f"{processed['Dataset ID'].max() + 1}"])
+        return SUCCESS
     else:
         # Request info from the user ab the unprocessed table
         print("UNIMPLEMENTED")
@@ -130,7 +133,7 @@ def add_all_to_process_table(processed, unprocessed_df):
     print(f'\nThe following 1/2 rows have been appended to the processed table:\n {new_rows.head(n=2)}\n')
     return SUCCESS, new_rows
 
-def individually_add_to_process_table(processed, unprocessed_row, new_id):
+def individually_add_to_process_table(processed, unprocessed_row, new_id=None):
     att, mask = get_base_att_mask_for_processed(processed, unprocessed_row, new_id)
     for var in list(processed.columns[mask]):
         inp = input(f"Please enter a '{var}': ")
@@ -144,20 +147,20 @@ def individually_add_to_process_table(processed, unprocessed_row, new_id):
 
 def get_base_att_mask_for_processed(processed, unprocessed, start_dataset_id=None):
     # get_command_type and check one of transform options
-    prompt = "\nPlease enter a 'Command Type'. Your options are combinations of:\n" + "\n".join(TRANSFORM_TYPES) + "\nInput: "
-    command_type = input(prompt)
+    prompt = "\nPlease enter a 'Command'. Your options are combinations of:\n" + "\n".join(TRANSFORM_TYPES) + "\nInput: "
+    command = input(prompt)
     # Next available Dataset ID
-    new_len = len(unprocessed['Dataset ID']) - 1
+    new_len = max(len(unprocessed['Dataset ID']) - 1, 1)
     if start_dataset_id is None:
         start_dataset_id = processed['Dataset ID'].max() + 1
     # Don't set these as they are already set, (Link column is added in config and shouldn't be output at all)
     mask = (processed.columns != 'Dataset ID') & (processed.columns != 'Source Dataset ID') & \
-           (processed.columns != 'Last Processed Datetime') & (processed.columns != 'Command Type') & \
+           (processed.columns != 'Last Processed Datetime') & (processed.columns != 'Command') & \
            (processed.columns != 'Link')
     att = {'Dataset ID': [d_id for d_id in range(start_dataset_id, start_dataset_id + new_len)],
-           'Source Dataset ID': [unprocessed['Dataset ID']],
+           'Source Dataset ID': list(unprocessed['Dataset ID']),
            'Last Processed Datetime': [None for _ in range(new_len)], 
-           'Command Type': [command_type for _ in range(new_len)]}
+           'Command': [command for _ in range(new_len)]}
     return att, mask
 
 def add_single_dataset(unprocessed):
