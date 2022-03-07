@@ -34,6 +34,8 @@ def get_standard_data_table(df,id):
             'height': 'auto',
             'textAlign': 'left'
         },
+        sort_action="native",
+        sort_mode="multi",
         filter_action='native',
         filter_options={
             'case': 'insensitive'
