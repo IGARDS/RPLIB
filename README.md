@@ -33,5 +33,16 @@ cd RPLib/dash
 Navigate to http://localhost:PORT/
   
 ### Processing a file example
+RANKING_TOOLBOX_DIR=$HOME/ranking_toolbox
+
+SCIP_BIN_DIR=/usr/local/SCIPOptSuite/bin
+
+export PATH=$PATH:$SCIP_BIN_DIR:$RANKING_TOOLBOX_DIR/scip
+
+which scip
+
+which scip_collect.sh
+
+which scip_count.sh
   
-python $HOME/RPLib/pipelines/create_lop_card.py 13 13
+python $HOME/RPLib/pipelines/run.py lop 13

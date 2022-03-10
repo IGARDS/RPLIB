@@ -18,7 +18,7 @@ class Unprocessed(dataset.Unprocessed):
         data_year = data_year.infer_objects()
         data_year['SAT/ACT 25th-75th Percentile Mean'] = (data_year['SAT/ACT 25th Percentile'].astype(int)+data_year['SAT/ACT 75th Percentile'].astype(int))/2
         
-        self.data_year = data_year.set_index('School Name')
+        self.data_year = data_year#.set_index('School Name')
         return self
     
     def data(self):

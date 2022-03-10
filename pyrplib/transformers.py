@@ -5,51 +5,17 @@ from tqdm import tqdm
 import itertools
 from sklearn.pipeline import Pipeline
 
-# +
-
 from pyrankability import utils
 from pyrankability import construct
 
 from . import dataset
 
-#sys.path.insert(0,"%s/rankability_toolbox_dev"%home)
-#sys.path.insert(0,"%s/RPLib"%home)
+def select_index(df,index):
+    return df.loc[index]
 
-# -
+def select(obj,col):
+    return obj[col]
 
-# ### Baseline 0001
-
-# **Function to compute a D matrix from games using hyperparameters**
-
-"""
-def compute_D(game_df,team_range,direct_thres,spread_thres):
-    map_func = lambda linked: pyrankability.construct.support_map_vectorized_direct_indirect(linked,direct_thres=direct_thres,spread_thres=spread_thres)
-    Ds = pyrankability.construct.V_count_vectorized(game_df,map_func)
-    for i in range(len(Ds)):
-        Ds[i] = Ds[i].reindex(index=team_range,columns=team_range)
-    return Ds
-"""
-
-
-class ComputeDTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, direct_thres=0, spread_thres=0,team_range=None):
-        self.team_range = team_range
-        self.direct_thres = direct_thres
-        self.spread_thres = spread_thres
-        
-    # Return self nothing else to do here
-    def fit( self, X, y = None  ):
-        return self
-    
-    # X might be the games dataframe
-    def transform(self, X, y = None ):
-        map_func = lambda linked: construct.support_map_vectorized_direct_indirect(linked, direct_thres=self.direct_thres, spread_thres=self.spread_thres)
-        Ds = construct.V_count_vectorized(X, map_func)
-        if self.team_range is not None:
-            for i in range(len(Ds)):
-                Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
-        return Ds
-    
 def count(games,teams):
     trans = ComputeDTransformer()
     trans.fit(games)
@@ -133,6 +99,26 @@ def features_to_D(df_features,options={}):
     processed_D.short_type = "D"
     
     return processed_D
+
+class ComputeDTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, direct_thres=0, spread_thres=0,team_range=None):
+        self.team_range = team_range
+        self.direct_thres = direct_thres
+        self.spread_thres = spread_thres
+        
+    # Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+    
+    # X might be the games dataframe
+    def transform(self, X, y = None ):
+        map_func = lambda linked: construct.support_map_vectorized_direct_indirect(linked, direct_thres=self.direct_thres, spread_thres=self.spread_thres)
+        Ds = construct.V_count_vectorized(X, map_func)
+        if self.team_range is not None:
+            for i in range(len(Ds)):
+                Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
+        return Ds
+    
 
 """
 ['Selectivity Rank',

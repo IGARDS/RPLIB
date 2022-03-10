@@ -7,4 +7,5 @@ fi
 
 PORT=$1
 
+#gunicorn app:server -b :$PORT
 gunicorn app:server --reload -b :$PORT

@@ -17,6 +17,10 @@ class Unprocessed(dataset.Unprocessed):
             except:
                 contents = requests.get(link).json()
             contents = pd.Series(contents,name=i)
+            Ds = {}
+            for key in contents["Ds"].keys():
+                Ds[key] = pd.DataFrame(contents["Ds"][key])
+            contents["Ds"] = pd.Series(Ds)
             if self._data is None:
                 self._data = pd.DataFrame(columns=contents.index)
             self._data = self._data.append(contents)
@@ -26,6 +30,9 @@ class Unprocessed(dataset.Unprocessed):
         return self._data,
         
     def view(self):
-        return style.get_standard_data_table(self._data,"data_year")
+        data = self._data.copy()
+        data['Shape of Ds'] = data['Ds'].apply(lambda D: ",".join([str(i) for i in D.shape]))
+        data.drop('Ds',axis=1,inplace=True)
+        return style.get_standard_data_table(data,"data_year")
 
        
