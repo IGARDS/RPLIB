@@ -75,9 +75,13 @@ for dataset_id in processed_dataset_ids:
         load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
         cls = getattr(load_lib, cls_str)
         unprocessed = cls(source_dataset_id,links).load()
-        funcs = command.split("...")[0].split("(")[:-1]
+        #funcs = command.split("...")[0].split("(")[:-1]
         data = unprocessed.data()
+        command = command.replace("transformers.","pyrplib.transformers.")
+        exec(f"data = {command}")
+        """
         for func in funcs[::-1]:
+            # select(select_index(0,select_data(0,...)),"Ds")
             if func == "transformers.count":
                 data = pyrplib.transformers.count(*data)
             elif func == "transformers.direct":
@@ -90,6 +94,9 @@ for dataset_id in processed_dataset_ids:
                 data = pyrplib.transformers.features_to_D(*data,options=options)
             elif func == "transformers.standardize_games_teams":
                 data = pyrplib.transformers.standardize_games_teams(*data,options=options)
+            elif func == "transformers.select":
+                data = pyrplib.transformers.select(*data,options=options)
+        """
         # datetime object containing current date and time
         now = datetime.now()
 

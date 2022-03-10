@@ -123,7 +123,7 @@ class LOP(Card):
         except:
             print('Cannot find multiple solutions (or another problem occured)')
 
-        if len(self.solutions) > 1: # Multiple optimal
+        if True or len(self.solutions) > 1: # Multiple optimal
             #solve_pair(D,D2=None,method=["lop","hillside"][1],minimize=False,min_ndis=None,max_ndis=None,tau_range=None,lazy=False,verbose=False)
             outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=False)
             self.add_solution(outlier_details['perm'])
