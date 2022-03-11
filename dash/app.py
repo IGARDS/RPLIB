@@ -13,6 +13,7 @@ import diskcache
 import zipfile
 import tempfile
 import importlib
+import os
 
 import dash
 import dash_bootstrap_components as dbc
@@ -25,31 +26,16 @@ import altair as alt
 from dash.dependencies import Input, Output, State
 import urllib
 
-home = str(Path.home())
+import pyrankability
+import pyrplib
 
 RPLIB_DATA_PREFIX = os.environ.get("RPLIB_DATA_PREFIX")
 
-if RPLIB_DATA_PREFIX is None: # Set default
-    RPLIB_DATA_PREFIX=f'{home}/RPLib/data'
-    
-try:
-    import pyrankability as pyrankability
-    import pyrplib as pyrplib
-except:
-    print('Looking for packages in home directory')
-    sys.path.insert(0,f"{home}") # Add the home directory relevant paths to the PYTHONPATH
-    sys.path.insert(0,f"{home}/ranking_toolbox") # Add the home directory relevant paths to the PYTHONPATH
-    sys.path.insert(0,f"{home}/RPLib") # Add the home directory relevant paths to the PYTHONPATH
-    import pyrankability
-    import pyrplib
-    
 # Config contains all of the datasets and other configuration details
 config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
 cache = diskcache.Cache("./cache")
 long_callback_manager = DiskcacheLongCallbackManager(cache)
 
-
-import os
 BASE_PATH = os.getenv("BASE_PATH","/")
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],url_base_pathname=BASE_PATH, long_callback_manager=long_callback_manager)
 print("BASE_PATH",BASE_PATH)

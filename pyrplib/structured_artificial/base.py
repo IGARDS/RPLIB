@@ -26,7 +26,7 @@ class Unprocessed(dataset.Unprocessed):
             self._data = self._data.append(contents)
         return self
     
-    def data(self):
+    def data(self): # must return a tuple but there are no other rules!
         return self._data,
         
     def view(self):

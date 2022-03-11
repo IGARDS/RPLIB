@@ -1,0 +1,15 @@
+services:
+  dash_dev:
+    build:
+      context: .
+      dockerfile: dash.Dockerfile
+    user: $USER
+    ports:
+      - "7001:7001"
+    volumes:
+      - ./data:/app/data
+      - ./pyrplib:/app/pyrplib
+      - ./dash:/app/dash
+      - ./pipelines:/app/pipelines
+    environment:
+        - BASE_PATH=/rplib/
