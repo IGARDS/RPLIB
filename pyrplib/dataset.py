@@ -2,21 +2,33 @@
 import os
 import json
 import requests
-
-import pandas as pd
-
+import importlib
 from abc import ABC, abstractmethod
 
-from . import style
+import pandas as pd
 
 from enum import Enum
 
 from dash import html
 
+from . import style
+
 class UnprocessedType(Enum):
     D = 0
     Games = 1
     Features = 2
+    
+def load_unprocessed(unprocessed_source_id,datasets_df):
+    if datasets_df.index.name != 'Dataset ID':
+        datasets_df = datasets_df.set_index('Dataset ID')
+    links = datasets_df.loc[unprocessed_source_id,'Download links']
+    loader = datasets_df.loc[unprocessed_source_id,'Loader']
+    loader_lib = ".".join(loader.split(".")[:-1])
+    cls_str = loader.split(".")[-1]
+    load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+    cls = getattr(load_lib, cls_str)
+    unprocessed = cls(unprocessed_source_id,links).load()
+    return unprocessed
 
 class Unprocessed(ABC):
     def __init__(self,dataset_id,links):

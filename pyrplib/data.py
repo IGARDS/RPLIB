@@ -28,10 +28,14 @@ class Data:
         self.colley_cards_df['Link'] = DATA_PREFIX+"/colley/"+self.lop_cards_df['Dataset ID'].astype(str)+".json"
         
     def save_processed_datasets(self):
-        self.processed_datasets_df.drop("Link",axis=1,inplace=True)
-        self.processed_datasets_df.to_csv(f"{self.DATA_PREFIX}/processed_datasets.tsv",sep='\t')
+        processed_datasets_df = self.processed_datasets_df.copy()
+        if processed_datasets_df.index.name == "Dataset ID":
+            processed_datasets_df.reset_index(inplace=True)
+        processed_datasets_df.drop("Link",axis=1,inplace=True)
+        processed_datasets_df.to_csv(f"{self.DATA_PREFIX}/processed_datasets.tsv",sep='\t',index=False)
         
     def save_lop_datasets(self):
+        # TODO: fix to match pattern above
         self.lop_cards_df.drop("Link",axis=1,inplace=True)
         self.lop_cards_df.to_csv(f"{self.DATA_PREFIX}/lop_cards.tsv",sep='\t')
         
