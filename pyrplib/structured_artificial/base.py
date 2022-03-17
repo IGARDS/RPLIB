@@ -29,7 +29,8 @@ class Unprocessed(dataset.Unprocessed):
             contents = contents.join(Ds_df)
             if self._data is None:
                 self._data = contents
-            self._data = self._data.append(contents)
+            else:
+                self._data = self._data.append(contents)
         self._data.index.name = "Outer Index"
         self._data.reset_index(inplace=True)
         return self

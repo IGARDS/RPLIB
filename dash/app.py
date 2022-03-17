@@ -163,7 +163,7 @@ def get_processed(config):
     df = config.processed_datasets_df.copy()
             
     def process(row):
-        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Short Type','Type','Command','Size','Download'])
+        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Identifier','Short Type','Type','Command','Size','Download'])
         link = row['Link']
         entry['Dataset ID'] = row['Dataset ID']
         try:
@@ -173,6 +173,7 @@ def get_processed(config):
                 d = pyrplib.dataset.ProcessedGames.from_json(link).load()
             entry.loc['Source Dataset ID'] = d.source_dataset_id
             entry.loc['Source Dataset Name'] = datasets_df.loc[d.source_dataset_id,"Dataset Name"]
+            entry.loc['Identifier'] = row['Identifier']
             entry.loc['Dataset ID'] = d.dataset_id
             entry.loc['Short Type'] = d.short_type
             entry.loc['Type'] = d.type
@@ -362,7 +363,7 @@ def cell_clicked_processed(cell,data):
         cls_str = loader.split(".")[-1]
         load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
         cls = getattr(load_lib, cls_str)
-        unprocessed = cls(dataset_id,links).load()
+        unprocessed = cls(unprocessed_source_id,links).load()
         
         description = description.replace("\\n","\n")
         contents = [html.Br(),html.H2(dataset_name),html.H3("Description"),html.Pre(description),html.H3("Command"),html.Pre(command),html.H3("Options"),html.Pre(options_str)]+ [html.H3("Source Item data")] + unprocessed.view_item(index) + [html.H3("Data")] + obj.view()
