@@ -64,9 +64,9 @@ class Card(ABC):
 
 class LOP(Card):
     def __init__(self):
-        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop"],
+        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None],
                                    index=["solutions","obj","max_tau_solutions",
-                                          "centroid_x","outlier_solution","dataset_id","source_dataset_id","options","D","method"])
+                                          "centroid_x","outlier_solution","dataset_id","source_dataset_id","options","D","method","closest_pair","farthest_pair"])
     
     def prepare(self,processed_dataset):
         self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
@@ -123,28 +123,42 @@ class LOP(Card):
         except:
             print('Cannot find multiple solutions (or another problem occured)')
 
-        if True or len(self.solutions) > 1: # Multiple optimal
-            #solve_pair(D,D2=None,method=["lop","hillside"][1],minimize=False,min_ndis=None,max_ndis=None,tau_range=None,lazy=False,verbose=False)
-            outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=False)
-            self.add_solution(outlier_details['perm'])
-            self.outlier_solution = outlier_details['perm']
+        #solve_pair(D,D2=None,method=["lop","hillside"][1],minimize=False,min_ndis=None,max_ndis=None,tau_range=None,lazy=False,verbose=False)
+        outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=False)
+        self.add_solution(outlier_details['perm'])
+        self.outlier_solution = outlier_details['perm']
 
-            centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=True)
-            self.add_solution(centroid_details['perm'])
-            self.centroid_solution = centroid_details['perm']
+        centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=True)
+        self.add_solution(centroid_details['perm'])
+        self.centroid_solution = centroid_details['perm']
+
+        # Now get ready to run scip
+        obj_lop_scip,details_lop_scip = pyrankability.rank.solve(D,method=self.method,include_model=True,cont=False)
+        model = details_lop_scip['model']
+        model_file = pyrankability.common.write_model(model)
+        max_num_solutions = 1000
+        if type(self.options) == dict and "max_num_solutions" in self.options:
+            max_num_solutions = self.options['max_num_solutions']
+        results = pyrankability.search.scip_collect(D,model_file,max_num_solutions=max_num_solutions)
+        print("Number of solutions found with SCIP:",len(results['perms']))
+        for sol in results['perms']:
+            self.add_solution(sol)
+                
+        if len(self.solutions) > 1: # Multiple optimal available
+            obj_lop_pair, details_lop_pair = pyrankability.search.solve_pair(D,method=self.method,minimize=False)
+            perm_x = details_lop_pair['perm_x']
+            perm_y = details_lop_pair['perm_y']
+            self.add_solution(perm_x)
+            self.add_solution(perm_y)
+            self.farthest_pair = (perm_x,perm_y)
             
-            # Now get ready to run scip
-            obj_lop_scip,details_lop_scip = pyrankability.rank.solve(D,method=self.method,include_model=True,cont=False)
-            model = details_lop_scip['model']
-            model_file = pyrankability.common.write_model(model)
-            max_num_solutions = 1000
-            if type(self.options) == dict and "max_num_solutions" in self.options:
-                max_num_solutions = self.options['max_num_solutions']
-            results = pyrankability.search.scip_collect(D,model_file,max_num_solutions=max_num_solutions)
-            print("Number of solutions found with SCIP:",len(results['perms']))
-            for sol in results['perms']:
-                self.add_solution(sol)
-   
+            obj_lop_pair, details_lop_pair = pyrankability.search.solve_pair(D,method=self.method,minimize=True,min_ndis=1)
+            perm_x = details_lop_pair['perm_x']
+            perm_y = details_lop_pair['perm_y']
+            self.add_solution(perm_x)
+            self.add_solution(perm_y)
+            self.closest_pair = (perm_x,perm_y)
+            
     @property
     def method(self):
         return self._instance['method']
@@ -164,6 +178,22 @@ class LOP(Card):
     @obj.setter
     def obj(self, obj):
         self._instance['obj'] = obj
+        
+    @property
+    def farthest_pair(self):
+        return self._instance['farthest_pair']
+       
+    @farthest_pair.setter
+    def farthest_pair(self, farthest_pair):
+        self._instance['farthest_pair'] = farthest_pair
+        
+    @property
+    def closest_pair(self):
+        return self._instance['closest_pair']
+       
+    @closest_pair.setter
+    def closest_pair(self, closest_pair):
+        self._instance['closest_pair'] = closest_pair
         
     @property
     def centroid_x(self):

@@ -1,9 +1,13 @@
 import pandas as pd
 import csv
+import os
 
-class Config:
+import importlib
+
+class Data:
     def __init__(self,DATA_PREFIX):
         self.DATA_PREFIX=DATA_PREFIX
+        
         self.datasets_df = pd.read_csv(f"{DATA_PREFIX}/unprocessed_datasets.tsv",sep='\t')
         self.datasets_df['Download links'] = self.datasets_df['Download links'].str.split(",")
         self.datasets_df = self.datasets_df.infer_objects()
@@ -30,3 +34,16 @@ class Config:
     def save_lop_datasets(self):
         self.lop_cards_df.drop("Link",axis=1,inplace=True)
         self.lop_cards_df.to_csv(f"{self.DATA_PREFIX}/lop_cards.tsv",sep='\t')
+        
+    def load_unprocessed(self,dataset_id):
+        dataset = self.datasets_df.set_index('Dataset ID').loc[dataset_id]
+        links = dataset['Download links']
+        loader = dataset['Loader']
+
+        loader_lib = ".".join(loader.split(".")[:-1])
+        cls_str = loader.split(".")[-1]
+        load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+        cls = getattr(load_lib, cls_str)
+        unprocessed = cls(dataset_id,links).load()
+        
+        return unprocessed

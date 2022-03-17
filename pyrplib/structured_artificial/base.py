@@ -20,19 +20,23 @@ class Unprocessed(dataset.Unprocessed):
             Ds = {}
             for key in contents["Ds"].keys():
                 Ds[key] = pd.DataFrame(contents["Ds"][key])
-            contents["Ds"] = pd.Series(Ds)
+            Ds_df = pd.DataFrame([Ds]).T
+            Ds_df.index.name = "Inner Index"
+            Ds_df.columns = ["D"]
+            Ds_df = Ds_df.reset_index()
+            Ds_df.index = [contents.name]*len(Ds_df)
+            contents = contents.to_frame().drop("Ds").T
+            contents = contents.join(Ds_df)
             if self._data is None:
-                self._data = pd.DataFrame(columns=contents.index)
+                self._data = contents
             self._data = self._data.append(contents)
+        self._data.index.name = "Outer Index"
+        self._data.reset_index(inplace=True)
         return self
     
-    def data(self): # must return a tuple but there are no other rules!
-        return self._data,
-        
-    def view(self):
-        data = self._data.copy()
-        data['Shape of Ds'] = data['Ds'].apply(lambda D: ",".join([str(i) for i in D.shape]))
-        data.drop('Ds',axis=1,inplace=True)
-        return style.get_standard_data_table(data,"data_year")
-
+    def dash_ready_data(self):
+        return self.data().drop("D",axis=1)
+    
+    def type(self):
+        return str(dataset.UnprocessedType.D)
        

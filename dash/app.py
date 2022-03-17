@@ -32,7 +32,7 @@ import pyrplib
 RPLIB_DATA_PREFIX = os.environ.get("RPLIB_DATA_PREFIX")
 
 # Config contains all of the datasets and other configuration details
-config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
+config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 cache = diskcache.Cache("./cache")
 long_callback_manager = DiskcacheLongCallbackManager(cache)
 
@@ -120,21 +120,41 @@ COLLEY_TABLE_DOWNLOAD_PROGRESS_ID = "colley_download_progress"
 COLLEY_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID = "colley_download_progress_collapse"
 
 def get_datasets(config):
-    df = config.datasets_df.copy()
-    
-    def process(links):
-        try:
-            if type(links) != list:
-                links = [links]
-            res = ", ".join(["[%s](%s)"%(link.split("/")[-1],link) for link in links])
-            return res
-        except:
-            return "Could not process. Check data."
+    columns = ["Dataset ID","Dataset Name","Type","Loader","Length of Data","Description"]
+    df = pd.DataFrame(columns=columns).set_index("Dataset ID")
+    #Dataset Name	Description	Type
+    #def process(links):
+    #    try:
+    #        if type(links) != list:
+    #            links = [links]
+    #        res = ", ".join(["[%s](%s)"%(link.split("/")[-1],link) for link in links])
+    #        return res
+    #    except:
+    #        return "Could not process. Check data."
 
-    df['Download links'] = df['Download links'].apply(process)
-    df = df.drop('Loader',axis=1).drop('Description',axis=1)
+    #df['Download links'] = df['Download links'].apply(process)
+    datasets_df = config.datasets_df.set_index('Dataset ID')
+    for index in datasets_df.index:
+        new_df = pd.DataFrame(columns=columns).set_index('Dataset ID')
+        links = datasets_df.loc[index,'Download links']
+        loader = datasets_df.loc[index,'Loader']
+
+        loader_lib = ".".join(loader.split(".")[:-1])
+        cls_str = loader.split(".")[-1]
+        load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+        cls = getattr(load_lib, cls_str)
+        unprocessed = cls(index,links).load()
+        
+        new_df.loc[index,"Dataset Name"] = datasets_df.loc[index,"Dataset Name"] 
+        new_df.loc[index,"Description"] = datasets_df.loc[index,"Description"]
+        new_df.loc[index,"Loader"] = loader
+        new_df.loc[index,"Type"] = unprocessed.type()
+        new_df.loc[index,"Length of Data"] = len(unprocessed.data())
+        df = df.append(new_df)
     
-    df = df.sort_values(by='Dataset Name')
+    #df = df.drop('Loader',axis=1).drop('Description',axis=1)
+    
+    df = df.sort_values(by='Dataset Name').reset_index()
     
     return df
 
@@ -267,6 +287,8 @@ def update_selected_row_color(active):
         )
     return style
 
+from dash import dcc
+
 @app.callback(
     Output("datasets_output", "children"),
     Input(UNPROCESSED_TABLE_ID, "active_cell"),
@@ -289,7 +311,9 @@ def cell_clicked_dataset(cell,data):
         load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
         cls = getattr(load_lib, cls_str)
         unprocessed = cls(dataset_id,links).load()
-        contents = [html.Br(),html.H2(dataset_name),html.P(description),]+[unprocessed.view()]
+        description = description.replace("\\n","\n")
+        description_html = [html.H3("Description"),html.Pre(description)]
+        contents = [html.Br(),html.H2(dataset_name)] + description_html + [html.H3("Data")] + unprocessed.view()
         return html.Div(contents)
     else:
         return dash.no_update  
@@ -313,8 +337,11 @@ def cell_clicked_processed(cell,data):
     selected = data[row][col]
     if selected is not None:
         dataset_id = data[row]['Dataset ID']
-        link = config.processed_datasets_df.set_index('Dataset ID').loc[dataset_id,"Link"]
-        options = config.processed_datasets_df.set_index('Dataset ID').loc[dataset_id,"Options"]
+        processed_datasets_df = config.processed_datasets_df.set_index('Dataset ID')
+        datasets_df = config.datasets_df.set_index('Dataset ID')
+        
+        link = processed_datasets_df.loc[dataset_id,"Link"]
+        options = processed_datasets_df.loc[dataset_id,"Options"]
         if type(options) == str:
             options = json.loads(options)
             options_str = json.dumps(options,indent=2)
@@ -323,11 +350,22 @@ def cell_clicked_processed(cell,data):
         short_type = data[row]['Short Type']
         if short_type == "D":
             obj = pyrplib.dataset.ProcessedD.from_json(link).load()
-        datasets_df = config.datasets_df.set_index('Dataset ID')
         description = datasets_df.loc[obj.source_dataset_id,"Description"]
         dataset_name = datasets_df.loc[obj.source_dataset_id,"Dataset Name"]
         command = obj.command
-        contents = [html.Br(),html.H2("Source Dataset Name"),html.P(dataset_name),html.H2("Description"),html.P(description),html.H2("Command"),html.P(command),html.H2("Options"),html.Pre(options_str)]+[obj.view()]
+        
+        unprocessed_source_id = obj.source_dataset_id
+        index = processed_datasets_df.loc[dataset_id,"Index"]
+        links = datasets_df.loc[unprocessed_source_id,'Download links']
+        loader = datasets_df.loc[unprocessed_source_id,'Loader']
+        loader_lib = ".".join(loader.split(".")[:-1])
+        cls_str = loader.split(".")[-1]
+        load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+        cls = getattr(load_lib, cls_str)
+        unprocessed = cls(dataset_id,links).load()
+        
+        description = description.replace("\\n","\n")
+        contents = [html.Br(),html.H2(dataset_name),html.H3("Description"),html.Pre(description),html.H3("Command"),html.Pre(command),html.H3("Options"),html.Pre(options_str)]+ [html.H3("Source Item data")] + unprocessed.view_item(index) + [html.H3("Data")] + obj.view()
         return html.Div(contents)
     else:
         return dash.no_update  
@@ -362,10 +400,20 @@ def cell_clicked_lop(cell,data):
         
         processed_datasets_df = config.processed_datasets_df.set_index('Dataset ID') 
         datasets_df = config.datasets_df.set_index('Dataset ID') 
-        description = datasets_df.loc[processed_datasets_df.loc[obj.source_dataset_id,"Source Dataset ID"],"Description"]
-        dataset_name = datasets_df.loc[processed_datasets_df.loc[obj.source_dataset_id,"Source Dataset ID"],"Dataset Name"]
+        unprocessed_source_id = processed_datasets_df.loc[obj.source_dataset_id,"Source Dataset ID"]
+        description = datasets_df.loc[unprocessed_source_id,"Description"]
+        dataset_name = datasets_df.loc[unprocessed_source_id,"Dataset Name"]
+        index = processed_datasets_df.loc[obj.source_dataset_id,"Index"]
         
-        contents = [html.Br(),html.H2("Source Dataset Name"),html.P(dataset_name),html.H2("Description"),html.P(description),html.H2("Options"),html.Pre(options_str)]+obj.view()
+        links = datasets_df.loc[unprocessed_source_id,'Download links']
+        loader = datasets_df.loc[unprocessed_source_id,'Loader']
+        loader_lib = ".".join(loader.split(".")[:-1])
+        cls_str = loader.split(".")[-1]
+        load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+        cls = getattr(load_lib, cls_str)
+        unprocessed = cls(dataset_id,links).load()
+        
+        contents = [html.Br(),html.H2("Source Dataset Name"),html.P(dataset_name),html.H2("Description"),html.P(description),html.H2("Options"),html.Pre(options_str)] + [unprocessed.view_item(index)] + obj.view()
         return html.Div(contents)
     else:
         return dash.no_update  

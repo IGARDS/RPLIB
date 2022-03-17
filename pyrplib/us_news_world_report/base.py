@@ -18,13 +18,16 @@ class Unprocessed(dataset.Unprocessed):
         data_year = data_year.infer_objects()
         data_year['SAT/ACT 25th-75th Percentile Mean'] = (data_year['SAT/ACT 25th Percentile'].astype(int)+data_year['SAT/ACT 75th Percentile'].astype(int))/2
         
-        self.data_year = data_year#.set_index('School Name')
+        self.data_year = data_year.set_index('School Name')
+        
+        self._data = pd.DataFrame([[self.data_year]],columns=["data_year"])
+
         return self
     
-    def data(self):
-        return self.data_year,
+    def type(self):
+        return str(dataset.UnprocessedType.Features)
         
-    def view(self):
-        return style.get_standard_data_table(self.data_year,"data_year")
+    def dash_ready_data(self):
+        return self.data()
 
        
