@@ -46,3 +46,6 @@ which scip_collect.sh
 which scip_count.sh
   
 python $HOME/RPLib/pipelines/run.py lop 13
+
+## Docker Compose
+USER=$(id -u) docker-compose up --build
