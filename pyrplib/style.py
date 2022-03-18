@@ -3,6 +3,8 @@ from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
 import pandas as pd
+from dash import html
+import json
 
 def get_standard_data_table(df,id):
     if type(df) == pd.Series:
@@ -82,3 +84,20 @@ def get_standard_download_all_button(button_id, download_id, progress_id, collap
         ]
     ) 
     return button
+
+def view_item(item,id):
+    html_comps = []
+    j = 0
+    for index in item.index:
+        print(index)
+        html_comps.append(html.H4(index))
+        d = item[index]
+        if type(d) == pd.DataFrame:
+            html_comps.append(get_standard_data_table(d,f"data_view_item_{j}")) 
+        elif type(d) == list:
+            html_comps.append(html.Pre("\n".join(d)))
+        else:
+            html_comps.append(html.Pre(d))
+        j += 1
+    
+    return html_comps

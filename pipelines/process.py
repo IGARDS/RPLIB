@@ -42,7 +42,7 @@ def get_ids(str_ids):
     return ids
 processed_dataset_ids = get_ids(sys.argv[1].split(",")) #[int(i) for i in sys.argv[1].split(",")]
 
-config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
+config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 
 datasets_df = config.datasets_df
 processed_datasets_df = config.processed_datasets_df
@@ -56,6 +56,7 @@ from datetime import datetime
 
 for dataset_id in processed_dataset_ids:
     dataset = processed_datasets_df.loc[dataset_id]
+    index = dataset['Index']
     print(dataset)
     source_dataset_id = dataset['Source Dataset ID']
     print(source_dataset_id,"->",dataset_id)
@@ -69,49 +70,31 @@ for dataset_id in processed_dataset_ids:
         print(json.dumps(options, indent=2))
 
     collection = dataset.loc['Collection']
-    if "base" in loader: # migration check
-        loader_lib = ".".join(loader.split(".")[:-1])
-        cls_str = loader.split(".")[-1]
-        load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
-        cls = getattr(load_lib, cls_str)
-        unprocessed = cls(source_dataset_id,links).load()
-        #funcs = command.split("...")[0].split("(")[:-1]
-        data = unprocessed.data()
-        command = command.replace("transformers.","pyrplib.transformers.")
-        exec(f"data = {command}")
-        """
-        for func in funcs[::-1]:
-            # select(select_index(0,select_data(0,...)),"Ds")
-            if func == "transformers.count":
-                data = pyrplib.transformers.count(*data)
-            elif func == "transformers.direct":
-                data = pyrplib.transformers.direct(*data)
-            elif func == "transformers.indirect":
-                data = pyrplib.transformers.indirect(*data)
-            elif func == "transformers.process_D":
-                data = pyrplib.transformers.process_D(*data)
-            elif func == "transformers.features_to_D":
-                data = pyrplib.transformers.features_to_D(*data,options=options)
-            elif func == "transformers.standardize_games_teams":
-                data = pyrplib.transformers.standardize_games_teams(*data,options=options)
-            elif func == "transformers.select":
-                data = pyrplib.transformers.select(*data,options=options)
-        """
-        # datetime object containing current date and time
-        now = datetime.now()
+    loader_lib = ".".join(loader.split(".")[:-1])
+    cls_str = loader.split(".")[-1]
+    load_lib = importlib.import_module(f"pyrplib.{loader_lib}")
+    cls = getattr(load_lib, cls_str)
+    unprocessed = cls(source_dataset_id,links).load()
+    #funcs = command.split("...")[0].split("(")[:-1]
+    data = unprocessed.data()
+    command = command.replace("transformers.","pyrplib.transformers.")
+    exec(f"data = {command}")
+    
+    # datetime object containing current date and time
+    now = datetime.now()
 
-        # dd/mm/YY H:M:S
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print("date and time =", dt_string)
-        
-        data.source_dataset_id = source_dataset_id
-        data.dataset_id = dataset_id
-        data.command = command
-        
-        processed_datasets_df.loc[dataset_id,'Last Processed Datetime'] = dt_string
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print("date and time =", dt_string)
 
-        result_path = f"../data/{collection}/{dataset_id}.json"
-        print('Writing to',result_path)
-        open(result_path,'w').write(data.to_json())
+    data.source_dataset_id = source_dataset_id
+    data.dataset_id = dataset_id
+    data.command = command
+
+    processed_datasets_df.loc[dataset_id,'Last Processed Datetime'] = dt_string
+
+    result_path = f"../data/{collection}/{dataset_id}.json"
+    print('Writing to',result_path)
+    open(result_path,'w').write(data.to_json())
         
 config.save_processed_datasets()

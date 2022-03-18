@@ -10,13 +10,14 @@ class Unprocessed(dataset.Unprocessed):
         :return: dataframe of IO Japan data
         """
         D = pd.read_csv(*self.links,header=None)
-        self.D = D      
+        self.D = D
+        
+        self._data = pd.DataFrame([[self.D]],columns=["D"])
+        
         return self
     
-    def data(self):
-        return self.D,
+    def type(self):
+        return str(dataset.UnprocessedType.D)
     
-    def view(self):
-        return style.get_standard_data_table(self.D,"japan_io_data")
-
-       
+    def dash_ready_data(self):
+        return self.data()

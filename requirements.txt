@@ -18,3 +18,7 @@ matplotlib==3.4.3
 nx_altair==0.1.6
 diskcache==5.4.0
 multiprocess==0.70.12.2
+requests
+joblib==1.1.0
+scikit-learn==1.0.2
+tqdm
