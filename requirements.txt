@@ -14,7 +14,7 @@ pandas==1.2.1
 ipython==7.29.0
 pygraphviz==1.7
 networkx==2.6.3
-matplotlib==3.4.3
+matplotlib
 nx_altair==0.1.6
 diskcache==5.4.0
 multiprocess==0.70.12.2
@@ -22,3 +22,4 @@ requests
 joblib==1.1.0
 scikit-learn==1.0.2
 tqdm
+visdcc==0.0.40
