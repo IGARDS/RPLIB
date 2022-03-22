@@ -1,2 +1,0 @@
-dash_bootstrap_components
-nx_altair
