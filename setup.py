@@ -9,7 +9,10 @@ setup(name='pyrplib',
       license='MIT',
       install_requires=[
           'dash',
-          'matplotlib'
+          'matplotlib',
+          'nx_altair',
+          'pygraphviz',
+          'dash_bootstrap_components'
       ],
       packages=['pyrplib'],
       zip_safe=False)
