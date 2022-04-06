@@ -84,6 +84,31 @@ def example_create(options=example_get_create_options()):
                               upset_func=lambda r1,r2: (abs(r1-r2) <= options['threshold']) and np.random.uniform() > 0.5)
     return D
 
+def example_create3(options):
+    """
+    Example create function. These functions must return a dominance (D) matrix that is a pandas dataframe. 
+    Options is a dictionary. There is one required key/value which is the number_of_rows_columns. 
+    It may also have additional arguments.
+    """
+    assert type(options) == dict
+    D = domplusnoise(options['number_of_rows_columns'],options['percentage'],options['low'],options['high'])
+    if options['percent_links_to_remove'] > 0:
+        D = removelinks(D,options['percent_links_to_remove'])
+    if options['make_unweighted']:
+        D = unweighted(D)
+    return D
+
+def example_get_create_options3():
+    return {
+        "number_matrices":10,
+        "number_of_rows_columns": 20,
+        "low":0,
+        "high":5,
+        "percentage":30,
+        "percent_links_to_remove":10,
+        "make_unweighted":False,
+    }
+
 def example_create2(options=example_get_create_options2()):
     """
     Example create function. These functions must return a dominance (D) matrix that is a pandas dataframe. 
