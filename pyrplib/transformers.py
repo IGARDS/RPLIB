@@ -10,12 +10,6 @@ from pyrankability import construct
 
 from . import dataset
 
-def select_index(df,index):
-    return df.loc[index]
-
-def select(obj,col):
-    return obj[col]
-
 def count(games,teams):
     trans = ComputeDTransformer()
     trans.fit(games)
