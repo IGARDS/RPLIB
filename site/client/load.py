@@ -9,7 +9,7 @@ import pyrplib
 from .common import Method
 
 def get_datasets(config):
-    columns = ["Dataset ID","Dataset Name","Type","Loader","Length of Data","Description"]
+    columns = ["Dataset ID","Dataset Name","Type","Length of Data","Description"]
     df = pd.DataFrame(columns=columns).set_index("Dataset ID")
 
     datasets_df = config.datasets_df.set_index('Dataset ID')
@@ -26,7 +26,6 @@ def get_datasets(config):
         
         new_df.loc[index,"Dataset Name"] = datasets_df.loc[index,"Dataset Name"] 
         new_df.loc[index,"Description"] = datasets_df.loc[index,"Description"]
-        new_df.loc[index,"Loader"] = loader
         new_df.loc[index,"Type"] = unprocessed.type()
         new_df.loc[index,"Length of Data"] = len(unprocessed.data())
         df = df.append(new_df)

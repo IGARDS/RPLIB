@@ -14,6 +14,7 @@ RUN apt-get install -y libgraphviz-dev
 COPY requirements.txt /app/
 
 # install pip requirements
+RUN pip install --upgrade pip
 RUN python -m pip install -r /app/requirements.txt
 
 RUN pip install git+https://github.com/IGARDS/ranking_toolbox.git --upgrade
