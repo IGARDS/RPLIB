@@ -1,0 +1,380 @@
+Dataset ID	Source Dataset ID	Command	Type	Collection	Options	Last Processed Datetime
+1	1	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:33
+2	1	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:21:35
+3	2	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:38
+4	2	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:21:40
+5	3	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:42
+6	3	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:21:44
+7	4	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:46
+8	4	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:21:48
+9	5	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:50
+10	5	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:21:52
+11	6	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:55
+12	6	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:21:57
+13	7	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:21:59
+14	7	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:01
+15	8	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:04
+16	8	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:06
+17	9	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:08
+18	9	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:10
+19	10	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:13
+20	10	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:15
+21	11	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:18
+22	11	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:20
+23	12	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:23
+24	12	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:25
+25	71	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:27
+26	71	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:29
+27	72	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:32
+28	72	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:34
+29	73	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:37
+30	73	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:39
+31	74	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:41
+32	74	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:43
+33	75	transformers.direct(transformers.count(...))	D	marchmadness		19/01/2022 02:22:46
+34	75	transformers.indirect(transformers.count(...))	D	marchmadness		19/01/2022 02:22:48
+35	21	transformers.process_D(...)	D	lolib		19/01/2022 02:22:49
+36	22	transformers.process_D(...)	D	lolib		19/01/2022 02:22:49
+37	23	transformers.process_D(...)	D	lolib		19/01/2022 02:22:49
+38	24	transformers.process_D(...)	D	lolib		19/01/2022 02:22:49
+39	25	transformers.process_D(...)	D	lolib		19/01/2022 02:22:49
+40	26	transformers.process_D(...)	D	lolib		19/01/2022 02:22:50
+41	27	transformers.process_D(...)	D	lolib		19/01/2022 02:22:50
+42	28	transformers.process_D(...)	D	lolib		19/01/2022 02:22:50
+43	29	transformers.process_D(...)	D	lolib		19/01/2022 02:22:51
+44	30	transformers.process_D(...)	D	lolib		19/01/2022 02:22:51
+45	31	transformers.process_D(...)	D	lolib		19/01/2022 02:22:51
+46	32	transformers.process_D(...)	D	lolib		19/01/2022 02:22:51
+47	33	transformers.process_D(...)	D	lolib		19/01/2022 02:22:51
+48	34	transformers.process_D(...)	D	lolib		19/01/2022 02:22:52
+49	35	transformers.process_D(...)	D	lolib		19/01/2022 02:22:52
+50	36	transformers.process_D(...)	D	lolib		19/01/2022 02:22:52
+51	37	transformers.process_D(...)	D	lolib		19/01/2022 02:22:52
+52	38	transformers.process_D(...)	D	lolib		19/01/2022 02:22:53
+53	39	transformers.process_D(...)	D	lolib		19/01/2022 02:22:53
+54	40	transformers.process_D(...)	D	lolib		19/01/2022 02:22:53
+55	41	transformers.process_D(...)	D	lolib		19/01/2022 02:22:53
+56	42	transformers.process_D(...)	D	lolib		19/01/2022 02:22:53
+57	43	transformers.process_D(...)	D	lolib		19/01/2022 02:22:54
+58	44	transformers.process_D(...)	D	lolib		19/01/2022 02:22:54
+59	45	transformers.process_D(...)	D	lolib		19/01/2022 02:22:54
+60	46	transformers.process_D(...)	D	lolib		19/01/2022 02:22:54
+61	47	transformers.process_D(...)	D	lolib		19/01/2022 02:22:55
+62	48	transformers.process_D(...)	D	lolib		19/01/2022 02:22:55
+63	49	transformers.process_D(...)	D	lolib		19/01/2022 02:22:56
+64	50	transformers.process_D(...)	D	lolib		19/01/2022 02:22:56
+65	51	transformers.process_D(...)	D	lolib		19/01/2022 02:22:56
+66	52	transformers.process_D(...)	D	lolib		19/01/2022 02:22:56
+67	53	transformers.process_D(...)	D	lolib		19/01/2022 02:22:57
+68	54	transformers.process_D(...)	D	lolib		19/01/2022 02:22:57
+69	55	transformers.process_D(...)	D	lolib		19/01/2022 02:22:57
+70	56	transformers.process_D(...)	D	lolib		19/01/2022 02:22:57
+71	57	transformers.process_D(...)	D	lolib		19/01/2022 02:22:58
+72	58	transformers.process_D(...)	D	lolib		19/01/2022 02:22:58
+73	59	transformers.process_D(...)	D	lolib		19/01/2022 02:22:58
+74	60	transformers.process_D(...)	D	lolib		19/01/2022 02:22:58
+75	61	transformers.process_D(...)	D	lolib		19/01/2022 02:22:59
+76	62	transformers.process_D(...)	D	lolib		19/01/2022 02:22:59
+77	63	transformers.process_D(...)	D	lolib		19/01/2022 02:22:59
+78	64	transformers.process_D(...)	D	lolib		19/01/2022 02:22:59
+79	65	transformers.process_D(...)	D	lolib		19/01/2022 02:23:00
+80	66	transformers.process_D(...)	D	lolib		19/01/2022 02:23:00
+81	67	transformers.process_D(...)	D	lolib		19/01/2022 02:23:00
+82	68	transformers.process_D(...)	D	lolib		19/01/2022 02:23:00
+83	69	transformers.process_D(...)	D	lolib		19/01/2022 02:23:01
+84	70	transformers.process_D(...)	D	lolib		19/01/2022 02:23:01
+85	19	transformers.features_to_D(...)	D	us_news_world_report	"{""columns"": [""Selectivity Rank"", ""Acceptance Rate"", ""SAT/ACT 25th-75th Percentile Mean"", ""Percent of Classes with Less Than 20 Students"", ""Student/Faculty Ratio""], ""items"": [""Amherst College"", ""Bowdoin College"", ""Carleton College"", ""Claremont McKenna College"", ""Davidson College"", ""Haverford College"", ""Middlebury College"", ""Pomona College"", ""Swarthmore College"", ""Wellesley College"", ""Williams College""]}"	19/01/2022 02:23:01
+86	19	transformers.features_to_D(...)	D	us_news_world_report	"{""columns"": [""Actual 6-year Graduation Rate"", ""Percent of Classes with Less Than 20 Students"", ""Student/Faculty Ratio"", ""Selectivity Rank"", ""Acceptance Rate""], ""items"": [""Amherst College"", ""Bowdoin College"", ""Carleton College"", ""Claremont McKenna College"", ""Davidson College"", ""Haverford College"", ""Middlebury College"", ""Pomona College"", ""Swarthmore College"", ""Wellesley College"", ""Williams College""]}"	19/01/2022 02:23:01
+87	19	transformers.features_to_D(...)	D	us_news_world_report	"{""columns"": [""Acceptance Rate"", ""Actual 6-year Graduation Rate"", ""Percent of Classes with Less Than 20 Students"", ""SAT/ACT 25th-75th Percentile Mean"", ""Selectivity Rank"", ""Student/Faculty Ratio""], ""items"": [""Amherst College"", ""Bowdoin College"", ""Carleton College"", ""Claremont McKenna College"", ""Davidson College"", ""Haverford College"", ""Middlebury College"", ""Pomona College"", ""Swarthmore College"", ""Wellesley College"", ""Williams College""]}"	19/01/2022 02:23:02
+88	15	transformers.process_D(...)	D	japan_io		19/01/2022 02:23:02
+89	16	transformers.process_D(...)	D	japan_io		19/01/2022 02:23:02
+90	17	transformers.process_D(...)	D	japan_io		19/01/2022 02:23:02
+91	18	transformers.process_D(...)	D	japan_io		19/01/2022 02:23:03
+92	1	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:27
+93	2	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:27
+94	3	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:27
+95	4	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:28
+96	5	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:28
+97	6	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:28
+98	7	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:28
+99	8	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:28
+100	9	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:29
+101	10	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:29
+102	11	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:29
+103	12	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:30
+104	71	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:30
+105	72	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:32
+106	73	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:33
+107	74	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:33
+108	75	transformers.standardize_games_teams(...)	Games	marchmadness	"{""team1_name"": ""team1_name"", ""team2_name"": ""team2_name"", ""team1_score"": ""team1_score"", ""team2_score"": ""team2_score"", ""team1_H_A_N"": ""team1_H_A_N"", ""team2_H_A_N"": ""team2_H_A_N""}"	16/02/2022 12:54:34
+109	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:46:11
+110	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:46:11
+111	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:46:12
+112	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:46:13
+113	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:46:13
+114	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:46:14
+115	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:46:14
+116	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:46:15
+117	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:46:16
+118	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:46:16
+119	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:46:17
+120	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:46:17
+121	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:46:18
+122	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:46:19
+123	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:46:19
+124	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:46:20
+125	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:46:21
+126	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:46:21
+127	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:46:22
+128	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:46:22
+129	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:46:23
+130	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:46:24
+131	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:46:24
+132	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:46:25
+133	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:46:25
+134	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:46:26
+135	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:46:27
+136	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:46:27
+137	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:46:28
+138	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:46:28
+139	76	"transformers.process_D(data[0].loc[0,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:46:29
+140	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:46:29
+141	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:46:30
+142	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:46:31
+143	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:46:31
+144	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:46:32
+145	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:46:32
+146	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:46:33
+147	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:46:34
+148	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:46:34
+149	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:46:35
+150	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:46:35
+151	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:46:36
+152	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:46:37
+153	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:46:37
+154	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:46:38
+155	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:46:38
+156	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:46:39
+157	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:46:40
+158	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:46:40
+159	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:46:41
+160	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:46:41
+161	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:46:42
+162	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:46:42
+163	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:46:43
+164	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:46:44
+165	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:46:44
+166	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:46:45
+167	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:46:45
+168	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:46:46
+169	76	"transformers.process_D(data[0].loc[1,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:46:47
+170	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:46:47
+171	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:46:48
+172	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:46:48
+173	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:46:49
+174	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:46:49
+175	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:46:50
+176	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:46:51
+177	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:46:51
+178	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:46:52
+179	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:46:52
+180	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:46:53
+181	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:46:54
+182	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:46:54
+183	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:46:55
+184	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:46:55
+185	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:46:56
+186	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:46:57
+187	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:46:57
+188	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:46:58
+189	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:46:58
+190	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:46:59
+191	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:47:00
+192	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:47:00
+193	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:47:01
+194	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:47:01
+195	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:47:02
+196	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:47:03
+197	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:47:03
+198	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:47:04
+199	76	"transformers.process_D(data[0].loc[2,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:47:04
+200	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:47:05
+201	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:47:06
+202	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:47:06
+203	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:47:07
+204	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:47:07
+205	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:47:08
+206	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:47:08
+207	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:47:09
+208	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:47:10
+209	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:47:10
+210	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:47:11
+211	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:47:11
+212	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:47:12
+213	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:47:13
+214	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:47:13
+215	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:47:14
+216	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:47:14
+217	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:47:15
+218	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:47:16
+219	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:47:16
+220	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:47:17
+221	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:47:17
+222	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:47:18
+223	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:47:19
+224	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:47:19
+225	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:47:20
+226	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:47:20
+227	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:47:21
+228	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:47:21
+229	76	"transformers.process_D(data[0].loc[3,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:47:22
+230	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:47:23
+231	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:47:23
+232	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:47:24
+233	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:47:24
+234	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:47:25
+235	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:47:26
+236	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:47:26
+237	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:47:27
+238	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:47:27
+239	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:47:28
+240	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:47:28
+241	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:47:29
+242	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:47:30
+243	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:47:30
+244	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:47:31
+245	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:47:31
+246	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:47:32
+247	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:47:33
+248	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:47:33
+249	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:47:34
+250	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:47:34
+251	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:47:35
+252	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:47:36
+253	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:47:36
+254	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:47:37
+255	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:47:37
+256	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:47:38
+257	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:47:39
+258	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:47:39
+259	76	"transformers.process_D(data[0].loc[4,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:47:40
+260	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:47:40
+261	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:47:41
+262	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:47:42
+263	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:47:42
+264	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:47:43
+265	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:47:43
+266	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:47:44
+267	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:47:44
+268	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:47:45
+269	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:47:46
+270	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:47:46
+271	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:47:47
+272	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:47:47
+273	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:47:48
+274	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:47:49
+275	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:47:49
+276	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:47:50
+277	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:47:50
+278	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:47:51
+279	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:47:52
+280	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:47:52
+281	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:47:53
+282	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:47:53
+283	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:47:54
+284	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:47:55
+285	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:47:55
+286	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:47:56
+287	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:47:56
+288	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:47:57
+289	76	"transformers.process_D(data[0].loc[5,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:47:57
+290	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:47:58
+291	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:47:59
+292	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:47:59
+293	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:48:00
+294	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:48:00
+295	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:48:01
+296	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:48:02
+297	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:48:02
+298	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:48:03
+299	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:48:04
+300	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:48:04
+301	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:48:05
+302	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:48:05
+303	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:48:06
+304	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:48:07
+305	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:48:07
+306	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:48:08
+307	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:48:08
+308	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:48:09
+309	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:48:10
+310	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:48:10
+311	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:48:11
+312	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:48:12
+313	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:48:12
+314	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:48:13
+315	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:48:13
+316	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:48:14
+317	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:48:15
+318	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:48:15
+319	76	"transformers.process_D(data[0].loc[6,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:48:16
+320	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:48:16
+321	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:48:17
+322	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:48:18
+323	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:48:18
+324	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:48:19
+325	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:48:20
+326	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:48:20
+327	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:48:21
+328	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:48:21
+329	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:48:22
+330	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:48:23
+331	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:48:23
+332	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:48:24
+333	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:48:25
+334	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:48:25
+335	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:48:26
+336	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:48:26
+337	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:48:27
+338	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:48:28
+339	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:48:29
+340	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:48:29
+341	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:48:30
+342	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:48:30
+343	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:48:31
+344	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:48:32
+345	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:48:32
+346	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:48:33
+347	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:48:34
+348	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:48:34
+349	76	"transformers.process_D(data[0].loc[7,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:48:35
+350	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['0'])"	D	structured_artificial	{}	09/03/2022 17:48:35
+351	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['1'])"	D	structured_artificial	{}	09/03/2022 17:48:36
+352	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['2'])"	D	structured_artificial	{}	09/03/2022 17:48:37
+353	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['3'])"	D	structured_artificial	{}	09/03/2022 17:48:37
+354	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['4'])"	D	structured_artificial	{}	09/03/2022 17:48:38
+355	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['5'])"	D	structured_artificial	{}	09/03/2022 17:48:39
+356	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['6'])"	D	structured_artificial	{}	09/03/2022 17:48:39
+357	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['7'])"	D	structured_artificial	{}	09/03/2022 17:48:40
+358	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['8'])"	D	structured_artificial	{}	09/03/2022 17:48:40
+359	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['9'])"	D	structured_artificial	{}	09/03/2022 17:48:41
+360	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['10'])"	D	structured_artificial	{}	09/03/2022 17:48:42
+361	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['11'])"	D	structured_artificial	{}	09/03/2022 17:48:42
+362	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['12'])"	D	structured_artificial	{}	09/03/2022 17:48:43
+363	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['13'])"	D	structured_artificial	{}	09/03/2022 17:48:43
+364	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['14'])"	D	structured_artificial	{}	09/03/2022 17:48:44
+365	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['15'])"	D	structured_artificial	{}	09/03/2022 17:48:45
+366	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['16'])"	D	structured_artificial	{}	09/03/2022 17:48:45
+367	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['17'])"	D	structured_artificial	{}	09/03/2022 17:48:46
+368	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['18'])"	D	structured_artificial	{}	09/03/2022 17:48:47
+369	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['19'])"	D	structured_artificial	{}	09/03/2022 17:48:47
+370	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['20'])"	D	structured_artificial	{}	09/03/2022 17:48:48
+371	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['21'])"	D	structured_artificial	{}	09/03/2022 17:48:48
+372	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['22'])"	D	structured_artificial	{}	09/03/2022 17:48:49
+373	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['23'])"	D	structured_artificial	{}	09/03/2022 17:48:50
+374	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['24'])"	D	structured_artificial	{}	09/03/2022 17:48:50
+375	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['25'])"	D	structured_artificial	{}	09/03/2022 17:48:51
+376	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['26'])"	D	structured_artificial	{}	09/03/2022 17:48:52
+377	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['27'])"	D	structured_artificial	{}	09/03/2022 17:48:52
+378	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['28'])"	D	structured_artificial	{}	09/03/2022 17:48:53
+379	76	"transformers.process_D(data[0].loc[8,""Ds""].loc['29'])"	D	structured_artificial	{}	09/03/2022 17:48:53

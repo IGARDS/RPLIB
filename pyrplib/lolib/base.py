@@ -1,5 +1,22 @@
 import pandas as pd
 
+from io import StringIO
+import urllib
+
+import pandas as pd
+
+import urllib.request
+
+def read_instance(content):
+    lines = content.strip().split("\n")[1:]
+    data_str = ("\n".join([line.strip() for line in lines])).replace(" ",",")
+    df = pd.read_csv(StringIO(data_str),header=None)
+    return df
+
+def read_instance_url(link):
+    resource = urllib.request.urlopen(link)
+    return read_instance(resource.read().decode(resource.headers.get_content_charset()))
+
 from .. import dataset
 from .. import style
 
@@ -9,15 +26,17 @@ class Unprocessed(dataset.Unprocessed):
         :rtype: pd.DataFrame
         :return: dataframe of IO lib data
         """
-        from lolib_study import base
-        D = base.read_instance_url(*self.links)
-        self.D = D      
+        D = read_instance_url(*self.links)
+        self.D = D 
+        
+        self._data = pd.DataFrame([[self.D]],columns=["D"])
+        
         return self
     
-    def data(self):
-        return self.D,
+    def type(self):
+        return str(dataset.UnprocessedType.D)
     
-    def view(self):
-        return style.get_standard_data_table(self.D,"lolib_data")
+    def dash_ready_data(self):
+        return self.data()
 
        

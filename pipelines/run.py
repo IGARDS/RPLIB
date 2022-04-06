@@ -44,7 +44,7 @@ def get_ids(str_ids):
 method = sys.argv[1]
 method_dataset_ids = get_ids(sys.argv[2].split(",")) #[int(i) for i in sys.argv[1].split(",")]
 
-config = pyrplib.config.Config(RPLIB_DATA_PREFIX)
+config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 
 datasets_df = config.datasets_df
 processed_datasets_df = config.processed_datasets_df

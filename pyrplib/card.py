@@ -4,6 +4,7 @@ import json
 import requests
 from abc import ABC, abstractmethod
 import io
+import copy
 
 import base64
 from io import BytesIO
@@ -64,13 +65,30 @@ class Card(ABC):
 
 class LOP(Card):
     def __init__(self):
-        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop"],
-                                   index=["solutions","obj","max_tau_solutions",
-                                          "centroid_x","outlier_solution","dataset_id","source_dataset_id","options","D","method"])
+        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None,None,None],
+                                   index=["solutions",
+                                          "obj",
+                                          "max_tau_solutions",
+                                          "centroid_x",
+                                          "outlier_solution",
+                                          "dataset_id",
+                                          "source_dataset_id",
+                                          "options",
+                                          "D",
+                                          "method",
+                                          "closest_pair",
+                                          "farthest_pair",
+                                          "tau_farthest_pair",
+                                          "tau_closest_pair"
+                                         ])
     
     def prepare(self,processed_dataset):
-        self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
-        d = pyrplib.dataset.ProcessedD.from_json(processed_dataset['Link']).load(processed_dataset['Options'])
+        if type(processed_dataset) == pyrplib.dataset.ProcessedD:
+            d = copy.deepcopy(processed_dataset)
+            self._instance['source_dataset_id'] = -1
+        else:
+            self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
+            d = pyrplib.dataset.ProcessedD.from_json(processed_dataset['Link']).load(processed_dataset['Options'])
 
         D = d.data.fillna(0)
     
@@ -80,6 +98,7 @@ class LOP(Card):
         mask = sums1 + sums2 != 2*np.diag(D)
         D = D.loc[mask,mask]
         self._instance['D'] = D
+        return self
         
     def run(self):
         assert 'source_dataset_id' in self._instance.index
@@ -92,6 +111,7 @@ class LOP(Card):
         orig_sol_x = pyrankability.common.threshold_x(details_lp['x'])
         centroid_x = orig_sol_x
         self.centroid_x = centroid_x
+        
         # Fix any that can be rounded. This leaves Gurubi a much smaller set of parameters to optimize
         fix_x = {}
         rows,cols = np.where(orig_sol_x==0)
@@ -107,32 +127,35 @@ class LOP(Card):
         orig_sol_x = details['x']
         orig_obj = details['obj']
         first_solution = details['P'][0]
+        
+        # beta
+        Xstar = pd.DataFrame(pyrankability.common.threshold_x(centroid_x),index=D.index,columns=D.columns)
+        Xstar_r_r = Xstar.iloc[np.array(first_solution),np.array(first_solution)]
+        self.beta = pyrankability.features.beta(Xstar_r_r)
 
         # Add what we have found to our instance
         self.obj = orig_obj
         self.add_solution(first_solution)
-
+        
         # Now we will see if there are multiple optimal solutions
         try:
             cont = False
             other_delta,other_detail = pyrankability.search.solve_any_diff(D,orig_obj,orig_sol_x,method=self.method)
             other_solution = other_detail['perm']
-            #print(other_solution['details']['P'])
             self.add_solution(other_solution)
             print('Found multiple solutions')
         except:
             print('Cannot find multiple solutions (or another problem occured)')
-
-        if True or len(self.solutions) > 1: # Multiple optimal
-            #solve_pair(D,D2=None,method=["lop","hillside"][1],minimize=False,min_ndis=None,max_ndis=None,tau_range=None,lazy=False,verbose=False)
-            outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=False)
+            
+        if len(self.solutions) > 1: # if multiple
+            outlier_deltas,outlier_details = pyrankability.search.solve_fixed_cont_x(D,orig_obj,centroid_x,method=self.method,minimize=False)
             self.add_solution(outlier_details['perm'])
             self.outlier_solution = outlier_details['perm']
 
-            centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,delta,centroid_x,method=self.method,minimize=True)
+            centroid_deltas,centroid_details = pyrankability.search.solve_fixed_cont_x(D,orig_obj,centroid_x,method=self.method,minimize=True)
             self.add_solution(centroid_details['perm'])
             self.centroid_solution = centroid_details['perm']
-            
+
             # Now get ready to run scip
             obj_lop_scip,details_lop_scip = pyrankability.rank.solve(D,method=self.method,include_model=True,cont=False)
             model = details_lop_scip['model']
@@ -140,11 +163,29 @@ class LOP(Card):
             max_num_solutions = 1000
             if type(self.options) == dict and "max_num_solutions" in self.options:
                 max_num_solutions = self.options['max_num_solutions']
-            results = pyrankability.search.scip_collect(D,model_file,max_num_solutions=max_num_solutions)
+            results = pyrankability.search.scip_collect(D,model_file,max_num_solutions=max_num_solutions,show_output=False)
             print("Number of solutions found with SCIP:",len(results['perms']))
             for sol in results['perms']:
                 self.add_solution(sol)
-   
+
+            if len(self.solutions) > 1: # Multiple optimal available
+                obj_lop_pair, details_lop_pair = pyrankability.search.solve_pair(D,method=self.method,minimize=False)
+                perm_x = details_lop_pair['perm_x']
+                perm_y = details_lop_pair['perm_y']
+                self.add_solution(perm_x)
+                self.add_solution(perm_y)
+                self.farthest_pair = (perm_x,perm_y)
+                self.tau_farthest_pair = pyrankability.common.tau(details_lop_pair['perm_x'],details_lop_pair['perm_y'])
+
+                obj_lop_pair, details_lop_pair = pyrankability.search.solve_pair(D,method=self.method,minimize=True,min_ndis=1)
+                perm_x = details_lop_pair['perm_x']
+                perm_y = details_lop_pair['perm_y']
+                self.add_solution(perm_x)
+                self.add_solution(perm_y)
+                self.closest_pair = (perm_x,perm_y)
+                self.tau_closest_pair = pyrankability.common.tau(details_lop_pair['perm_x'],details_lop_pair['perm_y'])
+        return self
+                
     @property
     def method(self):
         return self._instance['method']
@@ -164,6 +205,38 @@ class LOP(Card):
     @obj.setter
     def obj(self, obj):
         self._instance['obj'] = obj
+        
+    @property
+    def farthest_pair(self):
+        return self._instance['farthest_pair']
+       
+    @farthest_pair.setter
+    def farthest_pair(self, farthest_pair):
+        self._instance['farthest_pair'] = farthest_pair
+        
+    @property
+    def closest_pair(self):
+        return self._instance['closest_pair']
+       
+    @closest_pair.setter
+    def closest_pair(self, closest_pair):
+        self._instance['closest_pair'] = closest_pair
+        
+    @property
+    def tau_closest_pair(self):
+        return self._instance['tau_closest_pair']
+       
+    @tau_closest_pair.setter
+    def tau_closest_pair(self, tau_closest_pair):
+        self._instance['tau_closest_pair'] = tau_closest_pair    
+        
+    @property
+    def tau_farthest_pair(self):
+        return self._instance['tau_farthest_pair']
+       
+    @tau_farthest_pair.setter
+    def tau_farthest_pair(self, tau_farthest_pair):
+        self._instance['tau_farthest_pair'] = tau_farthest_pair  
         
     @property
     def centroid_x(self):
@@ -268,6 +341,131 @@ class LOP(Card):
         ))
                 
         return contents
+    
+    def get_visuals(self):
+        D = self.D
+        visuals = {"notebook":{},"dash":{}}
+        
+        centroid_x = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=D.index,columns=self.D.columns)
+        
+        r = centroid_x.sum(axis=0).sort_values(ascending=False)
+        visuals["dash"]["D[r,r]"] = pyrplib.style.get_standard_data_table(self.D.loc[r.index,:].loc[:,r.index].reset_index(),"D_r_r")
+        visuals["notebook"]["D[r,r]"] = self.D.loc[r.index,:].loc[:,r.index]
+        
+        # 'Red/Green plot':
+        xstar_width_height = len(centroid_x) * 10
+        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(centroid_x)
+        xstar_g = xstar_g.properties(
+            width=xstar_width_height,
+            height=xstar_width_height
+        )
+        visuals["notebook"]["Red/Green plot"] = xstar_g
+        plot_html = io.StringIO()
+        xstar_g.save(plot_html, 'html')
+
+        visuals["dash"]["Red/Green plot"] = html.Iframe(
+            id='xstar_plot',
+            height=str(xstar_width_height + 150),
+            width=str(xstar_width_height + 150),
+            sandbox='allow-scripts',
+            srcDoc=plot_html.getvalue(),
+            style={'border-width': '0px'}
+        )
+        
+        # 'X*':
+        xstar_width_height = len(centroid_x) * 10
+        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(centroid_x,red_green=False)
+        xstar_g = xstar_g.properties(
+            width=xstar_width_height,
+            height=xstar_width_height
+        )
+        visuals["notebook"]["X*"] = xstar_g
+        plot_html = io.StringIO()
+        xstar_g.save(plot_html, 'html')
+
+        visuals["dash"]["X*"] = html.Iframe(
+            id='xstar2_plot',
+            height=str(xstar_width_height + 150),
+            width=str(xstar_width_height + 150),
+            sandbox='allow-scripts',
+            srcDoc=plot_html.getvalue(),
+            style={'border-width': '0px'}
+        )
+        
+        # nearest and farthest
+        outlier_solution = pd.Series(self.outlier_solution,
+                                        index=D.index[np.array(self.outlier_solution)],
+                                        name="Farthest from Centroid")
+        centroid_solution = pd.Series(self.centroid_solution,
+                                        index=D.index[np.array(self.centroid_solution)],
+                                        name="Closest to Centroid")
+        
+        spider_g = pyrankability.plot.spider(outlier_solution,centroid_solution)
+        spider_width = 700
+        spider_height = 30 * len(outlier_solution)
+        spider_g = spider_g.properties(
+            width = spider_width,
+            height = spider_height
+        ).interactive()
+        
+        visuals["notebook"]["Nearest and Farthest"] = spider_g
+        
+        tmpfile = StringIO()
+        spider_g.save(tmpfile, 'html')   
+        visuals["dash"]["Nearest and Farthest"] = html.Iframe(
+            id='nearest_farthest',
+            height=str(spider_height + 100),
+            width=str(spider_width + 400),
+            sandbox='allow-scripts',
+            # Once this function returns, tmpfile is garbage collected and may be 
+            # the reason for 'view source' not working. 
+            # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
+            srcDoc=tmpfile.getvalue(), 
+            style={'border-width': '0px'}
+        )
+        
+        # Farthest pair
+        #farthest_pair
+        first,second = self.farthest_pair
+        first_solution = pd.Series(first,
+                                        index=D.index[np.array(first)],
+                                        name="Solution 1")
+        second_solution = pd.Series(second,
+                                        index=D.index[np.array(second)],
+                                        name="Solution 2")
+        
+        spider_g = pyrankability.plot.spider(first_solution,second_solution)
+        spider_width = 700
+        spider_height = 30 * len(second)
+        spider_g = spider_g.properties(
+            width = spider_width,
+            height = spider_height
+        ).interactive()
+        
+        visuals["notebook"]["Farthest Pair"] = spider_g
+        
+        tmpfile = StringIO()
+        spider_g.save(tmpfile, 'html')   
+        visuals["dash"]["Farthest Pair"] = html.Iframe(
+            id='farthest_pair',
+            height=str(spider_height + 100),
+            width=str(spider_width + 400),
+            sandbox='allow-scripts',
+            # Once this function returns, tmpfile is garbage collected and may be 
+            # the reason for 'view source' not working. 
+            # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
+            srcDoc=tmpfile.getvalue(), 
+            style={'border-width': '0px'}
+        )
+        
+        visuals["notebook"]["OBJECTIVE"] = self.obj
+        visuals["notebook"]["BETA"] = self.beta
+        visuals["notebook"]["TAU Farthest Pair"] = self.tau_farthest_pair
+        visuals["notebook"]["TAU Closest Pair"] = self.tau_closest_pair
+        visuals["notebook"]["Number of optimal solutions found"] = len(self.solutions)
+        
+        return visuals
+        
 
 class Hillside(LOP):
     def __init__(self):
