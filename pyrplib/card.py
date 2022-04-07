@@ -65,7 +65,7 @@ class Card(ABC):
 
 class LOP(Card):
     def __init__(self):
-        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None,None,None],
+        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None,None,None,None],
                                    index=["solutions",
                                           "obj",
                                           "max_tau_solutions",
@@ -79,7 +79,8 @@ class LOP(Card):
                                           "closest_pair",
                                           "farthest_pair",
                                           "tau_farthest_pair",
-                                          "tau_closest_pair"
+                                          "tau_closest_pair",
+                                          "beta"
                                          ])
     
     def prepare(self,processed_dataset):
@@ -206,6 +207,14 @@ class LOP(Card):
         self._instance['obj'] = obj
         
     @property
+    def beta(self):
+        return self._instance['beta']
+       
+    @beta.setter
+    def beta(self, beta):
+        self._instance['beta'] = beta
+        
+    @property
     def farthest_pair(self):
         return self._instance['farthest_pair']
        
@@ -284,61 +293,12 @@ class LOP(Card):
         return obj
     
     def view(self):
-        D = self.D
-        centroid_x = pd.DataFrame(self.centroid_x,index=D.index,columns=self.D.columns)
-        r = centroid_x.sum(axis=0).sort_values(ascending=False)
-        contents = [html.H2("D(r,r)"),pyrplib.style.get_standard_data_table(self.D.loc[r.index,:].loc[:,r.index].reset_index(),"D_r_r")]
-        
-        # 'Red/Green plot':
-        contents.append(html.H2("Red/Green plot"))
-        xstar_width_height = len(centroid_x) * 10
-        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(centroid_x)
-        xstar_g = xstar_g.properties(
-            width=xstar_width_height,
-            height=xstar_width_height
-        )
-        plot_html = io.StringIO()
-        xstar_g.save(plot_html, 'html')
-
-        contents.append(html.Iframe(
-            id='xstar_plot',
-            height=str(xstar_width_height + 150),
-            width=str(xstar_width_height + 150),
-            sandbox='allow-scripts',
-            srcDoc=plot_html.getvalue(),
-            style={'border-width': '0px'}
-        ))
-        
-        # 'Nearest/Farthest Centoid Plot':
-        contents.append(html.H2("Nearest/Farthest Centroid Plot"))
-        outlier_solution = pd.Series(self.outlier_solution,
-                                        index=D.index[self.outlier_solution],
-                                        name="Farthest from Centroid")
-        centroid_solution = pd.Series(self.centroid_solution,
-                                        index=D.index[self.centroid_solution],
-                                        name="Closest to Centroid")
-        
-        spider_g = pyrankability.plot.spider(outlier_solution,centroid_solution)
-        spider_width = 700
-        spider_height = 30 * len(outlier_solution)
-        spider_g = spider_g.properties(
-            width = spider_width,
-            height = spider_height
-        ).interactive()
-        tmpfile = StringIO()
-        spider_g.save(tmpfile, 'html')   
-        contents.append(html.Iframe(
-            id='nearest_farthest',
-            height=str(spider_height + 100),
-            width=str(spider_width + 400),
-            sandbox='allow-scripts',
-            # Once this function returns, tmpfile is garbage collected and may be 
-            # the reason for 'view source' not working. 
-            # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
-            srcDoc=tmpfile.getvalue(), 
-            style={'border-width': '0px'}
-        ))
-                
+        contents = []
+        visuals = self.get_visuals()['dash']
+        for key in visuals:
+            contents.append(html.H2(key))
+            contents.append(visuals[key])
+            
         return contents
     
     def get_visuals(self):
@@ -347,9 +307,12 @@ class LOP(Card):
         
         centroid_x = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=D.index,columns=self.D.columns)
         
-        r = centroid_x.sum(axis=0).sort_values(ascending=False)
+        r = centroid_x.sum(axis=1).sort_values(ascending=False)
         visuals["dash"]["D[r,r]"] = pyrplib.style.get_standard_data_table(self.D.loc[r.index,:].loc[:,r.index].reset_index(),"D_r_r")
         visuals["notebook"]["D[r,r]"] = self.D.loc[r.index,:].loc[:,r.index]
+        
+        visuals["dash"]["X*[r,r]"] = pyrplib.style.get_standard_data_table(centroid_x.loc[r.index,:].loc[:,r.index].reset_index(),"D_r_r")
+        visuals["notebook"]["X*[r,r]"] = centroid_x.loc[r.index,:].loc[:,r.index]
         
         # 'Red/Green plot':
         xstar_width_height = len(centroid_x) * 10
@@ -358,11 +321,11 @@ class LOP(Card):
             width=xstar_width_height,
             height=xstar_width_height
         )
-        visuals["notebook"]["Red/Green plot"] = xstar_g
+        visuals["notebook"]["X* (red/green)"] = xstar_g
         plot_html = io.StringIO()
         xstar_g.save(plot_html, 'html')
 
-        visuals["dash"]["Red/Green plot"] = html.Iframe(
+        visuals["dash"]["X* (red/green)"] = html.Iframe(
             id='xstar_plot',
             height=str(xstar_width_height + 150),
             width=str(xstar_width_height + 150),
@@ -378,11 +341,11 @@ class LOP(Card):
             width=xstar_width_height,
             height=xstar_width_height
         )
-        visuals["notebook"]["X*"] = xstar_g
+        visuals["notebook"]["X* (greyscale)"] = xstar_g
         plot_html = io.StringIO()
         xstar_g.save(plot_html, 'html')
 
-        visuals["dash"]["X*"] = html.Iframe(
+        visuals["dash"]["X* (greyscale)"] = html.Iframe(
             id='xstar2_plot',
             height=str(xstar_width_height + 150),
             width=str(xstar_width_height + 150),
@@ -391,77 +354,85 @@ class LOP(Card):
             style={'border-width': '0px'}
         )
         
-        # nearest and farthest
-        outlier_solution = pd.Series(self.outlier_solution,
-                                        index=D.index[np.array(self.outlier_solution)],
-                                        name="Farthest from Centroid")
-        centroid_solution = pd.Series(self.centroid_solution,
-                                        index=D.index[np.array(self.centroid_solution)],
-                                        name="Closest to Centroid")
+        if len(self.solutions) > 1:
+            # nearest and farthest
+            outlier_solution = pd.Series(self.outlier_solution,
+                                            index=D.index[np.array(self.outlier_solution)],
+                                            name="Farthest from Centroid")
+            centroid_solution = pd.Series(self.centroid_solution,
+                                            index=D.index[np.array(self.centroid_solution)],
+                                            name="Closest to Centroid")
+
+            spider_g = pyrankability.plot.spider(outlier_solution,centroid_solution)
+            spider_width = 700
+            spider_height = 30 * len(outlier_solution)
+            spider_g = spider_g.properties(
+                width = spider_width,
+                height = spider_height
+            ).interactive()
+
+            visuals["notebook"]["Nearest and Farthest"] = spider_g
+
+            tmpfile = StringIO()
+            spider_g.save(tmpfile, 'html')   
+            visuals["dash"]["Nearest and Farthest"] = html.Iframe(
+                id='nearest_farthest',
+                height=str(spider_height + 100),
+                width=str(spider_width + 400),
+                sandbox='allow-scripts',
+                # Once this function returns, tmpfile is garbage collected and may be 
+                # the reason for 'view source' not working. 
+                # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
+                srcDoc=tmpfile.getvalue(), 
+                style={'border-width': '0px'}
+            )
+
+            # Farthest pair
+            #farthest_pair
+            first,second = self.farthest_pair
+            first_solution = pd.Series(first,
+                                            index=D.index[np.array(first)],
+                                            name="Solution 1")
+            second_solution = pd.Series(second,
+                                            index=D.index[np.array(second)],
+                                            name="Solution 2")
+
+            spider_g = pyrankability.plot.spider(first_solution,second_solution)
+            spider_width = 700
+            spider_height = 30 * len(second)
+            spider_g = spider_g.properties(
+                width = spider_width,
+                height = spider_height
+            ).interactive()
+
+            visuals["notebook"]["Farthest Pair"] = spider_g
+
+            tmpfile = StringIO()
+            spider_g.save(tmpfile, 'html')   
+            visuals["dash"]["Farthest Pair"] = html.Iframe(
+                id='farthest_pair',
+                height=str(spider_height + 100),
+                width=str(spider_width + 400),
+                sandbox='allow-scripts',
+                # Once this function returns, tmpfile is garbage collected and may be 
+                # the reason for 'view source' not working. 
+                # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
+                srcDoc=tmpfile.getvalue(), 
+                style={'border-width': '0px'}
+            )
         
-        spider_g = pyrankability.plot.spider(outlier_solution,centroid_solution)
-        spider_width = 700
-        spider_height = 30 * len(outlier_solution)
-        spider_g = spider_g.properties(
-            width = spider_width,
-            height = spider_height
-        ).interactive()
-        
-        visuals["notebook"]["Nearest and Farthest"] = spider_g
-        
-        tmpfile = StringIO()
-        spider_g.save(tmpfile, 'html')   
-        visuals["dash"]["Nearest and Farthest"] = html.Iframe(
-            id='nearest_farthest',
-            height=str(spider_height + 100),
-            width=str(spider_width + 400),
-            sandbox='allow-scripts',
-            # Once this function returns, tmpfile is garbage collected and may be 
-            # the reason for 'view source' not working. 
-            # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
-            srcDoc=tmpfile.getvalue(), 
-            style={'border-width': '0px'}
-        )
-        
-        # Farthest pair
-        #farthest_pair
-        first,second = self.farthest_pair
-        first_solution = pd.Series(first,
-                                        index=D.index[np.array(first)],
-                                        name="Solution 1")
-        second_solution = pd.Series(second,
-                                        index=D.index[np.array(second)],
-                                        name="Solution 2")
-        
-        spider_g = pyrankability.plot.spider(first_solution,second_solution)
-        spider_width = 700
-        spider_height = 30 * len(second)
-        spider_g = spider_g.properties(
-            width = spider_width,
-            height = spider_height
-        ).interactive()
-        
-        visuals["notebook"]["Farthest Pair"] = spider_g
-        
-        tmpfile = StringIO()
-        spider_g.save(tmpfile, 'html')   
-        visuals["dash"]["Farthest Pair"] = html.Iframe(
-            id='farthest_pair',
-            height=str(spider_height + 100),
-            width=str(spider_width + 400),
-            sandbox='allow-scripts',
-            # Once this function returns, tmpfile is garbage collected and may be 
-            # the reason for 'view source' not working. 
-            # TODO: Look into the return of getvalue() and implications that has on 'srcDoc'
-            srcDoc=tmpfile.getvalue(), 
-            style={'border-width': '0px'}
-        )
         
         visuals["notebook"]["OBJECTIVE"] = self.obj
+        visuals["dash"]["OBJECTIVE"] = self.obj
         visuals["notebook"]["BETA"] = self.beta
-        visuals["notebook"]["TAU Farthest Pair"] = self.tau_farthest_pair
-        visuals["notebook"]["TAU Closest Pair"] = self.tau_closest_pair
+        visuals["dash"]["BETA"] = self.beta
+        if len(self.solutions) > 1:        
+            visuals["notebook"]["TAU Farthest Pair"] = self.tau_farthest_pair
+            visuals["notebook"]["TAU Closest Pair"] = self.tau_closest_pair
+            visuals["dash"]["TAU Farthest Pair"] = self.tau_farthest_pair
+            visuals["dash"]["TAU Closest Pair"] = self.tau_closest_pair
         visuals["notebook"]["Number of optimal solutions found"] = len(self.solutions)
+        visuals["dash"]["Number of optimal solutions found"] = len(self.solutions)
         
         return visuals
         
