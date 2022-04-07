@@ -380,3 +380,8 @@ Dataset ID	Source Dataset ID	Index	Command	Type	Collection	Options	Last Processe
 679	76	267	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	14/03/2022 18:22:318	Percentage of noise: 50
 680	76	268	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	14/03/2022 18:22:319	Percentage of noise: 50
 681	76	269	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	14/03/2022 18:22:320	Percentage of noise: 50
+682	78	0	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	07/04/2022 16:42:38	D = pyrplib.artificial.domplusnoise(20,0)
+683	78	1	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	07/04/2022 16:42:42	addmossimple(D,0,4)
+684	78	2	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	07/04/2022 16:42:46	addmossimple(D,5,9)
+685	78	3	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	07/04/2022 16:42:53	addmossimple(D,10,14)
+686	78	4	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}	07/04/2022 16:42:59	addmossimple(D,15,19)
