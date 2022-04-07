@@ -357,10 +357,10 @@ class LOP(Card):
         if len(self.solutions) > 1:
             # nearest and farthest
             outlier_solution = pd.Series(self.outlier_solution,
-                                            index=D.index[np.array(self.outlier_solution)],
+                                            index=D.index[np.array(self.outlier_solution)].astype(str),
                                             name="Farthest from Centroid")
             centroid_solution = pd.Series(self.centroid_solution,
-                                            index=D.index[np.array(self.centroid_solution)],
+                                            index=D.index[np.array(self.centroid_solution)].astype(str),
                                             name="Closest to Centroid")
 
             spider_g = pyrankability.plot.spider(outlier_solution,centroid_solution)
@@ -391,10 +391,10 @@ class LOP(Card):
             #farthest_pair
             first,second = self.farthest_pair
             first_solution = pd.Series(first,
-                                            index=D.index[np.array(first)],
+                                            index=D.index[np.array(first)].astype(str),
                                             name="Solution 1")
             second_solution = pd.Series(second,
-                                            index=D.index[np.array(second)],
+                                            index=D.index[np.array(second)].astype(str),
                                             name="Solution 2")
 
             spider_g = pyrankability.plot.spider(first_solution,second_solution)
