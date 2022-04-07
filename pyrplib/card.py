@@ -143,7 +143,7 @@ class LOP(Card):
             other_delta,other_detail = pyrankability.search.solve_any_diff(D,orig_obj,orig_sol_x,method=self.method)
             other_solution = other_detail['perm']
             self.add_solution(other_solution)
-            print('Found multiple solutions')
+            #print('Found multiple solutions')
         except:
             print('Cannot find multiple solutions (or another problem occured)')
             
@@ -164,7 +164,6 @@ class LOP(Card):
             if type(self.options) == dict and "max_num_solutions" in self.options:
                 max_num_solutions = self.options['max_num_solutions']
             results = pyrankability.search.scip_collect(D,model_file,max_num_solutions=max_num_solutions,show_output=False)
-            print("Number of solutions found with SCIP:",len(results['perms']))
             for sol in results['perms']:
                 self.add_solution(sol)
 
