@@ -127,11 +127,27 @@ def create_dataset(create_func,options):
 
     See example create_func and get_create_options_func
     """
+    assert type(options) == dict
     Ds = pd.Series([]*options['number_matrices'],dtype=object)#[pd.DataFrame(np.zeros((number_of_rows_columns,number_of_rows_columns)))])
     for i in range(options['number_matrices']):
         Ds[i] = create_func(options)
 
     create_code = inspect.getsource(create_func)
+
+    dataset = pd.Series(options)
+    dataset["Create code"] = create_code
+    dataset["Ds"] = Ds
+    return dataset
+
+def create_dataset_manual(D_matrices,options,create_code="manual"):
+    """
+    Create a dataset by manually passing the D matrices as a list.
+    The options are not used in any way. They are here if you want to include them.
+    """
+    assert type(options) == dict
+    Ds = pd.Series([]*len(D_matrices),dtype=object)#[pd.DataFrame(np.zeros((number_of_rows_columns,number_of_rows_columns)))])
+    for i in range(len(D_matrices)):
+        Ds[i] = D_matrices[i]
 
     dataset = pd.Series(options)
     dataset["Create code"] = create_code
