@@ -89,13 +89,14 @@ def view_item(item,id):
     html_comps = []
     j = 0
     for index in item.index:
-        print(index)
         html_comps.append(html.H4(index))
         d = item[index]
         if type(d) == pd.DataFrame:
             html_comps.append(get_standard_data_table(d,f"data_view_item_{j}")) 
         elif type(d) == list:
-            html_comps.append(html.Pre("\n".join(d)))
+            html_comps.append(html.Pre("\n".join([str(di) for di in d])))
+        elif d is None:
+            html_comps.append(html.Pre("None"))            
         else:
             html_comps.append(html.Pre(d))
         j += 1
