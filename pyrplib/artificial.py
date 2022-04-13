@@ -9,6 +9,16 @@ import scipy.linalg
 
 import inspect
 
+def cyclic(n):
+    """
+    Create a simple cycle D matrix of size n x n.
+    """
+    D=pd.DataFrame(np.zeros((n,n)),dtype=int) # initialize D as an empty graph 
+    for i in range(n):
+        D.iloc[i,i+1] = 1
+    D.iloc[n-1,0] = 1
+    return D
+
 def addmossimple(D,start_index,end_index):
     """
     For a binary matrix D, create simple multiple optimal solutions in the range of teams specified.
