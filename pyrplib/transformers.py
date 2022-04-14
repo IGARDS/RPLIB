@@ -30,6 +30,14 @@ def count(games,teams):
     
     return processed_D,processed_ID,trans
 
+def directplusindirect(D,ID,trans,indirect_weight=1.):
+    processed_D = dataset.ProcessedD()
+    processed_D.data = D.data+indirect_weight*ID.data
+    processed_D.load()
+    processed_D.type = "Count-based D Matrix"
+    processed_D.short_type = "D"
+    return processed_D
+    
 def direct(D,ID,trans):
     return D
 
