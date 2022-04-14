@@ -70,6 +70,7 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
 def setup_download_button(download_all_button_id, download_all_id, 
                           table_id, link_att_name, suggested_zipfilename, progress_id=None):
     if progress_id:
+        # progress bar linking and multiprocessing through long callback
         @app.long_callback(
             output=Output(download_all_id, "data"),
             inputs=(Input(download_all_button_id, "n_clicks"),
@@ -83,6 +84,7 @@ def setup_download_button(download_all_button_id, download_all_id,
                                                                   suggested_zipfilename, set_progress)
                 return dcc.send_file(path_to_local_zipfile)
     else:
+        # no progress bar
         @app.callback(
             Output(download_all_id, "data"),
             Input(download_all_button_id, "n_clicks"),
@@ -111,14 +113,23 @@ def setup_download_progress_bar(download_progress_collapse_id, download_all_butt
         else:
             return is_open
 
+# Uses the regular callback without the progress bar and without multiprocessing
 setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                      PROCESSED_TABLE_ID, "Download", "processed.zip", PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
-setup_download_progress_bar(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID,
-                            PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+                      PROCESSED_TABLE_ID, "Download", "processed.zip")
+# setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
+#                       PROCESSED_TABLE_ID, "Download", "processed.zip", PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+# setup_download_progress_bar(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID,
+#                             PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
 setup_download_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, LOP_TABLE_DOWNLOAD_ALL_ID,
-                      LOP_TABLE_ID, "Download", "lop.zip", LOP_TABLE_DOWNLOAD_PROGRESS_ID)
-setup_download_progress_bar(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID,
-                            LOP_TABLE_DOWNLOAD_PROGRESS_ID)
+                      LOP_TABLE_ID, "Download", "lop.zip")
+# setup_download_progress_bar(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID,
+#                             LOP_TABLE_DOWNLOAD_PROGRESS_ID)
+setup_download_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, HILLSIDE_TABLE_DOWNLOAD_ALL_ID,
+                      HILLSIDE_TABLE_ID, "Download", "hillside.zip")
+setup_download_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, COLLEY_TABLE_DOWNLOAD_ALL_ID,
+                      COLLEY_TABLE_ID, "Download", "colley.zip")
+setup_download_button(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, MASSEY_TABLE_DOWNLOAD_ALL_ID,
+                      MASSEY_TABLE_ID, "Download", "massey.zip")
 
 def get_download_local_file_button(pathname):
     button_text = "Download: " + pathname.split('/')[-1]
