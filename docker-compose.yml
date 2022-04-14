@@ -12,4 +12,4 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib/
+      - BASE_PATH=/rplib/

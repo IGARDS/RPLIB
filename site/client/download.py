@@ -13,30 +13,6 @@ from dash import dcc
 from . import app
 from .identifier import *
 
-@app.long_callback(
-    output=Output(UNPROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
-    inputs=(Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
-            State(UNPROCESSED_TABLE_ID, "derived_virtual_data")),
-    progress=[Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
-              Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
-)
-def download_all_files_unprocessed(set_progress, n_clicks, data):
-    if n_clicks != None:
-        suggested_zipfilename = "unprocessed.zip"
-        path_to_local_zipfile = download_and_or_get_files(data, "Download links", 
-                                                          suggested_zipfilename, set_progress)
-        return dcc.send_file(path_to_local_zipfile)
-
-@app.callback(
-    Output(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
-    Input(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
-    Input(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
-    Input(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
-    State(UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
-)
-def download_all_files_unprocessed_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
-    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
-
 def get_all_download_links_from_table(table_data, download_link_attribute):
     def unprocess_link(link, row):
         start = link.rfind('](')
@@ -91,63 +67,58 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
         f.write(mf.getvalue())
         return temp_directory_file
 
-def collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open):
-    if n_clicks:
-        # the progress becomes undefined when finished
-        if progress_val is None or progress_max is None:
-            return False
-        return True
+def setup_download_button(download_all_button_id, download_all_id, 
+                          table_id, link_att_name, suggested_zipfilename, progress_id=None):
+    if progress_id:
+        @app.long_callback(
+            output=Output(download_all_id, "data"),
+            inputs=(Input(download_all_button_id, "n_clicks"),
+                    State(table_id, "derived_virtual_data")),
+            progress=[Output(progress_id, "value"),
+                    Output(progress_id, "max")]
+        )
+        def download_all_files(set_progress, n_clicks, data):
+            if n_clicks != None:
+                path_to_local_zipfile = download_and_or_get_files(data, link_att_name, 
+                                                                  suggested_zipfilename, set_progress)
+                return dcc.send_file(path_to_local_zipfile)
     else:
-        return is_open
-    
-@app.long_callback(
-    output=Output(PROCESSED_TABLE_DOWNLOAD_ALL_ID, "data"),
-    inputs=(Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
-            State(PROCESSED_TABLE_ID, "derived_virtual_data")),
-    progress=[Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
-              Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
-)
-def download_all_files_processed(set_progress, n_clicks, data):
-    if n_clicks != None:
-        suggested_zipfilename = "processed.zip"
-        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
-                                                          suggested_zipfilename, set_progress)
-        return dcc.send_file(path_to_local_zipfile)
+        @app.callback(
+            Output(download_all_id, "data"),
+            Input(download_all_button_id, "n_clicks"),
+            State(table_id, "derived_virtual_data")
+        )
+        def download_all_files(n_clicks, data):
+            if n_clicks != None:
+                path_to_local_zipfile = download_and_or_get_files(data, link_att_name, 
+                                                                  suggested_zipfilename)
+                return dcc.send_file(path_to_local_zipfile)
 
-@app.callback(
-    Output(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
-    Input(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
-    Input(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
-    Input(PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
-    State(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
-)
-def download_all_files_processed_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
-    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
+def setup_download_progress_bar(download_progress_collapse_id, download_all_button_id, download_progress_id):
+    @app.callback(
+        Output(download_progress_collapse_id, "is_open"),
+        Input(download_all_button_id, "n_clicks"),
+        Input(download_progress_id, "value"),
+        Input(download_progress_id, "max"),
+        State(download_progress_collapse_id, "is_open")
+    )
+    def progess_bar_display(n_clicks, progress_val, progress_max, is_open)
+        if n_clicks:
+            # the progress becomes undefined when finished
+            if progress_val is None or progress_max is None:
+                return False
+            return True
+        else:
+            return is_open
 
-@app.long_callback(
-    output=Output(LOP_TABLE_DOWNLOAD_ALL_ID, "data"),
-    inputs=(Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
-            State(LOP_TABLE_ID, "derived_virtual_data")),
-    progress=[Output(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "value"), 
-              Output(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "max")],
-)
-def download_all_files_lop(set_progress, n_clicks, data):
-    if n_clicks != None:
-        suggested_zipfilename = "lop.zip"
-        path_to_local_zipfile = download_and_or_get_files(data, "Download", 
-                                                          suggested_zipfilename, set_progress)
-        return dcc.send_file(path_to_local_zipfile)
-
-@app.callback(
-    Output(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open"),
-    Input(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, "n_clicks"),
-    Input(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "value"),
-    Input(LOP_TABLE_DOWNLOAD_PROGRESS_ID, "max"),
-    State(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, "is_open")
-)
-def download_all_files_lop_progress_bar_display(n_clicks, progress_val, progress_max, is_open):
-    return collapse_progress_download_logic(n_clicks, progress_val, progress_max, is_open)
-
+setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
+                      PROCESSED_TABLE_ID, "Download", "processed.zip", PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+setup_download_progress_bar(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID,
+                            PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+setup_download_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, LOP_TABLE_DOWNLOAD_ALL_ID,
+                      LOP_TABLE_ID, "Download", "lop.zip", LOP_TABLE_DOWNLOAD_PROGRESS_ID)
+setup_download_progress_bar(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID,
+                            LOP_TABLE_DOWNLOAD_PROGRESS_ID)
 
 def get_download_local_file_button(pathname):
     button_text = "Download: " + pathname.split('/')[-1]
