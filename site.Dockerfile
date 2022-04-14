@@ -6,6 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Prevents Python from buffering stdout and stderr 
 ENV PYTHONUNBUFFERED=1
 
+ENV timeout=300
+
 WORKDIR /app/site
 
 RUN apt-get update

@@ -65,12 +65,12 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
                 dbc.NavLink("Processed", href=f"{BASE_PATH}processed", active="exact"),
                 dbc.NavLink("LOP", href=f"{BASE_PATH}lop", active="exact"),
                 dbc.NavLink("Hillside", href=f"{BASE_PATH}hillside", active="exact"),
                 dbc.NavLink("Colley", href=f"{BASE_PATH}colley", active="exact"),
                 dbc.NavLink("Massey", href=f"{BASE_PATH}massey", active="exact"),
+                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -102,15 +102,9 @@ df_massey_cards = load.get_cards(config, Method.MASSEY)
 df_colley_cards = load.get_cards(config, Method.COLLEY)
 
 unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
-unprocessed_download_button = \
-    pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   UNPROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_unprocessed = html.Div([
     html.H1("Unprocessed Datasets"),
     html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    unprocessed_download_button,
     unprocessed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
