@@ -81,10 +81,10 @@ def get_cards(config, method):
     def process(row):
         if method == Method.LOP or method == Method.HILLSIDE:
             entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name',
-                              'Rows(D)', 'Cols(D)', 'Objective','Found Solutions','Download'])
+                              'Rows', 'Columns', 'Objective','Found Solutions','Download'])
         elif method == Method.MASSEY or method == Method.COLLEY:
             entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name',
-                              'Rows(Games)', 'Cols(Games)', 'Length of teams','Download'])
+                              'Rows', 'Columns', 'Length of teams','Download'])
             
         link = row['Link']
         entry['Dataset ID'] = row['Dataset ID']
@@ -96,16 +96,16 @@ def get_cards(config, method):
                 else:
                     card = pyrplib.card.Hillside.from_json(link)                    
                 D = card.D
-                entry.loc['Rows(D)'] = D.shape[0]
-                entry.loc['Cols(D)'] = D.shape[1]
+                entry.loc['Rows'] = D.shape[0]
+                entry.loc['Columns'] = D.shape[1]
                 entry.loc['Objective'] = card.obj
                 entry.loc['Found Solutions'] = len(card.solutions)
             elif method == Method.MASSEY or method == Method.COLLEY:
                 card = pyrplib.card.SystemOfEquations.from_json(link)
                 games = card.games
                 teams = card.teams
-                entry.loc['Rows(Games)'] = games.shape[0]
-                entry.loc['Cols(Games)'] = games.shape[1]
+                entry.loc['Rows'] = games.shape[0]
+                entry.loc['Columns'] = games.shape[1]
                 entry.loc['Length of teams'] = len(teams)
                 
             datasets_df = config.datasets_df.set_index('Dataset ID')
