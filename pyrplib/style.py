@@ -87,6 +87,9 @@ def get_standard_download_all_button(button_id, download_id, progress_id=None, c
     else:
         button = html.Div(
             [
+                html.Div([
+                    dcc.Download(id=download_id),
+                ]),
                 dbc.Row(
                     [
                         html.Button(id=button_id, children="Download All In Table"),

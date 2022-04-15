@@ -47,7 +47,6 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
             filename = download_links[i]['filename']
             if filename not in zf.namelist():
                 link = download_links[i]['link']
-                print(filename)
                 if os.path.exists(link):
                     zf.write(link, arcname=filename)
                 else:
@@ -92,9 +91,7 @@ def setup_download_button(download_all_button_id, download_all_id,
             State(table_id, "derived_virtual_data")
         )
         def download_all_files(n_clicks, data):
-            print('hah')
             if n_clicks != None:
-                print('here')
                 path_to_local_zipfile = download_and_or_get_files(data, link_att_name, 
                                                                   suggested_zipfilename)
                 return dcc.send_file(path_to_local_zipfile)
