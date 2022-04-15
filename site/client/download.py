@@ -18,13 +18,15 @@ def get_all_download_links_from_table(table_data, download_link_attribute):
         start = link.rfind('](')
         if start == -1:
             print('Attempted to strip processing on an unprocessed link')
-            return link
+            return -1
         return {'filename' : str(row['Dataset ID'])+'_'+link[1:start], 'link' : link[start+2:-1]}
 
     unprocessed_links = []
     for dataset in range(len(table_data)):
         for link in table_data[dataset][download_link_attribute].split(', '):
-            unprocessed_links.append(unprocess_link(link, table_data[dataset]))
+            unprocessed_link = unprocess_link(link, table_data[dataset])
+            if unprocessed_link != -1:
+                unprocessed_links.append(unprocessed_link)
     filenames = {}
     # filenames in the table can be the same--prepend increasing number
     for link in unprocessed_links:
@@ -113,17 +115,16 @@ def setup_download_progress_bar(download_progress_collapse_id, download_all_butt
         else:
             return is_open
 
-# Uses the regular callback without the progress bar and without multiprocessing
-setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                      PROCESSED_TABLE_ID, "Download", "processed.zip")
 # setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
 #                       PROCESSED_TABLE_ID, "Download", "processed.zip", PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
 # setup_download_progress_bar(PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID,
 #                             PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID)
+
+# Uses the regular callback without the progress bar and without multiprocessing
+setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
+                      PROCESSED_TABLE_ID, "Download", "processed.zip")
 setup_download_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, LOP_TABLE_DOWNLOAD_ALL_ID,
                       LOP_TABLE_ID, "Download", "lop.zip")
-# setup_download_progress_bar(LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID, LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID,
-#                             LOP_TABLE_DOWNLOAD_PROGRESS_ID)
 setup_download_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, HILLSIDE_TABLE_DOWNLOAD_ALL_ID,
                       HILLSIDE_TABLE_ID, "Download", "hillside.zip")
 setup_download_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, COLLEY_TABLE_DOWNLOAD_ALL_ID,
