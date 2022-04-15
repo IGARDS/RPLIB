@@ -47,6 +47,7 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
             filename = download_links[i]['filename']
             if filename not in zf.namelist():
                 link = download_links[i]['link']
+                print(filename)
                 if os.path.exists(link):
                     zf.write(link, arcname=filename)
                 else:
@@ -91,7 +92,9 @@ def setup_download_button(download_all_button_id, download_all_id,
             State(table_id, "derived_virtual_data")
         )
         def download_all_files(n_clicks, data):
+            print('hah')
             if n_clicks != None:
+                print('here')
                 path_to_local_zipfile = download_and_or_get_files(data, link_att_name, 
                                                                   suggested_zipfilename)
                 return dcc.send_file(path_to_local_zipfile)
@@ -104,7 +107,7 @@ def setup_download_progress_bar(download_progress_collapse_id, download_all_butt
         Input(download_progress_id, "max"),
         State(download_progress_collapse_id, "is_open")
     )
-    def progess_bar_display(n_clicks, progress_val, progress_max, is_open)
+    def progess_bar_display(n_clicks, progress_val, progress_max, is_open):
         if n_clicks:
             # the progress becomes undefined when finished
             if progress_val is None or progress_max is None:
