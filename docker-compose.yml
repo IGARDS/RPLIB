@@ -12,7 +12,7 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib/
+      - BASE_PATH=/rplib/
   staging:
     build:
       context: .
@@ -26,7 +26,7 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_staging/
+      - BASE_PATH=/rplib_staging/
   pander14:
     build:
       context: .
@@ -40,7 +40,7 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_pander14/
+      - BASE_PATH=/rplib_pander14/
   bjtat:
     build:
       context: .
@@ -54,7 +54,7 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_bjtat/
+      - BASE_PATH=/rplib_bjtat/
   cward11:
     build:
       context: .
@@ -68,4 +68,4 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_cward11/
+      - BASE_PATH=/rplib_cward11/
