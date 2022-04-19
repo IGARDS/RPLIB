@@ -65,12 +65,12 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
                 dbc.NavLink("Processed", href=f"{BASE_PATH}processed", active="exact"),
                 dbc.NavLink("LOP", href=f"{BASE_PATH}lop", active="exact"),
                 dbc.NavLink("Hillside", href=f"{BASE_PATH}hillside", active="exact"),
                 dbc.NavLink("Colley", href=f"{BASE_PATH}colley", active="exact"),
                 dbc.NavLink("Massey", href=f"{BASE_PATH}massey", active="exact"),
+                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -102,15 +102,9 @@ df_massey_cards = load.get_cards(config, Method.MASSEY)
 df_colley_cards = load.get_cards(config, Method.COLLEY)
 
 unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
-unprocessed_download_button = \
-    pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   UNPROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_unprocessed = html.Div([
     html.H1("Unprocessed Datasets"),
     html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    unprocessed_download_button,
     unprocessed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -120,9 +114,7 @@ page_unprocessed = html.Div([
 processed_table = pyrplib.style.get_standard_data_table(df_processed, PROCESSED_TABLE_ID)
 processed_download_button = \
     pyrplib.style.get_standard_download_all_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID, 
-                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
+                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID)
 
 processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed_table")
 page_processed = html.Div([
@@ -138,9 +130,7 @@ page_processed = html.Div([
 lop_table = pyrplib.style.get_standard_data_table(df_lop_cards, LOP_TABLE_ID)
 lop_download_button = \
     pyrplib.style.get_standard_download_all_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   LOP_TABLE_DOWNLOAD_ALL_ID,
-                                                   LOP_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
+                                                   LOP_TABLE_DOWNLOAD_ALL_ID)
 page_lop = html.Div([
     html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
     html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
@@ -152,25 +142,37 @@ page_lop = html.Div([
 ])
 
 hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards, HILLSIDE_TABLE_ID)
+hillside_download_button = \
+    pyrplib.style.get_standard_download_all_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   HILLSIDE_TABLE_DOWNLOAD_ALL_ID)
 page_hillside = html.Div([
     html.H1("Search Hillside Solutions and Analysis"),
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    hillside_download_button,
     hillside_table,
     html.Div(id="hillside_output")
     ])
 
 massey_table = pyrplib.style.get_standard_data_table(df_massey_cards, MASSEY_TABLE_ID)
+massey_download_button = \
+    pyrplib.style.get_standard_download_all_button(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   MASSEY_TABLE_DOWNLOAD_ALL_ID)
 page_massey = html.Div([
     html.H1("Search Massey Solutions and Analysis"),
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    massey_download_button,
     massey_table,
     html.Div(id="massey_output")
     ])
 
 colley_table = pyrplib.style.get_standard_data_table(df_colley_cards, COLLEY_TABLE_ID)
+colley_download_button = \
+    pyrplib.style.get_standard_download_all_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   COLLEY_TABLE_DOWNLOAD_ALL_ID)
 page_colley = html.Div([
     html.H1("Search Colley Solutions and Analysis"),
     html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    colley_download_button,
     colley_table,
     html.Div(id="colley_output")
     ])
