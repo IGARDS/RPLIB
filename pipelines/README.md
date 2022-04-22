@@ -17,5 +17,5 @@ which scip_count.sh
 ## Example run
 
 ```
-python run.py lop 33
+RPLIB_DATA_PREFIX=$HOME/RPLib/data/ python run.py colley 1
 ```
