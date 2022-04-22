@@ -8,4 +8,4 @@ fi
 PORT=$1
 
 #gunicorn app:server -b :$PORT
-gunicorn wsgi:server --reload -b :$PORT
+gunicorn wsgi:server --reload -b :$PORT --timeout 120
