@@ -1,27 +1,24 @@
 import os
 import sys
-from pathlib import Path
 import json
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
 
-home = str(Path.home())
-
 RPLIB_DATA_PREFIX = os.environ.get("RPLIB_DATA_PREFIX")
 
 if RPLIB_DATA_PREFIX is None: # Set default
-    RPLIB_DATA_PREFIX=f'{home}/RPLib/data'
+    raise Exception("RPLIB_DATA_PREFIX must be set")
+print("RPLIB_DATA_PREFIX",RPLIB_DATA_PREFIX)
 
 try:
     import pyrankability as pyrankability
     import pyrplib as pyrplib
 except:
-    print('Looking for packages in home directory')
-    sys.path.insert(0,f"{home}") # Add the home directory relevant paths to the PYTHONPATH
-    sys.path.insert(0,f"{home}/ranking_toolbox") # Add the home directory relevant paths to the PYTHONPATH
-    sys.path.insert(0,f"{home}/RPLib") # Add the home directory relevant paths to the PYTHONPATH
+    print('Looking for packages relative to data prefix')
+    sys.path.insert(0,f"{RPLIB_DATA_PREFIX}/../../ranking_toolbox") 
+    sys.path.insert(0,f"{RPLIB_DATA_PREFIX}/..")  
     import pyrankability
     import pyrplib
 
