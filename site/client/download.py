@@ -5,13 +5,19 @@ import zipfile
 import tempfile
 import os
 import urllib
+import requests
 
 import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc
 
+import pyrplib
+
 from . import app
 from .identifier import *
+from .common import *
+
+config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 
 def get_all_download_links_from_table(table_data, download_link_attribute):
     def unprocess_link(link, row):
@@ -38,9 +44,14 @@ def get_all_download_links_from_table(table_data, download_link_attribute):
             filenames[cur_filename] = 1
     return unprocessed_links
 
-def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=None):
+def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=None, total_df=None):
     mf = io.BytesIO()
-    download_links = get_all_download_links_from_table(data, link_att_name)
+    if link_att_name:
+        download_links = get_all_download_links_from_table(data, link_att_name)
+    else:
+        # If there is no download link column in the dash table (get download links from the original config table)
+        filtered_df = total_df[total_df['Dataset ID'].isin({x['Dataset ID'] for x in data})]
+        download_links = [{'filename': x.strip('/app'), 'link': x} for x in filtered_df['Link'].tolist()]
     if set_progress:
         total = len(download_links)
         set_progress((str(0), str(total)))
@@ -70,7 +81,7 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
         return temp_directory_file
 
 def setup_download_button(download_all_button_id, download_all_id, 
-                          table_id, link_att_name, suggested_zipfilename, progress_id=None):
+                          table_id, link_att_name, suggested_zipfilename, progress_id=None, total_df=None):
     if progress_id:
         # progress bar linking and multiprocessing through long callback
         @app.long_callback(
@@ -83,7 +94,7 @@ def setup_download_button(download_all_button_id, download_all_id,
         def download_all_files(set_progress, n_clicks, data):
             if n_clicks != None:
                 path_to_local_zipfile = download_and_or_get_files(data, link_att_name, 
-                                                                  suggested_zipfilename, set_progress)
+                                                                  suggested_zipfilename, set_progress, total_df)
                 return dcc.send_file(path_to_local_zipfile)
     else:
         # no progress bar
@@ -95,7 +106,7 @@ def setup_download_button(download_all_button_id, download_all_id,
         def download_all_files(n_clicks, data):
             if n_clicks != None:
                 path_to_local_zipfile = download_and_or_get_files(data, link_att_name, 
-                                                                  suggested_zipfilename)
+                                                                  suggested_zipfilename, total_df=total_df)
                 return dcc.send_file(path_to_local_zipfile)
 
 def setup_download_progress_bar(download_progress_collapse_id, download_all_button_id, download_progress_id):
@@ -122,15 +133,15 @@ def setup_download_progress_bar(download_progress_collapse_id, download_all_butt
 
 # Uses the regular callback without the progress bar and without multiprocessing
 setup_download_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, PROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                      PROCESSED_TABLE_ID, "Download", "processed.zip")
+                      PROCESSED_TABLE_ID, None, "processed.zip", total_df=config.processed_datasets_df.copy())
 setup_download_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, LOP_TABLE_DOWNLOAD_ALL_ID,
-                      LOP_TABLE_ID, "Download", "lop.zip")
+                      LOP_TABLE_ID, None, "lop.zip", total_df=config.lop_cards_df.copy())
 setup_download_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, HILLSIDE_TABLE_DOWNLOAD_ALL_ID,
-                      HILLSIDE_TABLE_ID, "Download", "hillside.zip")
-setup_download_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, COLLEY_TABLE_DOWNLOAD_ALL_ID,
-                      COLLEY_TABLE_ID, "Download", "colley.zip")
+                      HILLSIDE_TABLE_ID, None, "hillside.zip", total_df=config.hillside_cards_df.copy())
 setup_download_button(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, MASSEY_TABLE_DOWNLOAD_ALL_ID,
-                      MASSEY_TABLE_ID, "Download", "massey.zip")
+                      MASSEY_TABLE_ID, None, "massey.zip", total_df=config.massey_cards_df.copy())
+setup_download_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, COLLEY_TABLE_DOWNLOAD_ALL_ID,
+                      COLLEY_TABLE_ID, None, "colley.zip", total_df=config.colley_cards_df.copy())
 
 def get_download_local_file_button(pathname):
     button_text = "Download: " + pathname.split('/')[-1]
