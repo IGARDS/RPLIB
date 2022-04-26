@@ -105,7 +105,7 @@ class LOP(Card):
         if solution is None:
             solution = self.solutions[0]
         Xstar = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=self.D.index,columns=self.D.columns)
-        Xstar_r_r = Xstar.iloc[np.array(first_solution),np.array(first_solution)]
+        Xstar_r_r = Xstar.iloc[np.array(solution),np.array(solution)]
         return Xstar_r_r
 
     def run(self):
