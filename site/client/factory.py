@@ -70,7 +70,7 @@ sidebar = html.Div(
                 dbc.NavLink("Hillside", href=f"{BASE_PATH}hillside", active="exact"),
                 dbc.NavLink("Colley", href=f"{BASE_PATH}colley", active="exact"),
                 dbc.NavLink("Massey", href=f"{BASE_PATH}massey", active="exact"),
-                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
+                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}unprocessed", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -78,7 +78,8 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Artificial Structured Datasets", href="https://colab.research.google.com/drive/1nNsf_bVFMw3q9Eq2qBYv9qxmrlIqpGJU?usp=sharing", active="exact"),
+                dbc.NavLink("RPLIB Card", href="https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/RPLIB_Card.ipynb", active="exact"),
+                dbc.NavLink("Artificial Structured Datasets", href="https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/structured_artificial.ipynb", active="exact"),
                 dbc.NavLink("Contribute Dataset", href="https://docs.google.com/forms/d/e/1FAIpQLSenO1WO_LlzNQ1ak4IPyOjBKkuixZU93umLgeI2kJbFxwzcZQ/viewform", active="exact"),
             ],
             vertical=True,
@@ -205,9 +206,11 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
     [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == f"{BASE_PATH}":
-        return page_unprocessed
+        return page_processed
     elif pathname == f"{BASE_PATH}processed":
         return page_processed
+    elif pathname == f"{BASE_PATH}unprocessed":
+        return page_unprocessed
     elif pathname == f"{BASE_PATH}lop":
         return page_lop
     elif pathname == f"{BASE_PATH}hillside":

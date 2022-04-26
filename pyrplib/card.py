@@ -100,7 +100,14 @@ class LOP(Card):
         D = D.loc[mask,mask]
         self._instance['D'] = D
         return self
-        
+    
+    def xstar_r_r(self,solution=None):
+        if solution is None:
+            solution = self.solutions[0]
+        Xstar = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=self.D.index,columns=self.D.columns)
+        Xstar_r_r = Xstar.iloc[np.array(first_solution),np.array(first_solution)]
+        return Xstar_r_r
+
     def run(self):
         assert 'source_dataset_id' in self._instance.index
         
