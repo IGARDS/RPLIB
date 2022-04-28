@@ -30,13 +30,14 @@ services:
   pander14:
     build:
       context: .
-      dockerfile: site.Dockerfile
+      dockerfile: pander14.Dockerfile
     user: $USER
     ports:
       - "7003:7001"
     volumes:
       - ./data:/app/data
       - ./pyrplib:/app/pyrplib
+      - ../ranking_toolbox/pyrankability:/app/pyrankability
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:

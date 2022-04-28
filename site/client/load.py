@@ -39,7 +39,7 @@ def get_processed(config):
     df = config.processed_datasets_df.copy()
             
     def process(row):
-        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Identifier','Short Type','Type','Command','Size','Download'])
+        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Identifier','Short Type','Type','Rows','Columns','Command','Download'])
         link = row['Link']
         entry['Dataset ID'] = row['Dataset ID']
         try:
@@ -54,7 +54,13 @@ def get_processed(config):
             entry.loc['Short Type'] = d.short_type
             entry.loc['Type'] = d.type
             entry.loc['Command'] = d.command
-            entry.loc['Size'] = d.size_str()
+            #entry.loc['Size'] = d.size_str()
+            if type(d.data) == tuple:
+                data = d.data[0]
+            else:
+                data = d.data
+            entry.loc['Rows'] = data.shape[0]
+            entry.loc['Columns'] = data.shape[1]
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print(row)
@@ -63,6 +69,7 @@ def get_processed(config):
         return entry
 
     datasets = df.apply(process,axis=1)
+    datasets = datasets.sort_values(by='Source Dataset Name')
     
     return datasets
 
@@ -81,10 +88,10 @@ def get_cards(config, method):
     def process(row):
         if method == Method.LOP or method == Method.HILLSIDE:
             entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name',
-                              'Rows', 'Columns', 'Objective','Found Solutions','Download'])
+                              'Rows', 'Columns','Objective','Found Solutions', 'Identifier','Command','Download'])
         elif method == Method.MASSEY or method == Method.COLLEY:
             entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name',
-                              'Rows', 'Columns', 'Length of teams','Download'])
+                              'Rows', 'Columns', 'Length of teams', 'Identifier','Command','Download'])
             
         link = row['Link']
         entry['Dataset ID'] = row['Dataset ID']
@@ -110,9 +117,12 @@ def get_cards(config, method):
                 
             datasets_df = config.datasets_df.set_index('Dataset ID')
             processed_datasets_df = config.processed_datasets_df.set_index('Dataset ID') 
-            dataset_name = datasets_df.loc[processed_datasets_df.loc[card.source_dataset_id,"Source Dataset ID"],"Dataset Name"]
+            processed_dataset = processed_datasets_df.loc[card.source_dataset_id]
+            dataset_name = datasets_df.loc[processed_dataset["Source Dataset ID"],"Dataset Name"]
             entry.loc['Unprocessed Dataset Name'] = dataset_name
             entry.loc['Dataset ID'] = card.dataset_id
+            entry.loc["Identifier"] = processed_dataset["Identifier"]
+            entry.loc["Command"] = processed_dataset["Command"]
             entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print("Exception in get_cards:",e)

@@ -215,11 +215,6 @@ class LOP(Card):
     @property
     def beta(self):    
         Xstar_r_r = self.xstar_r_r #Xstar.iloc[np.array(first_solution),np.array(first_solution)]
-        return pyrankability.features.beta(Xstar_r_r,normalize=True,average=False)
-    
-    @property
-    def average_beta(self):    
-        Xstar_r_r = self.xstar_r_r #Xstar.iloc[np.array(first_solution),np.array(first_solution)]
         return pyrankability.features.beta(Xstar_r_r,normalize=True,average=True)
         
     @property
@@ -327,7 +322,7 @@ class LOP(Card):
         
         # 'Red/Green plot':
         xstar_width_height = len(Xstar_r_r) * 10
-        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(Xstar_r_r)#centroid_x)
+        xstar_g=pyrankability.plot.show_single_xstar(Xstar_r_r)#centroid_x)
         xstar_g = xstar_g.properties(
             width=xstar_width_height,
             height=xstar_width_height
@@ -347,7 +342,7 @@ class LOP(Card):
         
         # 'X*':
         xstar_width_height = len(Xstar_r_r) * 10
-        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(Xstar_r_r,red_green=False)
+        xstar_g=pyrankability.plot.show_single_xstar(Xstar_r_r,red_green=False)
         xstar_g = xstar_g.properties(
             width=xstar_width_height,
             height=xstar_width_height
@@ -409,7 +404,7 @@ class LOP(Card):
                                             name="Solution 2")
 
             spider_g = pyrankability.plot.spider(first_solution,second_solution)
-            spider_width = 700
+            spider_width = 500
             spider_height = 30 * len(second)
             spider_g = spider_g.properties(
                 width = spider_width,
@@ -423,7 +418,7 @@ class LOP(Card):
             visuals["dash"]["Farthest Pair"] = html.Iframe(
                 id='farthest_pair',
                 height=str(spider_height + 100),
-                width=str(spider_width + 400),
+                width=str(spider_width + 600),
                 sandbox='allow-scripts',
                 # Once this function returns, tmpfile is garbage collected and may be 
                 # the reason for 'view source' not working. 
@@ -435,8 +430,8 @@ class LOP(Card):
         
         visuals["notebook"]["OBJECTIVE"] = self.obj
         visuals["dash"]["OBJECTIVE"] = self.obj
-        #visuals["notebook"]["BETA"] = self.beta
-        #visuals["dash"]["BETA"] = self.beta
+        visuals["notebook"]["BETA"] = self.beta
+        visuals["dash"]["BETA"] = self.beta
         if len(self.solutions) > 1:        
             visuals["notebook"]["TAU Farthest Pair"] = self.tau_farthest_pair
             visuals["notebook"]["TAU Closest Pair"] = self.tau_closest_pair

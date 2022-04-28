@@ -92,3 +92,9 @@ for dataset_id in method_dataset_ids:
 
 if method == 'lop':
     config.save_lop_datasets()
+elif method == 'hillside':
+    config.save_hillside_datasets()
+elif method == 'massey':
+    config.save_massey_datasets()
+elif method == 'colley':
+    config.save_colley_datasets()
