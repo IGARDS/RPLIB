@@ -17,8 +17,6 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN python -m pip install -r /app/requirements.txt
 
-#RUN pip install git+https://github.com/IGARDS/ranking_toolbox.git --upgrade
-
 ENV PYTHONPATH "${PYTHONPATH}:/app"
 
 ENV RPLIB_DATA_PREFIX "/app/data"

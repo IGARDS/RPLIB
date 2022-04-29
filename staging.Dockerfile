@@ -22,7 +22,7 @@ COPY ./pipelines /app/pipelines
 RUN pip install --upgrade pip
 RUN python -m pip install -r /app/requirements.txt
 
-RUN pip install git+https://github.com/IGARDS/RPLib.git --upgrade
+RUN pip install git+https://github.com/IGARDS/RPLib.git@staging --upgrade
 RUN pip install git+https://github.com/IGARDS/ranking_toolbox.git --upgrade
 
 ENV PYTHONPATH "${PYTHONPATH}:/app"
@@ -31,3 +31,4 @@ ENV RPLIB_DATA_PREFIX "/app/data"
 
 # application entry point
 CMD [ "/app/site/run.sh", "7001"] 
+#CMD [ "/usr/local/bin/pip", "freeze" ] 
