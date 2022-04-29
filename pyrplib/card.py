@@ -65,7 +65,7 @@ class Card(ABC):
 
 class LOP(Card):
     def __init__(self):
-        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None,None,None,None],
+        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None,None,None],
                                    index=["solutions",
                                           "obj",
                                           "max_tau_solutions",
@@ -79,8 +79,7 @@ class LOP(Card):
                                           "closest_pair",
                                           "farthest_pair",
                                           "tau_farthest_pair",
-                                          "tau_closest_pair",
-                                          "beta"
+                                          "tau_closest_pair"
                                          ])
     
     def prepare(self,processed_dataset):
@@ -100,7 +99,19 @@ class LOP(Card):
         D = D.loc[mask,mask]
         self._instance['D'] = D
         return self
-        
+    
+    @property
+    def xstar(self):
+        Xstar = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=self.D.index,columns=self.D.columns)
+        return Xstar
+    
+    @property
+    def xstar_r_r(self):
+        r = self.r #self.centroid_x.sum(axis=1).sort_values(ascending=False)
+        Xstar = self.xstar
+        Xstar_r_r = Xstar.loc[r.index,r.index]
+        return Xstar_r_r
+
     def run(self):
         assert 'source_dataset_id' in self._instance.index
         
@@ -128,11 +139,6 @@ class LOP(Card):
         orig_sol_x = details['x']
         orig_obj = details['obj']
         first_solution = details['P'][0]
-        
-        # beta
-        Xstar = pd.DataFrame(pyrankability.common.threshold_x(centroid_x),index=D.index,columns=D.columns)
-        Xstar_r_r = Xstar.iloc[np.array(first_solution),np.array(first_solution)]
-        self.beta = pyrankability.features.beta(Xstar_r_r)
 
         # Add what we have found to our instance
         self.obj = orig_obj
@@ -207,12 +213,9 @@ class LOP(Card):
         self._instance['obj'] = obj
         
     @property
-    def beta(self):
-        return self._instance['beta']
-       
-    @beta.setter
-    def beta(self, beta):
-        self._instance['beta'] = beta
+    def beta(self):    
+        Xstar_r_r = self.xstar_r_r #Xstar.iloc[np.array(first_solution),np.array(first_solution)]
+        return pyrankability.features.beta(Xstar_r_r,normalize=True,average=True)
         
     @property
     def farthest_pair(self):
@@ -301,22 +304,25 @@ class LOP(Card):
             
         return contents
     
+    @property
+    def r(self):
+        return self.xstar.sum(axis=1).sort_values(ascending=False)
+    
     def get_visuals(self):
         D = self.D
         visuals = {"notebook":{},"dash":{}}
-        
-        centroid_x = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=D.index,columns=self.D.columns)
-        
-        r = centroid_x.sum(axis=1).sort_values(ascending=False)
+                
+        r = self.r
         visuals["dash"]["D[r,r]"] = pyrplib.style.get_standard_data_table(self.D.loc[r.index,:].loc[:,r.index].reset_index(),"D_r_r")
         visuals["notebook"]["D[r,r]"] = self.D.loc[r.index,:].loc[:,r.index]
         
-        visuals["dash"]["X*[r,r]"] = pyrplib.style.get_standard_data_table(centroid_x.loc[r.index,:].loc[:,r.index].reset_index(),"D_r_r")
-        visuals["notebook"]["X*[r,r]"] = centroid_x.loc[r.index,:].loc[:,r.index]
+        Xstar_r_r = self.xstar_r_r
+        visuals["dash"]["X*[r,r]"] = pyrplib.style.get_standard_data_table(Xstar_r_r.reset_index(),"X_r_r")
+        visuals["notebook"]["X*[r,r]"] = Xstar_r_r
         
         # 'Red/Green plot':
-        xstar_width_height = len(centroid_x) * 10
-        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(centroid_x)
+        xstar_width_height = len(Xstar_r_r) * 10
+        xstar_g=pyrankability.plot.show_single_xstar(Xstar_r_r)#centroid_x)
         xstar_g = xstar_g.properties(
             width=xstar_width_height,
             height=xstar_width_height
@@ -335,8 +341,8 @@ class LOP(Card):
         )
         
         # 'X*':
-        xstar_width_height = len(centroid_x) * 10
-        xstar_g,scores,ordered_xstar=pyrankability.plot.show_single_xstar(centroid_x,red_green=False)
+        xstar_width_height = len(Xstar_r_r) * 10
+        xstar_g=pyrankability.plot.show_single_xstar(Xstar_r_r,red_green=False)
         xstar_g = xstar_g.properties(
             width=xstar_width_height,
             height=xstar_width_height
@@ -398,7 +404,7 @@ class LOP(Card):
                                             name="Solution 2")
 
             spider_g = pyrankability.plot.spider(first_solution,second_solution)
-            spider_width = 700
+            spider_width = 500
             spider_height = 30 * len(second)
             spider_g = spider_g.properties(
                 width = spider_width,
@@ -412,7 +418,7 @@ class LOP(Card):
             visuals["dash"]["Farthest Pair"] = html.Iframe(
                 id='farthest_pair',
                 height=str(spider_height + 100),
-                width=str(spider_width + 400),
+                width=str(spider_width + 600),
                 sandbox='allow-scripts',
                 # Once this function returns, tmpfile is garbage collected and may be 
                 # the reason for 'view source' not working. 

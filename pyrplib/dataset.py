@@ -162,7 +162,7 @@ class ProcessedD(Processed):
         
     def load(self,options={}):
         if type(self._instance['data']) != pd.DataFrame:
-            data = pd.DataFrame(self._instance['data'])
+            data = pd.DataFrame(self._instance['data']).T # JSON load requires the transpose
             if "D" in data.index:
                 self._instance['data'] = pd.DataFrame(data.loc['D','0'])
             else:
