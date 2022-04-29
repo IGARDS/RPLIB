@@ -28,8 +28,6 @@ from .common import *
 from .identifier import *
 from . import load
 
-RPLIB_DATA_PREFIX = os.environ.get("RPLIB_DATA_PREFIX")
-
 # Config contains all of the datasets and other configuration details
 config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 
@@ -65,7 +63,7 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Processed", href=f"{BASE_PATH}processed", active="exact"),
+                dbc.NavLink("Processed", href=f"{BASE_PATH}", active="exact"),
                 dbc.NavLink("LOP", href=f"{BASE_PATH}lop", active="exact"),
                 dbc.NavLink("Hillside", href=f"{BASE_PATH}hillside", active="exact"),
                 dbc.NavLink("Colley", href=f"{BASE_PATH}colley", active="exact"),
@@ -187,7 +185,7 @@ def get_blank_page(page_name):
     ])
 
 def get_404(pathname):
-    return dbc.Jumbotron(
+    return html.Div(
         [
             html.H1("404: Not found", className="text-danger"),
             html.Hr(),

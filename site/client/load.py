@@ -9,6 +9,15 @@ import pyrplib
 from .common import Method
 
 def get_datasets(config):
+    def process(links):
+        try:
+            if type(links) != list:
+                links = [links]
+            res = ", ".join(["[%s](%s)"%(link.split("/")[-1],link) for link in links])
+            return res
+        except:
+            return "Could not process. Check data."
+
     columns = ["Dataset ID","Dataset Name","Type","Length of Data","Description"]
     df = pd.DataFrame(columns=columns).set_index("Dataset ID")
 
@@ -28,10 +37,10 @@ def get_datasets(config):
         new_df.loc[index,"Description"] = datasets_df.loc[index,"Description"]
         new_df.loc[index,"Type"] = unprocessed.type()
         new_df.loc[index,"Length of Data"] = len(unprocessed.data())
+        new_df.loc[index,"Download Links"] = process(links)
         df = df.append(new_df)
-        
+
     df = df.sort_values(by='Dataset Name').reset_index()
-    
     return df
 
 def get_processed(config):
@@ -39,7 +48,7 @@ def get_processed(config):
     df = config.processed_datasets_df.copy()
             
     def process(row):
-        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Identifier','Short Type','Type','Rows','Columns','Command','Download'])
+        entry = pd.Series(index=['Dataset ID','Source Dataset ID','Source Dataset Name','Identifier','Short Type','Type','Rows','Columns','Command'])
         link = row['Link']
         entry['Dataset ID'] = row['Dataset ID']
         try:
@@ -54,14 +63,13 @@ def get_processed(config):
             entry.loc['Short Type'] = d.short_type
             entry.loc['Type'] = d.type
             entry.loc['Command'] = d.command
-            #entry.loc['Size'] = d.size_str()
             if type(d.data) == tuple:
                 data = d.data[0]
             else:
                 data = d.data
             entry.loc['Rows'] = data.shape[0]
             entry.loc['Columns'] = data.shape[1]
-            entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
+            #entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print(row)
             print("Exception in get_processed:",e)
@@ -88,10 +96,10 @@ def get_cards(config, method):
     def process(row):
         if method == Method.LOP or method == Method.HILLSIDE:
             entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name',
-                              'Rows', 'Columns','Objective','Found Solutions', 'Identifier','Command','Download'])
+                              'Rows', 'Columns','Objective','Found Solutions', 'Identifier','Command'])
         elif method == Method.MASSEY or method == Method.COLLEY:
             entry = pd.Series(index=['Dataset ID','Unprocessed Dataset Name',
-                              'Rows', 'Columns', 'Length of teams', 'Identifier','Command','Download'])
+                              'Rows', 'Columns', 'Length of teams', 'Identifier','Command'])
             
         link = row['Link']
         entry['Dataset ID'] = row['Dataset ID']
@@ -111,8 +119,9 @@ def get_cards(config, method):
                 card = pyrplib.card.SystemOfEquations.from_json(link)
                 games = card.games
                 teams = card.teams
-                entry.loc['Rows'] = games.shape[0]
-                entry.loc['Columns'] = games.shape[1]
+                M = card.M
+                entry.loc['Rows'] = M.shape[0]
+                entry.loc['Columns'] = M.shape[1]
                 entry.loc['Length of teams'] = len(teams)
                 
             datasets_df = config.datasets_df.set_index('Dataset ID')
@@ -123,7 +132,7 @@ def get_cards(config, method):
             entry.loc['Dataset ID'] = card.dataset_id
             entry.loc["Identifier"] = processed_dataset["Identifier"]
             entry.loc["Command"] = processed_dataset["Command"]
-            entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
+            #entry.loc['Download'] = "[%s](%s)"%(link.split("/")[-1],link)
         except Exception as e:
             print("Exception in get_cards:",e)
             print(traceback.format_exc())
