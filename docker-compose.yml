@@ -6,25 +6,15 @@ services:
     user: $USER
     ports:
       - "7001:7001"
-    volumes:
-      - ./data:/app/data
-      - ./pyrplib:/app/pyrplib
-      - ./site:/app/site
-      - ./pipelines:/app/pipelines
     environment:
       - BASE_PATH=/rplib/
   staging:
     build:
       context: .
-      dockerfile: site.Dockerfile
+      dockerfile: staging.Dockerfile
     user: $USER
     ports:
       - "7002:7001"
-    volumes:
-      - ./data:/app/data
-      - ./pyrplib:/app/pyrplib
-      - ./site:/app/site
-      - ./pipelines:/app/pipelines
     environment:
       - BASE_PATH=/rplib_staging/
   pander14:
