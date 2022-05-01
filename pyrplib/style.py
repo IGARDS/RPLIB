@@ -89,13 +89,12 @@ def get_standard_download_all_button(button_id, download_id, progress_id=None, c
             [
                 html.Div([
                     dcc.Download(id=download_id),
-                ]),
-                dbc.Row(
-                    [
-                        html.Button(id=button_id, children="Download All In Table"),
-                    ]
-                )
-            ]
+                ], style={'display': 'inline-block'}),
+                html.Button(id=button_id, children="Download All In Table", style={'padding': "5px 15px", "borderRadius": "7px",
+                                                                                   'backgroundColor': "#0c6efd",
+                                                                                   'color': "white", 'border': 'none'}),
+            ],
+            style={'float': 'right'}
         ) 
     return button
 

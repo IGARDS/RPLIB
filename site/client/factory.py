@@ -117,9 +117,9 @@ processed_download_button = \
 
 processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed_table")
 page_processed = html.Div([
-    html.H1("Processed Datasets"),
-    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Processed Datasets", style={'display': 'inline-block'}),
     processed_download_button,
+    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     processed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -131,9 +131,9 @@ lop_download_button = \
     pyrplib.style.get_standard_download_all_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
                                                    LOP_TABLE_DOWNLOAD_ALL_ID)
 page_lop = html.Div([
-    html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
-    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)", style={'display': 'inline-block'}),
     lop_download_button,
+    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     lop_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -145,9 +145,9 @@ hillside_download_button = \
     pyrplib.style.get_standard_download_all_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
                                                    HILLSIDE_TABLE_DOWNLOAD_ALL_ID)
 page_hillside = html.Div([
-    html.H1("Search Hillside Solutions and Analysis"),
-    html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Search Hillside Solutions and Analysis", style={'display': 'inline-block'}),
     hillside_download_button,
+    html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     hillside_table,
     html.Div(id="hillside_output")
     ])
@@ -157,9 +157,9 @@ massey_download_button = \
     pyrplib.style.get_standard_download_all_button(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
                                                    MASSEY_TABLE_DOWNLOAD_ALL_ID)
 page_massey = html.Div([
-    html.H1("Search Massey Solutions and Analysis"),
-    html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Search Massey Solutions and Analysis", style={'display': 'inline-block'}),
     massey_download_button,
+    html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     massey_table,
     html.Div(id="massey_output")
     ])
@@ -169,9 +169,9 @@ colley_download_button = \
     pyrplib.style.get_standard_download_all_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
                                                    COLLEY_TABLE_DOWNLOAD_ALL_ID)
 page_colley = html.Div([
-    html.H1("Search Colley Solutions and Analysis"),
-    html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Search Colley Solutions and Analysis", style={'display': 'inline-block'}),
     colley_download_button,
+    html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     colley_table,
     html.Div(id="colley_output")
     ])
