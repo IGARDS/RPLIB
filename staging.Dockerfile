@@ -31,4 +31,3 @@ ENV RPLIB_DATA_PREFIX "/app/data"
 
 # application entry point
 CMD [ "/app/site/run.sh", "7001"] 
-#CMD [ "/usr/local/bin/pip", "freeze" ] 
