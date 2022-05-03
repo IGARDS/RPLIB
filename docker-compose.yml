@@ -3,44 +3,33 @@ services:
     build:
       context: .
       dockerfile: site.Dockerfile
-    user: $USER
     ports:
       - "7001:7001"
-    volumes:
-      - ./data:/app/data
-      - ./pyrplib:/app/pyrplib
-      - ./site:/app/site
-      - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib/
+      - BASE_PATH=/rplib/
   staging:
     build:
       context: .
-      dockerfile: site.Dockerfile
-    user: $USER
+      dockerfile: staging.Dockerfile
     ports:
       - "7002:7001"
-    volumes:
-      - ./data:/app/data
-      - ./pyrplib:/app/pyrplib
-      - ./site:/app/site
-      - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_staging/
+      - BASE_PATH=/rplib_staging/
   pander14:
     build:
       context: .
-      dockerfile: site.Dockerfile
+      dockerfile: pander14.Dockerfile
     user: $USER
     ports:
       - "7003:7001"
     volumes:
       - ./data:/app/data
       - ./pyrplib:/app/pyrplib
+      - ../ranking_toolbox/pyrankability:/app/pyrankability
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_pander14/
+      - BASE_PATH=/rplib_pander14/
   bjtat:
     build:
       context: .
@@ -54,7 +43,7 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_bjtat/
+      - BASE_PATH=/rplib_bjtat/
   cward11:
     build:
       context: .
@@ -68,4 +57,4 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-        - BASE_PATH=/rplib_cward11/
+      - BASE_PATH=/rplib_cward11/

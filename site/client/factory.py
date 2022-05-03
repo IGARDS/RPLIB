@@ -28,8 +28,6 @@ from .common import *
 from .identifier import *
 from . import load
 
-RPLIB_DATA_PREFIX = os.environ.get("RPLIB_DATA_PREFIX")
-
 # Config contains all of the datasets and other configuration details
 config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 
@@ -65,12 +63,12 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}", active="exact"),
-                dbc.NavLink("Processed", href=f"{BASE_PATH}processed", active="exact"),
+                dbc.NavLink("Processed", href=f"{BASE_PATH}", active="exact"),
                 dbc.NavLink("LOP", href=f"{BASE_PATH}lop", active="exact"),
                 dbc.NavLink("Hillside", href=f"{BASE_PATH}hillside", active="exact"),
                 dbc.NavLink("Colley", href=f"{BASE_PATH}colley", active="exact"),
                 dbc.NavLink("Massey", href=f"{BASE_PATH}massey", active="exact"),
+                dbc.NavLink("Unprocessed", href=f"{BASE_PATH}unprocessed", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -78,7 +76,8 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Artificial Structured Datasets", href="https://colab.research.google.com/drive/1nNsf_bVFMw3q9Eq2qBYv9qxmrlIqpGJU?usp=sharing", active="exact"),
+                dbc.NavLink("RPLIB Card", href="https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/RPLIB_Card.ipynb", active="exact"),
+                dbc.NavLink("Artificial Structured Datasets", href="https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/structured_artificial.ipynb", active="exact"),
                 dbc.NavLink("Contribute Dataset", href="https://docs.google.com/forms/d/e/1FAIpQLSenO1WO_LlzNQ1ak4IPyOjBKkuixZU93umLgeI2kJbFxwzcZQ/viewform", active="exact"),
             ],
             vertical=True,
@@ -102,15 +101,9 @@ df_massey_cards = load.get_cards(config, Method.MASSEY)
 df_colley_cards = load.get_cards(config, Method.COLLEY)
 
 unprocessed_table = pyrplib.style.get_standard_data_table(df_datasets, UNPROCESSED_TABLE_ID)
-unprocessed_download_button = \
-    pyrplib.style.get_standard_download_all_button(UNPROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   UNPROCESSED_TABLE_DOWNLOAD_ALL_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   UNPROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
 page_unprocessed = html.Div([
     html.H1("Unprocessed Datasets"),
     html.P("Search for an unprocessed dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
-    unprocessed_download_button,
     unprocessed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -120,15 +113,13 @@ page_unprocessed = html.Div([
 processed_table = pyrplib.style.get_standard_data_table(df_processed, PROCESSED_TABLE_ID)
 processed_download_button = \
     pyrplib.style.get_standard_download_all_button(PROCESSED_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID, 
-                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   PROCESSED_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
+                                                   PROCESSED_TABLE_DOWNLOAD_ALL_ID)
 
 processed_table = pyrplib.style.get_standard_data_table(df_processed, "processed_table")
 page_processed = html.Div([
-    html.H1("Processed Datasets"),
-    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Processed Datasets", style={'display': 'inline-block'}),
     processed_download_button,
+    html.P("Search for a dataset with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     processed_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -138,13 +129,11 @@ page_processed = html.Div([
 lop_table = pyrplib.style.get_standard_data_table(df_lop_cards, LOP_TABLE_ID)
 lop_download_button = \
     pyrplib.style.get_standard_download_all_button(LOP_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
-                                                   LOP_TABLE_DOWNLOAD_ALL_ID,
-                                                   LOP_TABLE_DOWNLOAD_PROGRESS_ID,
-                                                   LOP_TABLE_DOWNLOAD_PROGRESS_COLLAPSE_ID)
+                                                   LOP_TABLE_DOWNLOAD_ALL_ID)
 page_lop = html.Div([
-    html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)"),
-    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
+    html.H1("Search LOP Solutions and Analysis (i.e., LOP cards)", style={'display': 'inline-block'}),
     lop_download_button,
+    html.P("Search for LOP card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     lop_table,
     html.Br(),
     html.H2("Selected content will appear below"),
@@ -152,24 +141,36 @@ page_lop = html.Div([
 ])
 
 hillside_table = pyrplib.style.get_standard_data_table(df_hillside_cards, HILLSIDE_TABLE_ID)
+hillside_download_button = \
+    pyrplib.style.get_standard_download_all_button(HILLSIDE_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   HILLSIDE_TABLE_DOWNLOAD_ALL_ID)
 page_hillside = html.Div([
-    html.H1("Search Hillside Solutions and Analysis"),
+    html.H1("Search Hillside Solutions and Analysis", style={'display': 'inline-block'}),
+    hillside_download_button,
     html.P("Search for a Hillside Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     hillside_table,
     html.Div(id="hillside_output")
     ])
 
 massey_table = pyrplib.style.get_standard_data_table(df_massey_cards, MASSEY_TABLE_ID)
+massey_download_button = \
+    pyrplib.style.get_standard_download_all_button(MASSEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   MASSEY_TABLE_DOWNLOAD_ALL_ID)
 page_massey = html.Div([
-    html.H1("Search Massey Solutions and Analysis"),
+    html.H1("Search Massey Solutions and Analysis", style={'display': 'inline-block'}),
+    massey_download_button,
     html.P("Search for a Massey Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     massey_table,
     html.Div(id="massey_output")
     ])
 
 colley_table = pyrplib.style.get_standard_data_table(df_colley_cards, COLLEY_TABLE_ID)
+colley_download_button = \
+    pyrplib.style.get_standard_download_all_button(COLLEY_TABLE_DOWNLOAD_ALL_BUTTON_ID, 
+                                                   COLLEY_TABLE_DOWNLOAD_ALL_ID)
 page_colley = html.Div([
-    html.H1("Search Colley Solutions and Analysis"),
+    html.H1("Search Colley Solutions and Analysis", style={'display': 'inline-block'}),
+    colley_download_button,
     html.P("Search for a Colley Card with filtered fields (case sensitive). Select a row by clicking. Results will be shown below the table."),
     colley_table,
     html.Div(id="colley_output")
@@ -184,7 +185,7 @@ def get_blank_page(page_name):
     ])
 
 def get_404(pathname):
-    return dbc.Jumbotron(
+    return html.Div(
         [
             html.H1("404: Not found", className="text-danger"),
             html.Hr(),
@@ -203,9 +204,11 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
     [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname == f"{BASE_PATH}":
-        return page_unprocessed
+        return page_processed
     elif pathname == f"{BASE_PATH}processed":
         return page_processed
+    elif pathname == f"{BASE_PATH}unprocessed":
+        return page_unprocessed
     elif pathname == f"{BASE_PATH}lop":
         return page_lop
     elif pathname == f"{BASE_PATH}hillside":

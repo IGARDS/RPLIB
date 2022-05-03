@@ -61,28 +61,41 @@ def get_standard_data_table(df,id):
     )
     return dataset_table
 
-def get_standard_download_all_button(button_id, download_id, progress_id, collapse_id):
-    button = html.Div(
-        [
-            html.Div([
-                dbc.Collapse(
-                    dbc.Row(
-                        [
-                            html.Progress(id=progress_id)
-                        ]
+def get_standard_download_all_button(button_id, download_id, progress_id=None, collapse_id=None):
+    if progress_id and collapse_id:     
+        button = html.Div(
+            [
+                html.Div([
+                    dbc.Collapse(
+                        dbc.Row(
+                            [
+                                html.Progress(id=progress_id)
+                            ]
+                        ),
+                        id=collapse_id,
+                        is_open=False
                     ),
-                    id=collapse_id,
-                    is_open=False
-                ),
-                dcc.Download(id=download_id),
-            ]),
-            dbc.Row(
-                [
-                    html.Button(id=button_id, children="Download All In Table"),
-                ]
-            )
-        ]
-    ) 
+                    dcc.Download(id=download_id),
+                ]),
+                dbc.Row(
+                    [
+                        html.Button(id=button_id, children="Download All In Table"),
+                    ]
+                )
+            ]
+        )
+    else:
+        button = html.Div(
+            [
+                html.Div([
+                    dcc.Download(id=download_id),
+                ], style={'display': 'inline-block'}),
+                html.Button(id=button_id, children="Download All In Table", style={'padding': "5px 15px", "borderRadius": "7px",
+                                                                                   'backgroundColor': "#0c6efd",
+                                                                                   'color': "white", 'border': 'none'}),
+            ],
+            style={'float': 'right'}
+        ) 
     return button
 
 def view_item(item,id):

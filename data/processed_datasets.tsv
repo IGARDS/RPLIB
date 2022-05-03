@@ -1,5 +1,5 @@
 Dataset ID	Source Dataset ID	Index	Command	Type	Collection	Options	Last Processed Datetime	Identifier
-1	1	0	transformers.direct(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		14/03/2022 18:04:34	
+1	1	0	transformers.direct(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		28/04/2022 19:18:24	
 2	1	0	transformers.indirect(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		14/03/2022 18:04:35	
 3	2	0	transformers.direct(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		14/03/2022 18:04:37	
 4	2	0	transformers.indirect(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		14/03/2022 18:04:39	
@@ -535,5 +535,5 @@ Dataset ID	Source Dataset ID	Index	Command	Type	Collection	Options	Last Processe
 834	79	147	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}		Threshold: 5
 835	79	148	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}		Threshold: 5
 836	79	149	transformers.process_D(data.loc[index,'D'])	D	structured_artificial	{}		Threshold: 5
-837	7	0	transformers.directplusindirect(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		08/04/2022 00:13:23	
-838	1	0	transformers.directplusindirect(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		08/04/2022 00:13:30	
+837	7	0	transformers.directplusindirect(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		26/04/2022 18:45:28	
+838	1	0	transformers.directplusindirect(*transformers.count(data.loc[index,'game_df'],data.loc[index,'madness_teams']))	D	marchmadness		26/04/2022 18:45:30	
