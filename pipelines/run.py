@@ -39,7 +39,6 @@ def get_ids(str_ids):
     return ids
 
 method = sys.argv[1]
-method_dataset_ids = get_ids(sys.argv[2].split(",")) #[int(i) for i in sys.argv[1].split(",")]
 
 config = pyrplib.data.Data(RPLIB_DATA_PREFIX)
 
@@ -54,6 +53,11 @@ elif method == 'massey':
 elif method == 'colley':
     method_datasets_df = config.colley_cards_df
 
+if sys.argv[2] != "all":
+    method_dataset_ids = get_ids(sys.argv[2].split(",")) #[int(i) for i in sys.argv[1].split(",")]
+else:
+    method_dataset_ids = list(method_datasets_df['Dataset ID'])
+    
 datasets_df.set_index('Dataset ID',inplace=True)
 processed_datasets_df.set_index('Dataset ID',inplace=True)
 method_datasets_df.set_index('Dataset ID',inplace=True)
