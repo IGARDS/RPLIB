@@ -1,51 +1,11 @@
 # RPLib
 
-## Installation instructions
+## Running frontend
+### Production
+USER=$(id -u) docker-compose up -d --build production
 
-### Step 0. Pre-installation notes
-If you wish to run many of the algorithms yourself, you will need to make sure Gurobi and gurobipy is installed within your environment. Gurobi is available to academics free of charge, and you can find those instructions here: https://www.gurobi.com/downloads/end-user-license-agreement-academic/. 
+### Staging
+USER=$(id -u) docker-compose up -d --build staging
 
-Finally, a lot of the code is built around assuming all paths are relative to your home directory.
-
-### Step 1. Download code and data
-git clone https://github.com/IGARDS/RPLib.git
-
-git clone https://github.com/IGARDS/ranking_toolbox
-
-### Step 2. Install dependencies
-
-cd RPLib
-pip install -r requirements.txt
-
-Note: If you are having problems with installing graphviz-dev, then run
-`sudo apt install graphviz-dev`
-or your equivalent package manager
-
-## Usage instructions
-
-### Running frontend
-The frontend can be run from RPLib/dash directory.
-
-cd RPLib/dash
-# export BASE_PATH=/rplib/ # if you want to run in a subdirectory
-./run.sh <PORT>
-  
-Navigate to http://localhost:PORT/
-  
-### Processing a file example
-RANKING_TOOLBOX_DIR=$HOME/ranking_toolbox
-
-SCIP_BIN_DIR=/usr/local/SCIPOptSuite/bin
-
-export PATH=$PATH:$SCIP_BIN_DIR:$RANKING_TOOLBOX_DIR/scip
-
-which scip
-
-which scip_collect.sh
-
-which scip_count.sh
-  
-python $HOME/RPLib/pipelines/run.py lop 13
-
-## Docker Compose
+### Development environments
 USER=$(id -u) docker-compose up --build <service>

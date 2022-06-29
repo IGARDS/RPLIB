@@ -71,7 +71,7 @@ def download_and_or_get_files(data, link_att_name, zipfilename, set_progress=Non
                 if set_progress:
                     set_progress((str(i + 1), str(total)))
     # saves zip file in the machine dependent tempfile location 
-    # creates RPLib dir if not present in temp dir location
+    # creates RPLIB dir if not present in temp dir location
     machine_temp_dir = tempfile.gettempdir()
     if not os.path.exists(machine_temp_dir+"/"+"RPLIB"):
         os.mkdir(machine_temp_dir+"/"+"RPLIB")
