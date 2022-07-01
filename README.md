@@ -37,30 +37,29 @@ import pyrplib
 ### Launch a version of RPLIB browser locally
 ### Production
 ```bash
-cd pyrplib
+cd RPLIB
 USER=$(id -u) docker-compose up -d --build production
 ```
 
+Visit http://localhost:7001/rplib to test your site.
+
 ### Staging
 ```bash
-cd pyrplib
+cd RPLIB
 git checkout staging
 USER=$(id -u) docker-compose up -d --build staging
 ```
 
-### Development environments
-cd pyrplib
-git checkout <branch>
-USER=$(id -u) docker-compose up --build <branch>
+Visit http://localhost:7002/rplib_staging to test your site.
 
-### Running tests
+### Development environments
 ```bash
-cd pyrplib
-python3 -m venv ../env
-source ../env/bin/activate
-cd tests
-pytest card_tests.py
+cd RPLIB
+git checkout <branch>
+USER=$(id -u) docker-compose up --build dev
 ```
+
+Visit http://localhost:7003/rplib_dev to test your site.
 
 ## Authors
 Paul Anderson, Ph.D.<br>
