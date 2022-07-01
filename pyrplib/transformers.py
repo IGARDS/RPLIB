@@ -101,3 +101,21 @@ def features_to_D(df_features,options={}):
     processed_D.short_type = "D"
     
     return processed_D
+
+class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
+    def __init__(self,columns):
+        self.columns = columns
+
+    #Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+   
+    def transform(self, X , y = None ):
+        D = pd.DataFrame(np.zeros((len(X),len(X))),columns=X.index.copy(),index=X.index.copy())
+        D.index.name = str(D.index.name)+"1"
+        D.columns.name = str(D.columns.name)+"2"
+        for col in self.columns:
+            sorted_col = X[col].sort_values()
+            for i in range(len(sorted_col)):
+                D.loc[sorted_col.index[i], sorted_col.index[i+1:]] += 1
+        return D
