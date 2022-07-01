@@ -11,23 +11,16 @@ WORKDIR /app/site
 RUN apt-get update
 RUN apt-get install -y libgraphviz-dev
 
-COPY requirements.txt /app/
-
-COPY ./data /app/data
-COPY ./pyrplib /app/pyrplib
-COPY ./site /app/site
-COPY ./pipelines /app/pipelines
+COPY ./ /app/
 
 # install pip requirements
 RUN pip install --upgrade pip
 RUN python -m pip install -r /app/requirements.txt
 
-#RUN pip install git+https://github.com/IGARDS/RPLib.git@staging --upgrade
-#RUN pip install git+https://github.com/IGARDS/ranking_toolbox.git --upgrade
 RUN pip install pyrankability
-RUN pip install /app/pyrplib
+RUN pip install /app
 
-ENV PYTHONPATH "${PYTHONPATH}:/app"
+#ENV PYTHONPATH "${PYTHONPATH}:/app"
 
 ENV RPLIB_DATA_PREFIX "/app/data"
 
