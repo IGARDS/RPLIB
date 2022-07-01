@@ -1,51 +1,78 @@
-# RPLib
+# RPLIB
 
-## Installation instructions
+This repo contains the RPLib data, package, and web server.
 
-### Step 0. Pre-installation notes
-If you wish to run many of the algorithms yourself, you will need to make sure Gurobi and gurobipy is installed within your environment. Gurobi is available to academics free of charge, and you can find those instructions here: https://www.gurobi.com/downloads/end-user-license-agreement-academic/. 
+## Browse data (recommended)
+Visit the RPLIB browser at https://birg.dev/rplib/. 
 
-Finally, a lot of the code is built around assuming all paths are relative to your home directory.
+## View RPLIB Card (recommended)
+You may view individual cards using the [RPLIB browser](https://birg.dev/rplib/) or for a more customizable experience, use our sample Jupyter notebook that has been tested with Google's Colab: [Click to launch on Colab](https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/RPLIB_Card.ipynb).
 
-### Step 1. Download code and data
-git clone https://github.com/IGARDS/RPLib.git
+## Contribute a dataset (recommended)
+We encourage the community to extend this repository with additional data. The recommended procedure for doing so begins with filling out this form: [Click to launch add dataset form](https://docs.google.com/forms/d/e/1FAIpQLSenO1WO_LlzNQ1ak4IPyOjBKkuixZU93umLgeI2kJbFxwzcZQ/viewform).
 
-git clone https://github.com/IGARDS/ranking_toolbox
+## Generate artificial data (recommended)
+We have also developed a sample notebook for those researchers interested in generating their own artificial data in a compatable format for RPLIB. [Click to launch on Colab](https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/structured_artificial.ipynb). 
 
-### Step 2. Install dependencies
+## Install instructions
+### Prerequisites
+graphviz headers must be installed:
+```bash
+apt-get install -y libgraphviz-dev
+```
+### Recommended package installation
+```bash
+pip install pyrplib
+```
 
-cd RPLib
-pip install -r requirements.txt
+### Post package installation: Gurobi License
+The webserver does not require Gurobi to launch, but to use the full functionality of RPLIB, the Gurobi optimizer must be installed with a valid license. Gurobi provides free academic licenses and more information on obtaining and installing your license can be found here: https://support.gurobi.com/hc/en-us/articles/360040541251. 
 
-Note: If you are having problems with installing graphviz-dev, then run
-`sudo apt install graphviz-dev`
-or your equivalent package manager
+### Verify installation
+```python
+import pyrplib
+```
 
-## Usage instructions
+## Development notes
+### Launch a version of RPLIB browser locally
+### Production
+```bash
+cd pyrplib
+USER=$(id -u) docker-compose up -d --build production
+```
 
-### Running frontend
-The frontend can be run from RPLib/dash directory.
+### Staging
+```bash
+cd pyrplib
+git checkout staging
+USER=$(id -u) docker-compose up -d --build staging
+```
 
-cd RPLib/dash
-# export BASE_PATH=/rplib/ # if you want to run in a subdirectory
-./run.sh <PORT>
-  
-Navigate to http://localhost:PORT/
-  
-### Processing a file example
-RANKING_TOOLBOX_DIR=$HOME/ranking_toolbox
+### Development environments
+cd pyrplib
+git checkout <branch>
+USER=$(id -u) docker-compose up --build <branch>
 
-SCIP_BIN_DIR=/usr/local/SCIPOptSuite/bin
+### Running tests
+```bash
+cd pyrplib
+python3 -m venv ../env
+source ../env/bin/activate
+cd tests
+pytest card_tests.py
+```
 
-export PATH=$PATH:$SCIP_BIN_DIR:$RANKING_TOOLBOX_DIR/scip
+## Authors
+Paul Anderson, Ph.D.<br>
+Brandon Tat<br>
+Charlie Ward<br>
+Department of Computer Science and Software Engineering<br>
+California Polytechnic State University<br>
 
-which scip
+Kathryn Pedings-Behling<br>
+Amy Langville, Ph.D.<br>
+Department of Mathematics<br>
+College of Charleston<br>
 
-which scip_collect.sh
-
-which scip_count.sh
-  
-python $HOME/RPLib/pipelines/run.py lop 13
-
-## Docker Compose
-USER=$(id -u) docker-compose up --build <service>
+## Acknowledgements
+We would like to thank the entire IGARDS team for their invaluable insight and encouragement.
