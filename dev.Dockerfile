@@ -11,7 +11,7 @@ WORKDIR /app/site
 RUN apt-get update
 RUN apt-get install -y libgraphviz-dev
 
-COPY requirements.txt /app/
+COPY ./requirements.txt /app
 
 # install pip requirements
 RUN pip install --upgrade pip
@@ -23,4 +23,3 @@ ENV RPLIB_DATA_PREFIX "/app/data"
 
 # application entry point
 CMD [ "/app/site/run.sh", "7001"] 
-#CMD [ "/usr/local/bin/pip", "freeze" ] 
