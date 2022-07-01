@@ -20,7 +20,7 @@ RUN python -m pip install -r /app/requirements.txt
 RUN pip install pyrankability
 RUN pip install /app
 
-#ENV PYTHONPATH "${PYTHONPATH}:/app"
+ENV PYTHONPATH "${PYTHONPATH}:/app"
 
 ENV RPLIB_DATA_PREFIX "/app/data"
 
