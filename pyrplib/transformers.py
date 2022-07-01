@@ -119,3 +119,22 @@ class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
             for i in range(len(sorted_col)):
                 D.loc[sorted_col.index[i], sorted_col.index[i+1:]] += 1
         return D
+
+class ComputeDTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, direct_thres=0, spread_thres=0,team_range=None):
+        self.team_range = team_range
+        self.direct_thres = direct_thres
+        self.spread_thres = spread_thres
+
+    # Return self nothing else to do here
+    def fit( self, X, y = None  ):
+        return self
+   
+    # X might be the games dataframe
+    def transform(self, X, y = None ):
+        map_func = lambda linked: construct.support_map_vectorized_direct_indirect(linked, direct_thres=self.direct_thres, spread_thres=self.spread_thres)
+        Ds = construct.V_count_vectorized(X, map_func)
+        if self.team_range is not None:
+            for i in range(len(Ds)):
+                Ds[i] = Ds[i].reindex(index=self.team_range,columns=self.team_range)
+        return Ds
