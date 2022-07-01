@@ -4,7 +4,7 @@ DIR=pathlib.Path(__file__).parent.absolute()
 # Import the student solutions
 import pyrplib
 
-RPLIB_DATA_PREFIX=f"{DIR}../data"
+RPLIB_DATA_PREFIX=f"{DIR}/../data"
 
 def test_1():
     dataset_id =  636
