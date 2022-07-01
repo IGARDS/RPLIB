@@ -15,10 +15,10 @@ services:
       - "7002:7001"
     environment:
       - BASE_PATH=/rplib_staging/
-  pander14:
+  dev:
     build:
       context: .
-      dockerfile: pander14.Dockerfile
+      dockerfile: dev.Dockerfile
     user: $USER
     ports:
       - "7003:7001"
@@ -29,32 +29,4 @@ services:
       - ./site:/app/site
       - ./pipelines:/app/pipelines
     environment:
-      - BASE_PATH=/rplib_pander14/
-  bjtat:
-    build:
-      context: .
-      dockerfile: site.Dockerfile
-    user: $USER
-    ports:
-      - "7004:7001"
-    volumes:
-      - ./data:/app/data
-      - ./pyrplib:/app/pyrplib
-      - ./site:/app/site
-      - ./pipelines:/app/pipelines
-    environment:
-      - BASE_PATH=/rplib_bjtat/
-  cward11:
-    build:
-      context: .
-      dockerfile: site.Dockerfile
-    user: $USER
-    ports:
-      - "7005:7001"
-    volumes:
-      - ./data:/app/data
-      - ./pyrplib:/app/pyrplib
-      - ./site:/app/site
-      - ./pipelines:/app/pipelines
-    environment:
-      - BASE_PATH=/rplib_cward11/
+      - BASE_PATH=/rplib_dev/
