@@ -76,7 +76,7 @@ sidebar = html.Div(
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("RPLIB Card", href="https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/RPLIB_Card.ipynb", active="exact"),
+                dbc.NavLink("RPLIB Card", href="https://colab.research.google.com/github/IGARDS/RPLIB/blob/main/notebooks/RPLIB_Card.ipynb", active="exact"),
                 dbc.NavLink("Artificial Structured Datasets", href="https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/structured_artificial.ipynb", active="exact"),
                 dbc.NavLink("Contribute Dataset", href="https://docs.google.com/forms/d/e/1FAIpQLSenO1WO_LlzNQ1ak4IPyOjBKkuixZU93umLgeI2kJbFxwzcZQ/viewform", active="exact"),
             ],
