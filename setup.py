@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from pathlib import Path
 
 this_directory = Path(__file__).parent
@@ -20,6 +20,6 @@ setup(name='pyrplib',
       ],
       long_description=long_description,
       long_description_content_type='text/markdown',
-      packages=['pyrplib'],
+      packages=find_packages(),
       zip_safe=False)
 
