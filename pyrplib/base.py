@@ -6,11 +6,24 @@ import requests
 import pandas as pd
 
 class MatricesInfo:
+    """
+    A class to represent information about matrices M and b. i.e., MX=b
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the object.
+        """
         self._instance = pd.Series([None,None,None,None,None],
                                    index=["matrix","b","source_dataset_id","dataset_id","command"])
         
     def to_json(self):
+        """
+        Returns a JSON string representing the object.
+
+        Returns
+        -------
+        JSON representation of object: str 
+        """
         return self._instance.to_json()
        
     @property
@@ -55,6 +68,17 @@ class MatricesInfo:
         
     @staticmethod
     def from_json(file):
+        """
+        Static method that reads a MatricesInfo object from a JSON file. 
+
+        Parameters
+        ----------
+        file (str): Local path to a JSON file or http link to a JSON file.
+
+        Returns
+        -------
+        MatricesInfo object
+        """
         try:
             contents = json.loads(open(file).read())
         except:
