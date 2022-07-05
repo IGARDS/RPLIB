@@ -17,12 +17,10 @@ class MatricesInfo:
                                    index=["matrix","b","source_dataset_id","dataset_id","command"])
         
     def to_json(self):
-        """
-        Returns a JSON string representing the object.
+        """Returns a JSON string representing the object.
 
-        Returns
-        -------
-        JSON representation of object: str 
+        :return: Returns a JSON string representing the object.
+        :rtype: str
         """
         return self._instance.to_json()
        
@@ -68,16 +66,10 @@ class MatricesInfo:
         
     @staticmethod
     def from_json(file):
-        """
-        Static method that reads a MatricesInfo object from a JSON file. 
+        """Static method that reads a MatricesInfo object from a JSON file. 
 
-        Parameters
-        ----------
-        file (str): Local path to a JSON file or http link to a JSON file.
-
-        Returns
-        -------
-        MatricesInfo object
+        :return: Returns a MatricesInfo object
+        :rtype: MatricesInfo
         """
         try:
             contents = json.loads(open(file).read())
