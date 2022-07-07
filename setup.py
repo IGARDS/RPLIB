@@ -5,7 +5,7 @@ this_directory = Path(__file__).parent
 long_description = open(f"{this_directory}/README.md").read()
 
 setup(name='pyrplib',
-      version='0.1.1',
+      version='0.1.2',
       description='Ranking Python Library',
       url='https://github.com/IGARDS/ranking_toolbox',
       author='Paul Anderson, Amy Langville, Kathryn Pedings-Behling, Brandon Tat,  Charlie Ward',
