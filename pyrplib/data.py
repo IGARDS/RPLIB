@@ -8,6 +8,54 @@ from . import card
 from . import dataset as pydataset
 
 class Data:
+    """
+    A class that facilitates accessing the datasets for RPLIB. 
+    
+    This class reads the following TSV files:
+        * {DATA_PREFIX}/unprocessed_datasets.tsv
+            * Columns: Dataset ID, Dataset Name, Description, Type, Loader, Download links
+            * Dataset ID - persistant unique ID for each dataset
+            * Dataset Name - Short human readable name for the dataset
+            * Description - Longer human readable description of the dataset
+            * Type - Games|D matrix|Features|Structured Artificial
+            * Loader - Class that is used to load the dataset (e.g., marchmadness.base.Unprocessed)
+            * Download links - String of comma separated file links
+        * {DATA_PREFIX}/processed_datasets.tsv
+            * Columns: Dataset ID, Source Dataset ID, Index, Command, Type, Collection, Options, Last Processed Datetime, Identifier
+            * Dataset ID - persistant unique ID for each processed dataset
+            * Source Dataset ID - source dataset ID
+            * Index - Index pointing into the source dataset to extract the specific value
+            * Command - Python functional code statement describing how to process the data. May assume the following variables: data and index.
+            * Type - resulting type of dataset (D|Games)
+            * Collection - Name of collection for organization in the data directory
+            * Options - JSON string of optional options
+            * Last Processed Datetime - Last time this dataset was processed/updated
+            * Identifier - Optional identifying string for the dataset
+        * {DATA_PREFIX}/lop_cards.tsv
+            * Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime
+            * Dataset ID - persistant unique ID for each card
+            * Processed Dataset ID - processed dataset ID used as input
+            * Options - JSON string of optional options
+            * Last Processed Datetime - Last time this dataset was processed/updated
+        * {DATA_PREFIX}/hillside_cards.tsv
+            * Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime
+            * Dataset ID - persistant unique ID for each card
+            * Processed Dataset ID - processed dataset ID used as input
+            * Options - JSON string of optional options
+            * Last Processed Datetime - Last time this dataset was processed/updated
+        * {DATA_PREFIX}/massey_cards.tsv
+            * Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime
+            * Dataset ID - persistant unique ID for each card
+            * Processed Dataset ID - processed dataset ID used as input
+            * Options - JSON string of optional options
+            * Last Processed Datetime - Last time this dataset was processed/updated
+        * {DATA_PREFIX}/colley_cards.tsv
+            * Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime
+            * Dataset ID - persistant unique ID for each card
+            * Processed Dataset ID - processed dataset ID used as input
+            * Options - JSON string of optional options
+            * Last Processed Datetime - Last time this dataset was processed/updated
+    """
     def __init__(self,DATA_PREFIX):
         self.DATA_PREFIX=DATA_PREFIX
         

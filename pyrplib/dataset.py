@@ -19,6 +19,13 @@ class UnprocessedType(Enum):
     Features = 2
     
 def load_unprocessed(unprocessed_source_id,datasets_df):
+    """Helper function to load unprocessed dataset.
+
+    :param [unprocessed_source_id]: [Unprocessed dataset ID]
+    :param [datasets_df]: [Dataframe of datasets read from data.Data(DATA_PREFIX)]
+    :return: Unprocessed dataset
+    :rtype: dataset.Unprocessed
+    """
     if datasets_df.index.name != 'Dataset ID':
         datasets_df = datasets_df.set_index('Dataset ID')
     links = datasets_df.loc[unprocessed_source_id,'Download links']
@@ -31,6 +38,9 @@ def load_unprocessed(unprocessed_source_id,datasets_df):
     return unprocessed
 
 class Unprocessed(ABC):
+    """
+    Unprocessed dataset labeled with a persistant and unique dataset_id 
+    """
     def __init__(self,dataset_id,links):
         self.dataset_id = dataset_id
         self.links = links
@@ -52,6 +62,9 @@ class Unprocessed(ABC):
     
     @abstractmethod
     def view(self):
+        """
+        Returns the visualizations for this dataset
+        """
         pass
     
     @abstractmethod
@@ -63,9 +76,15 @@ class Unprocessed(ABC):
 
     @abstractmethod
     def dash_ready_data(self):
+        """
+        Returns dash ready data
+        """
         pass
     
     def view(self):
+        """
+        Standard view function for a dataset
+        """
         data = self.dash_ready_data()
         if len(data) == 1:
             html_comps = []
@@ -83,11 +102,17 @@ class Unprocessed(ABC):
             return [style.get_standard_data_table(data.reset_index(),"data_view")]
     
     def view_item(self,index):
+        """
+        Standard view function for an item from a dataset
+        """
         data = self.dash_ready_data()
         item = data.loc[index]
         return style.view_item(item,"item_view")
     
 class Processed(Unprocessed):
+    """
+    Processed dataset labeled with a persistant and unique dataset_id 
+    """
     def __init__(self):
         self._instance = pd.Series([None,None,None,None,None,None],
                                    index=["data","type","short_type","source_dataset_id","dataset_id","command"])
@@ -156,11 +181,17 @@ class Processed(Unprocessed):
         return self.data
 
 class ProcessedD(Processed):
+    """
+    Processed dominance (D) dataset object
+    """
     def __init__(self):
         self._instance = pd.Series([None,None,None,None,None,None],
                                    index=["data","type","short_type","source_dataset_id","dataset_id","command"])
         
     def load(self,options={}):
+        """
+        Load a processed dominance (D) dataset with options
+        """
         if type(self._instance['data']) != pd.DataFrame:
             data = pd.DataFrame(self._instance['data']).T # JSON load requires the transpose
             if "D" in data.index:
@@ -171,6 +202,12 @@ class ProcessedD(Processed):
         
     @staticmethod
     def from_json(file):
+        """Loads a ProcessedD file from a JSON file.
+
+        :param [file]: [Path to local or http JSON file]
+        :return: Returns a ProcessedD object.
+        :rtype: ProcessedD
+        """
         try:
             contents = json.loads(open(file).read())
         except:
@@ -181,15 +218,23 @@ class ProcessedD(Processed):
         return obj
     
     def size_str(self):
+        """Size of dataset as a string
+        """
         return ",".join([str(i) for i in self.data.shape])
     
     
 class ProcessedGames(Processed):
+    """
+    Processed games dataset object
+    """
     def __init__(self):
         self._instance = pd.Series([None,None,None,None,None,None],
                                    index=["data","type","short_type","source_dataset_id","dataset_id","command"])
         
     def load(self,options={}):
+        """
+        Load a processed games dataset with options
+        """
         if type(self._instance['data']) == list: # first load from JSON
             games,teams = self._instance['data']
             if type(games) != pd.DataFrame:
@@ -200,10 +245,18 @@ class ProcessedGames(Processed):
         return self
     
     def size_str(self):
+        """Size of dataset as a string
+        """
         return "("+",".join([str(i) for i in self.data[0].shape])+"),"+str(len(self.data[1]))
         
     @staticmethod
     def from_json(file):
+        """Loads a ProcessedGames file from a JSON file.
+
+        :param [file]: [Path to local or http JSON file]
+        :return: Returns a ProcessedGames object.
+        :rtype: ProcessedGames
+        """
         try:
             contents = json.loads(open(file).read())
         except:
