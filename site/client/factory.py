@@ -59,7 +59,7 @@ CONTENT_STYLE = {
 
 sidebar = html.Div(
     [
-        html.H2("RP Lib", className="display-4"),
+        html.H2("RPLIB", className="display-4"),
         html.Hr(),
         dbc.Nav(
             [
