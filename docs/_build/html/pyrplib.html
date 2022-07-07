@@ -317,18 +317,24 @@ elements will be noise</p>
 .. code-block:: json</p>
 <blockquote>
 <div><dl class="simple">
-<dt>{</dt><dd><p>“D”: “&lt;Dominance matrix and input to the LOP solver&gt;”,
-“obj”: “&lt;Optimal value of LOP&gt;”,
-“solutions”: “&lt;List of optimal orderings/permutations that result in an optimal value&gt;”,
-“max_tau_solutions”: “&lt;Two farthest orderings measured by Kendall tau (when available)&gt;”,
-“centroid_x”: “&lt;X*&gt;”,
-“outlier_solution”: “&lt;Optimal ordering/permutation that is farthest from centroid&gt;”,
-“dataset_id”: “&lt;Identifying ID&gt;”,
-…</p>
+<dt>{</dt><dd><p>“D”: “test”,
+“obj”: “testing”</p>
 </dd>
 </dl>
 <p>}</p>
 </div></blockquote>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+    &quot;D&quot;: &quot;&lt;Dominance matrix and input to the LOP solver&gt;&quot;,
+    &quot;obj&quot;: &quot;&lt;Optimal value of LOP&gt;&quot;,
+    &quot;solutions&quot;: &quot;&lt;List of optimal orderings/permutations that result in an optimal value&gt;&quot;,
+    &quot;max_tau_solutions&quot;: &quot;&lt;Two farthest orderings measured by Kendall tau (when available)&gt;&quot;,
+    &quot;centroid_x&quot;: &quot;&lt;X*&gt;&quot;,
+    &quot;outlier_solution&quot;: &quot;&lt;Optimal ordering/permutation that is farthest from centroid&gt;&quot;,
+    &quot;dataset_id&quot;: &quot;&lt;Identifying ID&gt;&quot;,
+    ...
+}
+</pre></div>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.base.LOPCard.D">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">D</span></span><a class="headerlink" href="#pyrplib.base.LOPCard.D" title="Permalink to this definition">¶</a></dt>
