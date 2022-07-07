@@ -876,15 +876,75 @@ and removing rows and columns with all 0’s.</p>
 <dt>{DATA_PREFIX}/unprocessed_datasets.tsv</dt><dd><ul>
 <li><p>Columns: Dataset ID, Dataset Name, Description, Type, Loader, Download links</p></li>
 <li><p>Dataset ID - persistant unique ID for each dataset</p></li>
+<li><p>Dataset Name - Short human readable name for the dataset</p></li>
+<li><p>Description - Longer human readable description of the dataset</p></li>
+<li><p>Type - Games|D matrix|Features|Structured Artificial</p></li>
+<li><p>Loader - Class that is used to load the dataset (e.g., marchmadness.base.Unprocessed)</p></li>
+<li><p>Download links - String of comma separated file links</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p>{DATA_PREFIX}/processed_datasets.tsv</p></li>
-<li><p>{DATA_PREFIX}/lop_cards.tsv</p></li>
-<li><p>{DATA_PREFIX}/hillside_cards.tsv</p></li>
-<li><p>{DATA_PREFIX}/massey_cards.tsv</p></li>
-<li><p>{DATA_PREFIX}/colley_cards.tsv</p></li>
+<li><dl class="simple">
+<dt>{DATA_PREFIX}/processed_datasets.tsv</dt><dd><ul>
+<li><p>Columns: Dataset ID, Source Dataset ID, Index, Command, Type, Collection, Options, Last Processed Datetime, Identifier</p></li>
+<li><p>Dataset ID - persistant unique ID for each processed dataset</p></li>
+<li><p>Source Dataset ID - source dataset ID</p></li>
+<li><p>Index - Index pointing into the source dataset to extract the specific value</p></li>
+<li><p>Command - Python functional code statement describing how to process the data. May assume the following variables: data and index.</p></li>
+<li><p>Type - resulting type of dataset (D|Games)</p></li>
+<li><p>Collection - Name of collection for organization in the data directory</p></li>
+<li><p>Options - JSON string of optional options</p></li>
+<li><p>Last Processed Datetime - Last time this dataset was processed/updated</p></li>
+<li><p>Identifier - Optional identifying string for the dataset</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>{DATA_PREFIX}/lop_cards.tsv</dt><dd><ul>
+<li><p>Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime</p></li>
+<li><p>Dataset ID - persistant unique ID for each card</p></li>
+<li><p>Processed Dataset ID - processed dataset ID used as input</p></li>
+<li><p>Options - JSON string of optional options</p></li>
+<li><p>Last Processed Datetime - Last time this dataset was processed/updated</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>{DATA_PREFIX}/hillside_cards.tsv</dt><dd><ul>
+<li><p>Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime</p></li>
+<li><p>Dataset ID - persistant unique ID for each card</p></li>
+<li><p>Processed Dataset ID - processed dataset ID used as input</p></li>
+<li><p>Options - JSON string of optional options</p></li>
+<li><p>Last Processed Datetime - Last time this dataset was processed/updated</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>{DATA_PREFIX}/massey_cards.tsv</dt><dd><ul>
+<li><p>Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime</p></li>
+<li><p>Dataset ID - persistant unique ID for each card</p></li>
+<li><p>Processed Dataset ID - processed dataset ID used as input</p></li>
+<li><p>Options - JSON string of optional options</p></li>
+<li><p>Last Processed Datetime - Last time this dataset was processed/updated</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>{DATA_PREFIX}/colley_cards.tsv</dt><dd><ul>
+<li><p>Columns: Dataset ID, Processed Dataset ID, Options, Last Processed Datetime</p></li>
+<li><p>Dataset ID - persistant unique ID for each card</p></li>
+<li><p>Processed Dataset ID - processed dataset ID used as input</p></li>
+<li><p>Options - JSON string of optional options</p></li>
+<li><p>Last Processed Datetime - Last time this dataset was processed/updated</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
