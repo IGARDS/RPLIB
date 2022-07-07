@@ -7,6 +7,8 @@ from dash import html
 import json
 
 def get_standard_data_table(df,id):
+    """Returns a dash data table with standard configuration.
+    """
     if type(df) == pd.Series:
         df = df.to_frame().reset_index()
     df = df.fillna("")
@@ -62,6 +64,8 @@ def get_standard_data_table(df,id):
     return dataset_table
 
 def get_standard_download_all_button(button_id, download_id, progress_id=None, collapse_id=None):
+    """Return a standard download button.
+    """
     if progress_id and collapse_id:     
         button = html.Div(
             [
@@ -99,6 +103,8 @@ def get_standard_download_all_button(button_id, download_id, progress_id=None, c
     return button
 
 def view_item(item,id):
+    """Helper function to view a single item.
+    """
     html_comps = []
     j = 0
     for index in item.index:

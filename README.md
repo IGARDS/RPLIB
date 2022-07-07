@@ -14,16 +14,21 @@ We encourage the community to extend this repository with additional data. The r
 ## Generate artificial data (recommended)
 We have also developed a sample notebook for those researchers interested in generating their own artificial data in a compatable format for RPLIB. [Click to launch on Colab](https://colab.research.google.com/github/IGARDS/structured_artificial/blob/main/notebooks/structured_artificial.ipynb). 
 
-## Install instructions
+## Installing pyrplib package
 ### Prerequisites
-graphviz headers must be installed:
+The graphviz headers must be installed. To do this on Debian/Ubuntu:
 ```bash
 apt-get install -y libgraphviz-dev
 ```
+
 ### Recommended package installation
 ```bash
 pip install pyrplib
 ```
+
+### Documentation
+
+For documentation on pyrplib: https://birg.dev/pyrplib.
 
 ### Post package installation: Gurobi License
 The webserver does not require Gurobi to launch, but to use the full functionality of RPLIB, the Gurobi optimizer must be installed with a valid license. Gurobi provides free academic licenses and more information on obtaining and installing your license can be found here: https://support.gurobi.com/hc/en-us/articles/360040541251. 

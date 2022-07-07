@@ -997,6 +997,7 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.dataset.Processed">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.dataset.</span></span><span class="sig-name descname"><span class="pre">Processed</span></span><a class="headerlink" href="#pyrplib.dataset.Processed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrplib.dataset.Unprocessed" title="pyrplib.dataset.Unprocessed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unprocessed</span></code></a></p>
+<p>Processed dataset labeled with a persistant and unique dataset_id</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.dataset.Processed.command">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">command</span></span><a class="headerlink" href="#pyrplib.dataset.Processed.command" title="Permalink to this definition">¶</a></dt>
@@ -1005,7 +1006,8 @@ and removing rows and columns with all 0’s.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.Processed.dash_ready_data">
 <span class="sig-name descname"><span class="pre">dash_ready_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.Processed.dash_ready_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns dash ready data</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.dataset.Processed.data">
@@ -1055,21 +1057,35 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedD">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.dataset.</span></span><span class="sig-name descname"><span class="pre">ProcessedD</span></span><a class="headerlink" href="#pyrplib.dataset.ProcessedD" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrplib.dataset.Processed" title="pyrplib.dataset.Processed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Processed</span></code></a></p>
+<p>Processed dominance (D) dataset object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedD.from_json">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.ProcessedD.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads a ProcessedD file from a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>[</strong><strong>file</strong><strong>]</strong> – [Path to local or http JSON file]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a ProcessedD object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyrplib.dataset.ProcessedD" title="pyrplib.dataset.ProcessedD">ProcessedD</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedD.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.ProcessedD.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Code that loads the data from the links</p>
+<dd><p>Load a processed dominance (D) dataset with options</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedD.size_str">
 <span class="sig-name descname"><span class="pre">size_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.ProcessedD.size_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Size of dataset as a string</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1077,21 +1093,35 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedGames">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.dataset.</span></span><span class="sig-name descname"><span class="pre">ProcessedGames</span></span><a class="headerlink" href="#pyrplib.dataset.ProcessedGames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrplib.dataset.Processed" title="pyrplib.dataset.Processed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Processed</span></code></a></p>
+<p>Processed games dataset object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedGames.from_json">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.ProcessedGames.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loads a ProcessedGames file from a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>[</strong><strong>file</strong><strong>]</strong> – [Path to local or http JSON file]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a ProcessedGames object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyrplib.dataset.ProcessedGames" title="pyrplib.dataset.ProcessedGames">ProcessedGames</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedGames.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.ProcessedGames.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Code that loads the data from the links</p>
+<dd><p>Load a processed games dataset with options</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.ProcessedGames.size_str">
 <span class="sig-name descname"><span class="pre">size_str</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.ProcessedGames.size_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Size of dataset as a string</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1099,10 +1129,12 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.dataset.Unprocessed">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.dataset.</span></span><span class="sig-name descname"><span class="pre">Unprocessed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.Unprocessed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Unprocessed dataset labeled with a persistant and unique dataset_id</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.Unprocessed.dash_ready_data">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dash_ready_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.Unprocessed.dash_ready_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns dash ready data</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.Unprocessed.data">
@@ -1125,12 +1157,14 @@ and removing rows and columns with all 0’s.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.Unprocessed.view">
 <span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.Unprocessed.view" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Standard view function for a dataset</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.dataset.Unprocessed.view_item">
 <span class="sig-name descname"><span class="pre">view_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.Unprocessed.view_item" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Standard view function for an item from a dataset</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1159,7 +1193,22 @@ and removing rows and columns with all 0’s.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.dataset.load_unprocessed">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.dataset.</span></span><span class="sig-name descname"><span class="pre">load_unprocessed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unprocessed_source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.dataset.load_unprocessed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Helper function to load unprocessed dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>[</strong><strong>unprocessed_source_id</strong><strong>]</strong> – [Unprocessed dataset ID]</p></li>
+<li><p><strong>[</strong><strong>datasets_df</strong><strong>]</strong> – [Dataframe of datasets read from data.Data(DATA_PREFIX)]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Unprocessed dataset</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyrplib.dataset.Unprocessed" title="pyrplib.dataset.Unprocessed">dataset.Unprocessed</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-pyrplib.style">
@@ -1167,17 +1216,20 @@ and removing rows and columns with all 0’s.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.style.get_standard_data_table">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.style.</span></span><span class="sig-name descname"><span class="pre">get_standard_data_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.style.get_standard_data_table" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a dash data table with standard configuration.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.style.get_standard_download_all_button">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.style.</span></span><span class="sig-name descname"><span class="pre">get_standard_download_all_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collapse_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.style.get_standard_download_all_button" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a standard download button.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.style.view_item">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.style.</span></span><span class="sig-name descname"><span class="pre">view_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.style.view_item" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Helper function to view a single item.</p>
+</dd></dl>
 
 </section>
 <section id="module-pyrplib.transformers">
@@ -1186,6 +1238,7 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.transformers.ColumnCountTransformer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">ColumnCountTransformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.ColumnCountTransformer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>A class to convert a feature matrix to a dominance matrix in the standard sklearn transformer paradigm.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.transformers.ColumnCountTransformer.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.ColumnCountTransformer.fit" title="Permalink to this definition">¶</a></dt>
@@ -1202,6 +1255,7 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.transformers.ComputeDTransformer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">ComputeDTransformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direct_thres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread_thres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.ComputeDTransformer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>A class to convert games to a dominance matrix in the standard sklearn transformer paradigm.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.transformers.ComputeDTransformer.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.ComputeDTransformer.fit" title="Permalink to this definition">¶</a></dt>
@@ -1217,39 +1271,68 @@ and removing rows and columns with all 0’s.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.count">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">games</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teams</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.count" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a processed direct matchup dominance matrix, processed indirect matchup dominance matrix, and the transformer used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>[</strong><strong>games</strong><strong>]</strong> (<em>[</em><em>pandas.DataFrame</em><em>]</em>) – [DataFrame of games (matchups between items)]</p></li>
+<li><p><strong>[</strong><strong>teams</strong><strong>]</strong> (<em>[</em><em>list</em><em>]</em>) – [list of teams/items]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of processed D from direct matchups, processed D from indirect matchups, and the transformer</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.direct">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">direct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.direct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the direct matchup (D) matrix from the arguments.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.directplusindirect">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">directplusindirect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indirect_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.directplusindirect" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a processed D object that is a combination of D and ID using the indirect weight.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Processed dominance matrix that is a weighted combination of D and ID</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>processed_D</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.features_to_D">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">features_to_D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.features_to_D" title="Permalink to this definition">¶</a></dt>
-<dd><p>options[“columns”] = list of columns you would like to convert
+<dd><p>Convert a features matrix to a dominance matrix.</p>
+<p>options[“columns”] = list of columns you would like to convert
 options[“items”] = list of items you would like to use. Items must be in the index</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.indirect">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">indirect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.indirect" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the indirect matchup (ID) matrix from the arguments.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.process_D">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">process_D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.process_D" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a processed D object from a dominance matrix (pandas.DataFrame).</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyrplib.transformers.standardize_games_teams">
 <span class="sig-prename descclassname"><span class="pre">pyrplib.transformers.</span></span><span class="sig-name descname"><span class="pre">standardize_games_teams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">games</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.transformers.standardize_games_teams" title="Permalink to this definition">¶</a></dt>
-<dd><p>options[“team1_name”] = column in your dataframe that has team 1 names
+<dd><p>Returns a standardized version of games and teams with the expected column names as a ProcessedGames object.</p>
+<p>options[“team1_name”] = column in your dataframe that has team 1 names
 options[“team2_name”] = column in your dataframe that has team 2 names
 options[“team1_score”] = column in your dataframe that has team 1 score
 options[“team2_score”] = column in your dataframe that has team 2 score
