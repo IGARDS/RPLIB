@@ -6,12 +6,39 @@ import requests
 import pandas as pd
 
 class MatricesInfo:
+    """
+    A class to represent information about matrices M and b. i.e., MX=b
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for the object.
+        """
         self._instance = pd.Series([None,None,None,None,None],
                                    index=["matrix","b","source_dataset_id","dataset_id","command"])
         
     def to_json(self):
+        """Returns a JSON string representing the object.
+
+        :return: Returns a JSON string representing the object.
+        :rtype: str
+        """
         return self._instance.to_json()
+    
+    @staticmethod
+    def from_json(file):
+        """Static method that reads a MatricesInfo object from a JSON file. 
+
+        :return: Returns a MatricesInfo object
+        :rtype: MatricesInfo
+        """
+        try:
+            contents = json.loads(open(file).read())
+        except:
+            link = file # Try to see if this is a link instead of a file
+            contents = requests.get(link).json()
+        obj = MatricesInfo()
+        obj._instance = pd.Series(contents)
+        return obj
        
     @property
     def matrix(self):
@@ -52,26 +79,38 @@ class MatricesInfo:
     @command.setter
     def command(self, command):
         self._instance['command'] = command
-        
-    @staticmethod
-    def from_json(file):
-        try:
-            contents = json.loads(open(file).read())
-        except:
-            link = file # Try to see if this is a link instead of a file
-            contents = requests.get(link).json()
-        obj = MatricesInfo()
-        obj._instance = pd.Series(contents)
-        return obj
-  
 
 class DInfo:
+    """
+    A class to represent information about a dominance (D) matrix.
+    """
     def __init__(self):
         self._instance = pd.Series([None,None,set(),None,None],
                                    index=["D","D_type","source_dataset_id","dataset_id","command"])
         
     def to_json(self):
+        """Returns a JSON string representing the object.
+
+        :return: Returns a JSON string representing the object.
+        :rtype: str
+        """
         return self._instance.to_json()
+    
+    @staticmethod
+    def from_json(file):
+        """Static method that reads a DInfo object from a JSON file. 
+
+        :return: Returns a DInfo object
+        :rtype: DInfo
+        """
+        try:
+            contents = json.loads(open(file).read())
+        except:
+            link = file # Try to see if this is a link instead of a file
+            contents = requests.get(link).json()
+        obj = DInfo()
+        obj._instance = pd.Series(contents)
+        return obj
        
     @property
     def D(self):
@@ -112,26 +151,62 @@ class DInfo:
     @command.setter
     def command(self, command):
         self._instance['command'] = command
+  
+class LOPCard:
+    """
+    A class that represents the analysis, results, and metrics associated with running LOP algorithm. 
+    
+    LOPCard can be saved as a JSON file that contains the following:
+    
+    .. code-block:: json
+    
+        {
+            "D": "<Dominance matrix and input to the LOP solver>",
+            "obj": "<Optimal value of LOP>",
+            "solutions": "<List of optimal orderings/permutations that result in an optimal value>",
+            "max_tau_solutions": "<Two farthest orderings/permutations measured by Kendall tau (when available)>",
+            "centroid_x": "<X*>",
+            "outlier_solution": "<Optimal ordering/permutation that is farthest from centroid_x>",
+            "dataset_id": "<Identifying ID>"
+        }
+    """
+    def __init__(self):
+        self._instance = pd.Series([None,None,set(),None,None,None,None],
+                                   index=["D","obj","solutions","max_tau_solutions",
+                                          "centroid_x","outlier_solution","dataset_id"])
+            
+    def to_json(self,file):
+        """Returns a JSON string representing the object.
+
+        :return: Returns a JSON string representing the object.
+        :rtype: str
+        """
+        self._instance.to_json(file,orient='columns')
+        
+    def add_solution(self,sol):
+        """Adds a solution specified by a permutation/ordering.
+
+        :param [sol]: [A permutation/ordering of type list or tuple]
+        """
+        if type(sol) != tuple:
+            sol = tuple(sol)
+        self._instance['solutions'].add(sol)
         
     @staticmethod
     def from_json(file):
+        """Static method that reads a LOPCard object from a JSON file. 
+
+        :return: Returns a LOPCard object
+        :rtype: LOPCard
+        """
         try:
             contents = json.loads(open(file).read())
         except:
             link = file # Try to see if this is a link instead of a file
             contents = requests.get(link).json()
-        obj = DInfo()
+        obj = LOPCard()
         obj._instance = pd.Series(contents)
         return obj
-  
-class LOPCard:
-    def __init__(self):
-        self._instance = pd.Series([None,None,set(),None,None,None,None],
-                                   index=["D","obj","solutions","max_tau_solutions",
-                                          "centroid_x","outlier_solution","dataset_id"])
-        
-    def to_json(self,file):
-        self._instance.to_json(file,orient='columns')
        
     @property
     def D(self):
@@ -192,22 +267,6 @@ class LOPCard:
     @property
     def solutions(self):
         return self._instance['solutions']
-        
-    def add_solution(self,sol):
-        if type(sol) != tuple:
-            sol = tuple(sol)
-        self._instance['solutions'].add(sol)
-        
-    @staticmethod
-    def from_json(file):
-        try:
-            contents = json.loads(open(file).read())
-        except:
-            link = file # Try to see if this is a link instead of a file
-            contents = requests.get(link).json()
-        obj = LOPCard()
-        obj._instance = pd.Series(contents)
-        return obj
                             
 class HillsideCard(LOPCard):
     pass

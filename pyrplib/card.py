@@ -18,15 +18,41 @@ from dash import html
 import pyrankability
 import pyrplib
 
-class Card(ABC):        
+class Card(ABC):
+    """
+    The base Card abstract class. 
+    """
     def __init__(self):
         self._instance = pd.Series(index=["dataset_id","source_dataset_id","options"])
         
     def to_json(self):
+        """Returns a JSON string representing the object.
+
+        :return: Returns a JSON string representing the object.
+        :rtype: str
+        """
         return self._instance.to_json(orient='columns')
+    
+    def load(self,dataset_id,options):
+        """Load a Card using the dataset_id and the options.
+
+        :param [dataset_id]: [Dataset ID]
+        :param [options]: [Dictionary of options]
+        :type [options]: [dict]
+        """
+        self._instance['dataset_id'] = dataset_id
+        self._instance['options'] = options
+        return self
 
     @staticmethod
     def get_contents(file):
+        """Static method that reads a Card from a JSON file. 
+
+        :param [file]: [file path or URL path to JSON file]
+        :type [file]: [str]
+        :return: Returns a Pandas Series object
+        :rtype: pandas.Series
+        """
         try:
             contents = json.loads(open(file).read())
         except:
@@ -45,11 +71,6 @@ class Card(ABC):
     @property
     def options(self):
         return self._instance['options']
-
-    def load(self,dataset_id,options):
-        self._instance['dataset_id'] = dataset_id
-        self._instance['options'] = options
-        return self
         
     @abstractmethod
     def prepare(self,processed_dataset):
@@ -64,11 +85,32 @@ class Card(ABC):
         pass
 
 class LOP(Card):
+    """
+    A class that represents the analysis, results, and metrics associated with running LOP algorithm. 
+    
+    LOP card can be saved as a JSON file that contains the following:
+    
+    .. code-block:: json
+    
+        {
+            "dataset_id": "<Identifying Dataset ID>"
+            "source_dataset_id": "<Identifying Source Dataset ID>"
+            "D": "<Dominance matrix and input to the LOP solver>",
+            "obj": "<Optimal value of LOP>",
+            "solutions": "<List of optimal orderings/permutations that result in an optimal value>",
+            "farthest_pair": "<Two farthest orderings/permutations measured by Kendall tau (when available)>",
+            "tau_farthest_pair": "<Associated Kendall tau value (when available)>",
+            "closest_pair": "<Two (not identical) closest orderings/permutations measured by Kendall tau (when available)>",
+            "tau_closest_pair": "<Associated Kendall tau value (when available)>",
+            "centroid_x": "<X*>",
+            "outlier_solution": "<Optimal ordering/permutation that is farthest from centroid_x>",
+            "method": "<Method which is LOP or Hillside>"
+        }
+    """
     def __init__(self):
-        self._instance = pd.Series([set(),None,None,None,None,None,None,None,None,"lop",None,None,None,None],
+        self._instance = pd.Series([set(),None,None,None,None,None,None,None,"lop",None,None,None,None],
                                    index=["solutions",
                                           "obj",
-                                          "max_tau_solutions",
                                           "centroid_x",
                                           "outlier_solution",
                                           "dataset_id",
@@ -82,7 +124,16 @@ class LOP(Card):
                                           "tau_closest_pair"
                                          ])
     
+    
     def prepare(self,processed_dataset):
+        """Prepare the data for analysis. For LOP this means filling in missing values in the dominance matrix
+        and removing rows and columns with all 0's. 
+
+        :param [processed_dataset]: [Processed dataset object]
+        :type [processed_dataset]: [dataset.Processed]
+        :return: self
+        :rtype: LOP
+        """
         if type(processed_dataset) == pyrplib.dataset.ProcessedD:
             d = copy.deepcopy(processed_dataset)
             self._instance['source_dataset_id'] = -1
@@ -102,17 +153,23 @@ class LOP(Card):
     
     @property
     def xstar(self):
+        """Return X* as a dataframe using the row and column names of D.
+        """
         Xstar = pd.DataFrame(pyrankability.common.threshold_x(self.centroid_x),index=self.D.index,columns=self.D.columns)
         return Xstar
     
     @property
     def xstar_r_r(self):
+        """Return X* optimally reordered.
+        """
         r = self.r #self.centroid_x.sum(axis=1).sort_values(ascending=False)
         Xstar = self.xstar
         Xstar_r_r = Xstar.loc[r.index,r.index]
         return Xstar_r_r
 
     def run(self):
+        """Run the LOP analysis and compute the metrics.
+        """
         assert 'source_dataset_id' in self._instance.index
         
         D = self.D
@@ -278,12 +335,21 @@ class LOP(Card):
         return self._instance['solutions']
         
     def add_solution(self,sol):
+        """Adds a solution specified by a permutation/ordering.
+
+        :param [sol]: [A permutation/ordering of type list or tuple]
+        """
         if type(sol) != tuple:
             sol = tuple(sol)
         self._instance['solutions'].add(sol)
         
     @staticmethod
     def from_json(file_link):
+        """Static method that reads a LOP card object from a JSON file. 
+
+        :return: Returns a LOP card object
+        :rtype: LOP
+        """
         contents = super(LOP, LOP).get_contents(file_link)
         if 'method' not in contents or contents['method'] == 'lop': # TODO: remove backward compatibility
             obj = LOP()
@@ -296,6 +362,11 @@ class LOP(Card):
         return obj
     
     def view(self):
+        """Returns a dictionary in dash ready format. 
+
+        :return: List of HTML dash ready objects
+        :rtype: list
+        """
         contents = []
         visuals = self.get_visuals()['dash']
         for key in visuals:
@@ -306,9 +377,19 @@ class LOP(Card):
     
     @property
     def r(self):
+        """Returns a rating vector using X*. 
+
+        :return: Rating vector derived from X* 
+        :rtype: pandas.Series
+        """
         return self.xstar.sum(axis=1).sort_values(ascending=False)
     
     def get_visuals(self):
+        """Returns a diciontary with both dash and notebook ready visualization. 
+
+        :return: Dash and notebook visuals
+        :rtype: dict
+        """
         D = self.D
         visuals = {"notebook":{},"dash":{}}
                 
@@ -444,16 +525,53 @@ class LOP(Card):
         
 
 class Hillside(LOP):
+    """
+    A class that represents the analysis, results, and metrics associated with running Hillside algorithm. 
+    
+    Hillside finds the optimal solution in Hillside form:
+    
+    Chartier, Timothy P., et al. "Minimum violations sports ranking using evolutionary optimization and binary integer linear program approaches." Proceedings of the Tenth Australian Conference on Mathematics and Computers in Sport, A. Bedford and M. Ovens, eds., MathSport (ANZIAM), New South Wales, Australia. 2010.
+    
+    Hillside and LOP share the same metrics and analysis.
+    """
     def __init__(self):
         super().__init__()
         self._instance['method'] = 'hillside'
 
 class SystemOfEquations(Card):
+    """
+    A class that represents the analysis, results, and metrics associated with solving a system of equations to produce a ranking. 
+    
+    SystemOfEquations card can be saved as a JSON file that contains the following:
+    
+    .. code-block:: json
+    
+        {
+            "dataset_id": "<Identifying Dataset ID>"
+            "source_dataset_id": "<Identifying Source Dataset ID>"
+            "M": "<Matrix from Mx=b>",
+            "b": "<Vector from Mx=b>",
+            "r": "<Rating vector>",
+            "ranking": "<Ranking vector>",
+            "perm": "<Ordering/permutation>",
+            "options": "<dictionary of options>",
+            "games": "<Games (or more generally matchups) that are processed to produce M and b>",
+            "teams": "<List of teams (or more generally items)>",
+            "method": "<Method which is Massey or Colley>"
+        }
+    """
     def __init__(self,method):
         self._instance = pd.Series(index=["r","ranking","perm","dataset_id","source_dataset_id","options","games","teams","method","b","M"])
         self._instance['method'] = method
     
     def prepare(self,processed_dataset):
+        """Prepare the data for analysis.
+
+        :param [processed_dataset]: [Processed dataset object]
+        :type [processed_dataset]: [dataset.Processed]
+        :return: self
+        :rtype: SystemOfEquations
+        """
         self._instance['source_dataset_id'] = processed_dataset.name #['Dataset ID']
         d = pyrplib.dataset.ProcessedGames.from_json(processed_dataset['Link']).load(processed_dataset['Options'])
 
@@ -475,6 +593,8 @@ class SystemOfEquations(Card):
         return self
         
     def run(self):
+        """Solve the system of equations and store the results.
+        """
         assert 'source_dataset_id' in self._instance.index
         
         #inxs = list(np.where(mask)[0])
@@ -546,6 +666,11 @@ class SystemOfEquations(Card):
         
     @staticmethod
     def from_json(file_link):
+        """Static method that reads a SystemOfEquations card object from a JSON file. 
+
+        :return: Returns a SystemOfEquations card object
+        :rtype: SystemOfEquations
+        """
         contents = super(SystemOfEquations, SystemOfEquations).get_contents(file_link)
         obj = SystemOfEquations(contents['method'])
         obj._instance = contents
@@ -559,6 +684,11 @@ class SystemOfEquations(Card):
         return obj
     
     def view(self):
+        """Returns a dictionary in dash ready format. 
+
+        :return: List of HTML dash ready objects
+        :rtype: list
+        """
         games = self.games
         M = self.M
         b = self.b

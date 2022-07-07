@@ -11,6 +11,15 @@ from pyrankability import construct
 from . import dataset
 
 def count(games,teams):
+    """Returns a processed direct matchup dominance matrix, processed indirect matchup dominance matrix, and the transformer used.
+
+    :param [games]: [DataFrame of games (matchups between items)]
+    :type [games]: [pandas.DataFrame]
+    :param [teams]: [list of teams/items]
+    :type [teams]: [list]
+    :return: Tuple of processed D from direct matchups, processed D from indirect matchups, and the transformer
+    :rtype: tuple
+    """
     trans = ComputeDTransformer()
     trans.fit(games)
     D,ID = trans.transform(games)
@@ -31,6 +40,11 @@ def count(games,teams):
     return processed_D,processed_ID,trans
 
 def directplusindirect(D,ID,trans,indirect_weight=1.):
+    """Returns a processed D object that is a combination of D and ID using the indirect weight.
+
+    :return: Processed dominance matrix that is a weighted combination of D and ID
+    :rtype: processed_D
+    """
     processed_D = dataset.ProcessedD()
     processed_D.data = D.data.fillna(0)+indirect_weight*ID.data.fillna(0)
     processed_D.load()
@@ -39,12 +53,18 @@ def directplusindirect(D,ID,trans,indirect_weight=1.):
     return processed_D
     
 def direct(D,ID,trans):
+    """Returns the direct matchup (D) matrix from the arguments.
+    """
     return D
 
 def indirect(D,ID,trans):
+    """Returns the indirect matchup (ID) matrix from the arguments.
+    """
     return ID
 
 def process_D(D):
+    """Returns a processed D object from a dominance matrix (pandas.DataFrame).
+    """
     processed_D = dataset.ProcessedD()
     processed_D.data = D
     processed_D.load()
@@ -54,6 +74,8 @@ def process_D(D):
 
 def standardize_games_teams(games,teams,options={}):
     """
+    Returns a standardized version of games and teams with the expected column names as a ProcessedGames object. 
+    
     options["team1_name"] = column in your dataframe that has team 1 names
     options["team2_name"] = column in your dataframe that has team 2 names
     options["team1_score"] = column in your dataframe that has team 1 score
@@ -78,10 +100,10 @@ def standardize_games_teams(games,teams,options={}):
     processed_games.short_type = "Games"
     return processed_games
     
-    return standardized_games,standardized_teams
-
 def features_to_D(df_features,options={}):
     """
+    Convert a features matrix to a dominance matrix.
+    
     options["columns"] = list of columns you would like to convert
     options["items"] = list of items you would like to use. Items must be in the index
     """
@@ -103,6 +125,10 @@ def features_to_D(df_features,options={}):
     return processed_D
 
 class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
+    """
+    A class to convert a feature matrix to a dominance matrix in the standard sklearn transformer paradigm. 
+    """
+    
     def __init__(self,columns):
         self.columns = columns
 
@@ -121,6 +147,9 @@ class ColumnCountTransformer( BaseEstimator, TransformerMixin ):
         return D
 
 class ComputeDTransformer(BaseEstimator, TransformerMixin):
+    """
+    A class to convert games to a dominance matrix in the standard sklearn transformer paradigm. 
+    """
     def __init__(self, direct_thres=0, spread_thres=0,team_range=None):
         self.team_range = team_range
         self.direct_thres = direct_thres
