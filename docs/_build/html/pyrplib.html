@@ -473,6 +473,7 @@ elements will be noise</p>
 <dt class="sig sig-object py" id="pyrplib.card.Card">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.card.</span></span><span class="sig-name descname"><span class="pre">Card</span></span><a class="headerlink" href="#pyrplib.card.Card" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>The base Card abstract class.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.Card.dataset_id">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataset_id</span></span><a class="headerlink" href="#pyrplib.card.Card.dataset_id" title="Permalink to this definition">¶</a></dt>
@@ -481,12 +482,33 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.Card.get_contents">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_contents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.Card.get_contents" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Static method that reads a Card from a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>[</strong><strong>file</strong><strong>]</strong> (<em>[</em><em>str</em><em>]</em>) – [file path or URL path to JSON file]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a Pandas Series object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.Card.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.Card.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Load a Card using the dataset_id and the options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>[</strong><strong>dataset_id</strong><strong>]</strong> – [Dataset ID]</p></li>
+<li><p><strong>[</strong><strong>options</strong><strong>]</strong> (<em>[</em><em>dict</em><em>]</em>) – [Dictionary of options]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.Card.options">
@@ -511,7 +533,16 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.Card.to_json">
 <span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.Card.to_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a JSON string representing the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a JSON string representing the object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.Card.view">
@@ -524,12 +555,34 @@ elements will be noise</p>
 <dt class="sig sig-object py" id="pyrplib.card.Hillside">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.card.</span></span><span class="sig-name descname"><span class="pre">Hillside</span></span><a class="headerlink" href="#pyrplib.card.Hillside" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrplib.card.LOP" title="pyrplib.card.LOP"><code class="xref py py-class docutils literal notranslate"><span class="pre">LOP</span></code></a></p>
+<p>A class that represents the analysis, results, and metrics associated with running Hillside algorithm.</p>
+<p>Hillside finds the optimal solution in Hillside form:</p>
+<p>Chartier, Timothy P., et al. “Minimum violations sports ranking using evolutionary optimization and binary integer linear program approaches.” Proceedings of the Tenth Australian Conference on Mathematics and Computers in Sport, A. Bedford and M. Ovens, eds., MathSport (ANZIAM), New South Wales, Australia. 2010.</p>
+<p>Hillside and LOP share the same metrics and analysis.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyrplib.card.LOP">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.card.</span></span><span class="sig-name descname"><span class="pre">LOP</span></span><a class="headerlink" href="#pyrplib.card.LOP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrplib.card.Card" title="pyrplib.card.Card"><code class="xref py py-class docutils literal notranslate"><span class="pre">Card</span></code></a></p>
+<p>A class that represents the analysis, results, and metrics associated with running LOP algorithm.</p>
+<p>LOP card can be saved as a JSON file that contains the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;dataset_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&lt;Identifying Dataset ID&gt;&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;source_dataset_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&lt;Identifying Source Dataset ID&gt;&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;D&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Dominance matrix and input to the LOP solver&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;obj&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Optimal value of LOP&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;solutions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;List of optimal orderings/permutations that result in an optimal value&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;farthest_pair&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Two farthest orderings/permutations measured by Kendall tau (when available)&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;tau_farthest_pair&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Associated Kendall tau value (when available)&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;closest_pair&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Two (not identical) closest orderings/permutations measured by Kendall tau (when available)&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;tau_closest_pair&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Associated Kendall tau value (when available)&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;centroid_x&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;X*&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;outlier_solution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Optimal ordering/permutation that is farthest from centroid_x&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Method which is LOP or Hillside&gt;&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.D">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">D</span></span><a class="headerlink" href="#pyrplib.card.LOP.D" title="Permalink to this definition">¶</a></dt>
@@ -538,7 +591,13 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.add_solution">
 <span class="sig-name descname"><span class="pre">add_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.LOP.add_solution" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Adds a solution specified by a permutation/ordering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>[</strong><strong>sol</strong><strong>]</strong> – [A permutation/ordering of type list or tuple]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.beta">
@@ -568,12 +627,30 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.from_json">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_link</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.LOP.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Static method that reads a LOP card object from a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a LOP card object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyrplib.card.LOP" title="pyrplib.card.LOP">LOP</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.get_visuals">
 <span class="sig-name descname"><span class="pre">get_visuals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.LOP.get_visuals" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a diciontary with both dash and notebook ready visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dash and notebook visuals</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.method">
@@ -593,17 +670,40 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.prepare">
 <span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processed_dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.LOP.prepare" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Prepare the data for analysis. For LOP this means filling in missing values in the dominance matrix
+and removing rows and columns with all 0’s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>[</strong><strong>processed_dataset</strong><strong>]</strong> (<em>[</em><a class="reference internal" href="#pyrplib.dataset.Processed" title="pyrplib.dataset.Processed"><em>dataset.Processed</em></a><em>]</em>) – [Processed dataset object]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyrplib.card.LOP" title="pyrplib.card.LOP">LOP</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.r">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">r</span></span><a class="headerlink" href="#pyrplib.card.LOP.r" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a rating vector using X*.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Rating vector derived from X*</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pandas.Series</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.LOP.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Run the LOP analysis and compute the metrics.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.solutions">
@@ -623,17 +723,28 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.view">
 <span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.LOP.view" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a dictionary in dash ready format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of HTML dash ready objects</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.xstar">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xstar</span></span><a class="headerlink" href="#pyrplib.card.LOP.xstar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return X* as a dataframe using the row and column names of D.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.LOP.xstar_r_r">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xstar_r_r</span></span><a class="headerlink" href="#pyrplib.card.LOP.xstar_r_r" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return X* optimally reordered.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -641,6 +752,23 @@ elements will be noise</p>
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.card.</span></span><span class="sig-name descname"><span class="pre">SystemOfEquations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.SystemOfEquations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyrplib.card.Card" title="pyrplib.card.Card"><code class="xref py py-class docutils literal notranslate"><span class="pre">Card</span></code></a></p>
+<p>A class that represents the analysis, results, and metrics associated with solving a system of equations to produce a ranking.</p>
+<p>SystemOfEquations card can be saved as a JSON file that contains the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;dataset_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&lt;Identifying Dataset ID&gt;&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;source_dataset_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&lt;Identifying Source Dataset ID&gt;&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;M&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Matrix from Mx=b&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;b&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Vector from Mx=b&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;r&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Rating vector&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;ranking&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Ranking vector&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;perm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Ordering/permutation&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;dictionary of options&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;games&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Games (or more generally matchups) that are processed to produce M and b&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;teams&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;List of teams (or more generally items)&gt;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;Method which is Massey or Colley&gt;&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.M">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">M</span></span><a class="headerlink" href="#pyrplib.card.SystemOfEquations.M" title="Permalink to this definition">¶</a></dt>
@@ -654,7 +782,16 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.from_json">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_link</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.SystemOfEquations.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Static method that reads a SystemOfEquations card object from a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a SystemOfEquations card object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyrplib.card.SystemOfEquations" title="pyrplib.card.SystemOfEquations">SystemOfEquations</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.games">
@@ -674,7 +811,19 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.prepare">
 <span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processed_dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.SystemOfEquations.prepare" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Prepare the data for analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>[</strong><strong>processed_dataset</strong><strong>]</strong> (<em>[</em><a class="reference internal" href="#pyrplib.dataset.Processed" title="pyrplib.dataset.Processed"><em>dataset.Processed</em></a><em>]</em>) – [Processed dataset object]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyrplib.card.SystemOfEquations" title="pyrplib.card.SystemOfEquations">SystemOfEquations</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.r">
@@ -689,7 +838,8 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.SystemOfEquations.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Solve the system of equations and store the results.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.teams">
@@ -699,7 +849,16 @@ elements will be noise</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.card.SystemOfEquations.view">
 <span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.card.SystemOfEquations.view" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a dictionary in dash ready format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of HTML dash ready objects</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
