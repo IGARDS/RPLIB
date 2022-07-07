@@ -872,7 +872,14 @@ and removing rows and columns with all 0’s.</p>
 <p>A class that facilitates accessing the datasets for RPLIB.</p>
 <dl class="simple">
 <dt>This class reads the following TSV files:</dt><dd><ul class="simple">
-<li><p>{DATA_PREFIX}/unprocessed_datasets.tsv</p></li>
+<li><dl class="simple">
+<dt>{DATA_PREFIX}/unprocessed_datasets.tsv</dt><dd><ul>
+<li><p>Columns: Dataset ID, Dataset Name, Description, Type, Loader, Download links</p></li>
+<li><p>Dataset ID - persistant unique ID for each dataset</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 <li><p>{DATA_PREFIX}/processed_datasets.tsv</p></li>
 <li><p>{DATA_PREFIX}/lop_cards.tsv</p></li>
 <li><p>{DATA_PREFIX}/hillside_cards.tsv</p></li>
