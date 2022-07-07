@@ -869,6 +869,18 @@ and removing rows and columns with all 0’s.</p>
 <dt class="sig sig-object py" id="pyrplib.data.Data">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyrplib.data.</span></span><span class="sig-name descname"><span class="pre">Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">DATA_PREFIX</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.data.Data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class that facilitates accessing the datasets for RPLIB.</p>
+<dl class="simple">
+<dt>This class reads the following TSV files:</dt><dd><ul class="simple">
+<li><p>{DATA_PREFIX}/unprocessed_datasets.tsv</p></li>
+<li><p>{DATA_PREFIX}/processed_datasets.tsv</p></li>
+<li><p>{DATA_PREFIX}/lop_cards.tsv</p></li>
+<li><p>{DATA_PREFIX}/hillside_cards.tsv</p></li>
+<li><p>{DATA_PREFIX}/massey_cards.tsv</p></li>
+<li><p>{DATA_PREFIX}/colley_cards.tsv</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyrplib.data.Data.load_card">
 <span class="sig-name descname"><span class="pre">load_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyrplib.data.Data.load_card" title="Permalink to this definition">¶</a></dt>
