@@ -6,22 +6,32 @@ import pandas as pd
 from dash import html
 import json
 
+def get_datatype(dtype):
+    if 'float' in dtype or 'double' in dtype or 'int' in dtype:
+        return 'numeric'
+    elif 'datetime' in dtype:
+        return 'datetime'
+    return 'text'
+    
+def get_filter_options(dtype):
+    if 'float' in dtype or 'double' in dtype or 'int' in dtype:
+        return 'sensitive'
+    return 'insensitive'
+
 def get_standard_data_table(df,id):
     """Returns a dash data table with standard configuration.
     """
     if type(df) == pd.Series:
         df = df.to_frame().reset_index()
     df = df.fillna("")
-    def get_datatypes(dtype):
-        if 'float' in dtype or 'double' in dtype or 'int' in dtype:
-            return 'numeric'
-        elif 'datetime' in dtype:
-            return 'datetime'
-        return 'text'
+
     dataset_table = dash_table.DataTable(
         id=id,
-        columns=[{"name": i, "id": i, 'presentation': 'markdown', 
-                "type": get_datatypes(str(df[i].dtype))} for i in df.columns],
+        columns=[{
+            "name": i, "id": i, 'presentation': 'markdown', 
+            "type": get_datatype(str(df[i].dtype)),
+            "filter_options": {"case": get_filter_options(str(df[i].dtype))}
+        } for i in df.columns],
         data=df.to_dict("records"),
         is_focused=True,
         style_table={
@@ -41,9 +51,9 @@ def get_standard_data_table(df,id):
         sort_action="native",
         sort_mode="multi",
         filter_action='native',
-        filter_options={
-            'case': 'insensitive'
-        },
+#        filter_options={ # moved this to each column because of bug with filtering
+#            'case': 'sensitive' #'insensitive'
+#        },
         style_data={
             "backgroundColor": '#E3F2FD',
             "border-bottom": "1px solid #90CAF9",
